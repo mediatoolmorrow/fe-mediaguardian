@@ -1,0 +1,22 @@
+{
+    "contacts": [
+        {   
+            "id" : "mosd",
+            "nameth": "ศูนย์ช่วยเหลือสังคม กระทรวงการพัฒนาสังคม และความมั่นคงของมนุษย์ (พม.)",
+            "nameen": "Social Help Center, Ministry of Social Development and Human Security",
+            "website": "https://eservice1300.m-society.go.th/"
+        },
+        {
+            "id" : "ocpb",
+            "nameth": "สำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)",
+            "nameen": "Office of the Consumer Protection Board (OCPB)",
+            "website": "https://complaint.ocpb.go.th/Complaint"
+        },
+        {
+            "id" : "nbtc",
+            "nameth": "สำนักงานกสทช.",
+            "nameen": "Office of The National Broadcasting and Telecommunications Commission (NBTC)",
+            "website": "https://nbtc.go.th/tcp/th/complaint/complaint-form.aspx"
+        }
+    ]
+}
