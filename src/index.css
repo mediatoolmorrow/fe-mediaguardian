@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Option */
+
+.promptOption {
+    @apply w-full text-[12px] h-[80px] sm:w-[100px] sm:h-[70px] md:w-[120px] md:h-[80px] border rounded-[5px];
+}
+
+.promptOptionSelected {
+    @apply bg-blue-500 text-white;
+}
+
+.optionTopic {
+    @apply mb-2 text-sm font-semibold
+}
+
+.optionText {
+    @apply mb-4 text-xs font-medium
+}
+
+.optionCategory {
+    @apply mb-2 text-sm font-semibold
+}
+
+/* Prompt Box */
+
+.media-box {
+  @apply relative max-w-[386px] rounded-2xl border p-4 flex flex-col;
+}
+
+.media-box__form {
+  @apply border rounded-2xl max-w-[362px] h-[60px] flex;
+}
+
+.media-box__textarea {
+  @apply w-full min-h-8 p-4 rounded-2xl border-none outline-none leading-none;
+}
+
+.media-box__icon {
+  @apply w-8 h-8 flex items-center justify-center;
+}
+
+.media-box__select {
+  @apply border rounded-xl px-2 py-1 text-xs w-[133px] h-[30px];
+}
+
+.dropzone {
+  @apply relative w-full h-full rounded-xl overflow-hidden cursor-pointer;
+}
+
+.dropzone__preview {
+  @apply w-full h-full object-cover;
+}
