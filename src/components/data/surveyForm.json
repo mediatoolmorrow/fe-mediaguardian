@@ -1,0 +1,47 @@
+{
+  "questions": [
+    {
+      "value": "tool_satisfaction",
+      "type": "rating",
+      "label_th": "ความพึงพอใจในการใช้งานเครื่องมือ?",
+      "options": [
+        { "value": "1", "label": "ควรปรับปรุง" },
+        { "value": "2", "label": "พอใช้" },
+        { "value": "3", "label": "ปานกลาง" },
+        { "value": "4", "label": "พึงพอใจ" },
+        { "value": "5", "label": "มากที่สุด" }
+      ]
+    },
+    {
+      "value": "self_reflect",
+      "type": "rating",
+      "label_th": "หลังใช้ข้อความนี้ คุณมั่นใจขึ้นไหมว่า “คุณปกป้องตัวเองได้”?",
+      "options": [
+        { "value": "1", "label": "ควรปรับปรุง" },
+        { "value": "2", "label": "พอใช้" },
+        { "value": "3", "label": "ปานกลาง" },
+        { "value": "4", "label": "พึงพอใจ" },
+        { "value": "5", "label": "มากที่สุด" }
+      ]
+    },
+    {
+      "value": "user_role",
+      "type": "option",
+      "label_th": "คุณใช้งานเครื่องมือในบทบาทไหน?",
+      "options": [
+        { "value": "parents", "label": "ผู้ปกครอง" },
+        { "value": "general_public", "label": "บุคคลทั่วไป" },
+        { "value": "others", "label": "อื่น ๆ (ไม่ระบุ)" }
+      ]
+    },
+    {
+      "value": "next_step",
+      "type": "option",
+      "label_th": "คุณอยากทำอะไรกับข้อมูลนี้ต่อ?",
+      "options": [
+        { "value": "report", "label": "แนะนำหน่วยงานสำหรับร้องเรียน" },
+        { "value": "share_to_social", "label": "แชร์ต่อ" }
+      ]
+    }
+  ]
+}
