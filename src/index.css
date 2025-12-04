@@ -53,3 +53,25 @@
 .dropzone__preview {
   @apply w-full h-full object-cover;
 }
+
+/* Survey */ 
+
+.survey-option {
+  @apply flex flex-col items-center cursor-pointer select-none;
+}
+
+.survey-option-circle {
+  @apply w-12 h-12 rounded-full border border-gray-400 flex items-center justify-center;
+}
+
+.survey-option-circle-selected {
+  @apply border-blue-500 bg-blue-50;
+}
+
+.survey-choice-box {
+  @apply px-4 py-2 rounded-lg border border-gray-300 cursor-pointer;
+}
+
+.survey-choice-box-selected {
+  @apply bg-blue-50 border-blue-500;
+}
