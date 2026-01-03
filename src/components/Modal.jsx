@@ -42,12 +42,23 @@ export default function Modal() {
   ];
 
   return (
-    <div className="min-h-[338px] min-w-[395px] max-w-[703px] rounded-xl p-6 bg-white shadow">
-      <div className="flex justify-end">
-        <img src="/src/assets/icon/close.svg" alt="close" />
-      </div>
+    <div className="relative shadow min-h-[338px] min-w-[395px] max-w-[703px] max-h-[500px] rounded-xl bg-white sm:p-6">
+    <button
+    type="button"
+    className="
+        absolute
+        -top-4 -right-4
+        transition
+    "
+    >
+    <img
+        src="/src/assets/icon/close.svg"
+        alt="close"
+        className="w-full h-full"
+    />
+    </button>
 
-    <div className="flex flex-col items-center justify-center"> 
+    <div className="flex flex-col items-center justify-center  p-24"> 
       <p className="text-xl font-bold mb-4">แชร์ลิงก์</p>
 
       <Button text="แชร์ผ่านเมนูมือถือ" variant="normalActive" />
