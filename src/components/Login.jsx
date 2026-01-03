@@ -41,20 +41,6 @@ export default function Login() {
 
     return (
         <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl ">
-            {/*}
-            <div className="text-center mb-8">
-                <div className="flex justify-center mb-4">
-                    <img
-                        src="./favicon.svg"
-                        alt="Media Guardians"
-                        className="w-24 h-24"
-                    />
-                </div>
-                <h1 className="text-2xl font-bold mb-1">ชุมชนเฝ้าระวังสื่อ</h1>
-                <p className="text-sm font-bold">Media Guardians</p>
-            </div>
-            */}
-
             <div className="mb-4">
                 <input
                     type="email"

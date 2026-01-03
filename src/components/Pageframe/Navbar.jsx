@@ -1,10 +1,10 @@
 import React from "react";
-import Button from "./Button";
-import logoutIcon from "../assets/icon/logout.svg";
+import Button from "../Button";
+import logoutIcon from "../../assets/icon/logout.svg";
 
 export default function Navbar(){
     return (
-        <div className="w-screen max-h-[115px] max-h-[80px] bg-color-navbar flex justify-between py-4 px-6 sm:px-16 ">
+        <div className="max-w-screen max-h-[115px] max-h-[80px] bg-navbar flex justify-between py-4 px-6 sm:px-16 rounded-3xl rounded-b ">
             <div className="flex h-[53px] gap-3 justify-center">
                 <img src="./favicon.svg" /> 
                 <div className="flex flex-col text-start justify-center"> 

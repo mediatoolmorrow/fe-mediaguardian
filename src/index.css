@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'KwamSook';
+  font-style: normal;
+  src: url(./assets/font/KwamSookRegular_0.otf);
+}
+
+@font-face {
+  font-family: 'KwamSook';
+  font-style: bold;
+  src: url(./assets/font/KwamSookBold_0.otf);
+}
+
+@font-face {
+  font-family: 'KwamSook';
+  font-style: light;
+  src: url(./assets/font/KwamSookLight_0.otf);
+}
+
+@font-face {
+  font-family: 'KwamSook';
+  font-style: italic;
+  src: url(./assets/font/KwamSookItalic_0.otf);
+}
+
 @theme {
   --color-primary: #24A9C4;
   --color-accent: #EE9C2F; 
@@ -7,4 +31,6 @@
   --color-text: #5F6368;
   --color-button: #C7C7CC;
   --color-navbar: #FFFFFF;
+  --font-display: "KwamSook", san-serif;
 }
+
