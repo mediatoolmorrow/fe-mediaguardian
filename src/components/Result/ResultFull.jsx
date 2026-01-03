@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "../Button";
 
-export default function ResultSummary({description}){
+export default function ResultFull({description}){
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(description);
 
@@ -32,20 +32,20 @@ export default function ResultSummary({description}){
     };
 
     return (
-        <div className="flex flex-col min-w-[376px] min-h-[586px] max-h-[598px] max-w-[648px] gap-2">
+        <div className="flex flex-col w-full max-w-[648px] h-full max-h-[598px] gap-2 p-4">
             <div className="flex gap-4 flex-1 overflow-hidden">
                 <img src="src/assets/icon/result.svg" className="w-11 h-11 flex-shrink-0"/>
-                <div className="flex flex-col flex-1 min-h-0">
+                <div className="flex flex-col flex-1 min-h-0 min-w-0">
                     <p className="mb-1 font-bold text-sm flex-shrink-0"> ผลลัพธ์จากการประมวลผล </p>
                     {isEditing ? (
                         <textarea
                             value={editedText}
                             onChange={(e) => setEditedText(e.target.value)}
-                            className="flex-1 text-xs max-w-lg p-2 mb-2 border border-button/20 rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
+                            className="flex-1 text-xs w-full p-2 mb-2 border border-button/20 rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
                         />
                     ) : (
                         <div 
-                            className="flex-1 text-xs max-w-lg mb-2 overflow-y-auto"
+                            className="flex-1 text-xs w-full mb-2 overflow-y-auto"
                             dangerouslySetInnerHTML={{ __html: renderMarkdown(editedText) }}
                         />
                     )}

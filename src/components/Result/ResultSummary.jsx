@@ -1,18 +1,42 @@
 import React from "react";
 import Button from "../Button";
 
-export default function ResultSummary({description}){
-    return (
-        <div className="flex min-w-[376px] min-h-[166px] max-w-[648px] max-h-[209px] gap-4">
-            <img src="src/assets/icon/result.svg" className="w-11 h-11"/>
-            <div className="flex flex-col items-center">
-                <p className="mb-1 font-bold self-start text-sm"> ผลลัพธ์จากการประมวลผล </p>
-                <p className="mb-6 self-start text-xs max-w-md"> {description} </p>
-                <Button className="p-4"
-                text="เลือกและแก้ไข" 
-                variant="normalActive"/>
-            </div>
+export default function ResultSummary({ description }) {
+  return (
+    <div
+      className="
+        w-full
+        max-w-[648px]
+        flex
+        flex-col
+        sm:flex-row
+        gap-3
+        p-4
+      "
+    >
+      <img
+        src="/src/assets/icon/result.svg"
+        className="w-10 h-10 flex-shrink-0"
+        alt="Result"
+      />
 
+      <div className="flex flex-col flex-1">
+        <p className="mb-1 font-bold text-sm">
+          ผลลัพธ์จากการประมวลผล
+        </p>
+
+        <p className="mb-4 text-xs text-text break-words">
+          {description}
+        </p>
+
+        <div className="mt-auto">
+          <Button
+            text="เลือกและแก้ไข"
+            variant="normalActive"
+            className="w-full sm:w-auto"
+          />
         </div>
-    );
+      </div>
+    </div>
+  );
 }

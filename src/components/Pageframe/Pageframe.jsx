@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 
 export default function Pageframe() {
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center p-4 sm:p-6"
+    <div className="font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center p-4 sm:p-6"
       style={{
         backgroundImage: "url('/bg.webp')",
       }}>
