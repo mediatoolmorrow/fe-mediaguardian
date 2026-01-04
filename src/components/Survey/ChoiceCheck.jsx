@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ChoiceCheck({ text, isSelect }) {
   return (
-    <button className="flex items-center gap-2 w-[55px] min-h-[61px] justify-center flex-col">
+    <button className="flex items-center gap-2 max-w-[55px]  min-h-[61px] justify-center flex-col">
       <div
         className={`
           w-[40px] h-[40px] rounded-full border flex items-center justify-center

@@ -8,6 +8,7 @@ import Tutorialpage from "./page/Tutorialpage"
 import ResultViewpage from "./page/ResultViewpage";
 import ResultListpage from "./page/ResultListpage";
 import Contactpage from "./page/Contactpage";
+import Surveypage from "./page/Surveypage";
 
 function App() {
   return (

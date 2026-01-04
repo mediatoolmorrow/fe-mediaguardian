@@ -4,7 +4,7 @@ export default function ChoiceSelect({ text, isSelect }) {
   return (
     <button
       className={`
-        group
+        p-4
         max-h-[80px] max-w-[431px]
         min-h-[60px] min-w-[398px]
         border border-button rounded-md
@@ -16,18 +16,12 @@ export default function ChoiceSelect({ text, isSelect }) {
         }
       `}
     >
-      <p
-        className={`
-          font-medium text-xs transition-colors
-          ${
-            isSelect
-              ? "text-white"
-              : "text-text group-hover:text-white"
-          }
-        `}
-      >
-        {text}
-      </p>
+      <p className={`font-medium text-xs hover:text-white ${
+          isSelect
+            ? "text-white"
+            : "hover:text-white text-text"
+        }`}>{text} 
+        </p>
     </button>
   );
 }
