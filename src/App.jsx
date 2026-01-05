@@ -12,7 +12,7 @@ import ResultViewpage from "./page/ResultViewpage";
 import ResultListpage from "./page/ResultListpage";
 import Contactpage from "./page/Contactpage";
 import Surveypage from "./page/Surveypage";
-import Promptpage from "./page/PromptPage";
+import Promptpage from "./page/Promptpage";
 
 function App() {
   return (
