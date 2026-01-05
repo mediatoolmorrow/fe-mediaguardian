@@ -19,22 +19,22 @@ export default function Login() {
     const socialLogins = [
         {
             name: "Facebook",
-            icon: "/src/assets/social-media/facebook.svg",
+            icon: "/social-media/facebook.svg",
             onClick: () => console.log("Facebook login"),
         },
         {
             name: "Google",
-            icon: "/src/assets/social-media/google.svg",
+            icon: "/social-media/google.svg",
             onClick: () => console.log("Google login"),
         },
         {
             name: "Apple",
-            icon: "/src/assets/social-media/apple.svg",
+            icon: "/social-media/apple.svg",
             onClick: () => console.log("Apple login"),
         },
         {
             name: "LINE",
-            icon: "/src/assets/social-media/line.svg",
+            icon: "/social-media/line.svg",
             onClick: () => console.log("LINE login"),
         },
     ];
@@ -67,7 +67,7 @@ export default function Login() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                     <img
-                        src="/src/assets/icon/hide.svg"
+                        src="/icon/hide.svg"
                         alt="toggle password"
                         className="w-5 h-5"
                     />

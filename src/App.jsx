@@ -19,7 +19,16 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Pageframe />}>
-          <Route path="/" element={<Surveypage />} />
+          <Route path="/" element={<Loginpage />} />
+          <Route path="/login" element={<Loginpage />} />
+          <Route path="/pdpa" element={<Pdpapage />} />
+          <Route path="/tutorial" element={<Tutorialpage />} />
+          <Route path="/reult" element={<ResultListpage />} />
+          <Route path="/result/:id" element={<ResultViewpage />} />
+          <Route path="/survey" element={<Surveypage />} />
+          <Route path="/contact" element={<Contactpage />} />
+          <Route path="/agentic" element={<Promptpage />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

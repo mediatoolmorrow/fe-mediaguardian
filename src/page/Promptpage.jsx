@@ -4,35 +4,35 @@ import Button from "../components/Button";
 import ChoiceCard from "../components/ChoiceCard";
 
 const iconMap = {
-  "การถูกหลอกโดยข่าวปลอม": "src/assets/choice-icon/problem/fake-news.svg",
-  "ไม่มั่นใจในข้อมูล": "src/assets/choice-icon/problem/confusion.svg",
-  "ข้อมูลบิดเบือน": "src/assets/choice-icon/problem/dis-info.svg",
-  "สินค้าไม่ตรงปก": "src/assets/choice-icon/problem/fake-merch.svg",
-  "หลอกให้รักออนไลน์": "src/assets/choice-icon/problem/fake-love.svg",
-  "โฆษณาเกินจริง": "src/assets/choice-icon/problem/fake-promo.svg",
-  "หลอกให้ลงทุน": "src/assets/choice-icon/problem/fake-inves.svg",
+  "การถูกหลอกโดยข่าวปลอม": "/choice-icon/problem/fake-news.svg",
+  "ไม่มั่นใจในข้อมูล": "/choice-icon/problem/confusion.svg",
+  "ข้อมูลบิดเบือน": "/choice-icon/problem/dis-info.svg",
+  "สินค้าไม่ตรงปก": "/choice-icon/problem/fake-merch.svg",
+  "หลอกให้รักออนไลน์": "/choice-icon/problem/fake-love.svg",
+  "โฆษณาเกินจริง": "/choice-icon/problem/fake-promo.svg",
+  "หลอกให้ลงทุน": "/choice-icon/problem/fake-inves.svg",
   
-  "ขโมยข้อมูลส่วนตัว": "src/assets/choice-icon/problem/phising.svg",
-  "ใช้ภาพบุคคลโดยไม่ได้รับอนุญาต": "src/assets/choice-icon/problem/privacy.svg",
-  "ละเมิดสิทธิเด็กและเยาวชน": "src/assets/choice-icon/problem/child-abuse.svg",
+  "ขโมยข้อมูลส่วนตัว": "/choice-icon/choice-icon/problem/phising.svg",
+  "ใช้ภาพบุคคลโดยไม่ได้รับอนุญาต": "/choice-icon/problem/privacy.svg",
+  "ละเมิดสิทธิเด็กและเยาวชน": "/choice-icon/problem/child-abuse.svg",
   
-  "ต่อสุขภาพกาย": "src/assets/choice-icon/problem/health-risk.svg",
-  "ต่อสุขภาพจิต": "src/assets/choice-icon/problem/mentalhealth-risk.svg",
-  "ต่อสังคม": "src/assets/choice-icon/problem/social-risk.svg",
+  "ต่อสุขภาพกาย": "/choice-icon/problem/health-risk.svg",
+  "ต่อสุขภาพจิต": "/choice-icon/problem/mentalhealth-risk.svg",
+  "ต่อสังคม": "/choice-icon/problem/social-risk.svg",
   
-  "การถูกคุกคาม": "src/assets/choice-icon/problem/abuse.svg",
-  "การลามกอนาจาร": "src/assets/choice-icon/problem/pervert.svg",
+  "การถูกคุกคาม": "/choice-icon/problem/abuse.svg",
+  "การลามกอนาจาร": "/choice-icon/problem/pervert.svg",
   
-  "การตกเป็นเหยื่อ": "src/assets/choice-icon/worry/victimize.svg",
-  "การเสียทรัพสิน": "src/assets/choice-icon/worry/money.svg",
-  "เรื่องสุขภาพจิต": "src/assets/choice-icon/worry/mental-health.svg",
-  "เกิดอันตราย": "src/assets/choice-icon/worry/danger.svg",
+  "การตกเป็นเหยื่อ": "/choice-icon/worry/victimize.svg",
+  "การเสียทรัพสิน": "/choice-icon/worry/money.svg",
+  "เรื่องสุขภาพจิต": "/choice-icon/worry/mental-health.svg",
+  "เกิดอันตราย": "/choice-icon/worry/danger.svg",
   
-  "ตอบกลับอย่างสร้างสรรค์": "src/assets/choice-icon/worry/creative-commu.svg",
-  "ตั้งคำถามเชิญชวน": "src/assets/choice-icon/worry/question.svg",
-  "คุยกับลูก": "src/assets/choice-icon/worry/talk-child.svg",
-  "คุยกับเพื่อน": "src/assets/choice-icon/worry/talk-friend.svg",
-  "คุยกับคนอายุมากกว่า": "src/assets/choice-icon/worry/talk-elder.svg"
+  "ตอบกลับอย่างสร้างสรรค์": "/choice-icon/worry/creative-commu.svg",
+  "ตั้งคำถามเชิญชวน": "/choice-icon/worry/question.svg",
+  "คุยกับลูก": "/choice-icon/worry/talk-child.svg",
+  "คุยกับเพื่อน": "/choice-icon/worry/talk-friend.svg",
+  "คุยกับคนอายุมากกว่า": "/choice-icon/worry/talk-elder.svg"
 };
 
 const questions = {

@@ -34,7 +34,7 @@ export default function ResultFull({description}){
     return (
         <div className="flex flex-col w-full max-w-[648px] h-full max-h-[598px] gap-2 p-4">
             <div className="flex gap-4 flex-1 overflow-hidden">
-                <img src="src/assets/icon/result.svg" className="w-11 h-11 flex-shrink-0"/>
+                <img src="/icon/result.svg" className="w-11 h-11 flex-shrink-0"/>
                 <div className="flex flex-col flex-1 min-h-0 min-w-0">
                     <p className="mb-1 font-bold text-sm flex-shrink-0"> ผลลัพธ์จากการประมวลผล </p>
                     {isEditing ? (
@@ -66,7 +66,7 @@ export default function ResultFull({description}){
                         className="flex items-center gap-2 text-sm px-4 py-2 hover:bg-button/10 rounded transition-colors"
                     >
                         <img
-                            src="/src/assets/icon/edit.svg"
+                            src="/icon/edit.svg"
                             alt="Edit"
                             className="w-4 h-4"
                         />
@@ -79,7 +79,7 @@ export default function ResultFull({description}){
                     className="flex items-center gap-2 text-sm px-4 py-2 hover:bg-button/10 rounded transition-colors"
                 >
                     <img
-                        src="/src/assets/icon/copy.svg"
+                        src="/icon/copy.svg"
                         alt="Copy"
                         className="w-4 h-4"
                     />

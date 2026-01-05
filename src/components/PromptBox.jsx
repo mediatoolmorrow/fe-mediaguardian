@@ -8,17 +8,17 @@ export default function PromptBox() {
     {
       id: "text",
       displayName: "Text Content",
-      icon: "/src/assets/icon/message.svg",
+      icon: "/icon/message.svg",
     },
     {
       id: "link",
       displayName: "Link Content",
-      icon: "/src/assets/icon/link.svg",
+      icon: "/icon/link.svg",
     },
     {
       id: "image",
       displayName: "Image Content",
-      icon: "/src/assets/icon/image.svg",
+      icon: "/icon/image.svg",
     },
   ];
 
@@ -45,7 +45,7 @@ export default function PromptBox() {
                     <span>{current.displayName}</span>
                 </div>
 
-                <img src="src/assets/icon/dropdown.svg" alt="" />
+                <img src="/icon/dropdown.svg" alt="" />
                 </button>
 
                 {open && (

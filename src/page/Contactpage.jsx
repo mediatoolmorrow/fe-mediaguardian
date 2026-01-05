@@ -12,7 +12,7 @@ function Contactpage() {
       description:
         "ให้คำปรึกษาและช่วยเหลือด้านสังคมสำหรับประชาชนทั่วไป",
       tel: "02-000-1234",
-      icon: "/src/assets/contact/pm.png",
+      icon: "/contact/pm.png",
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ function Contactpage() {
       description:
         "บริการรับฟังปัญหา ให้คำแนะนำ และดูแลด้านสุขภาพจิต",
       tel: "1323",
-      icon: "/src/assets/contact/sorkorbor.png",
+      icon: "/contact/sorkorbor.png",
     },
     {
       id: 3,
@@ -28,13 +28,13 @@ function Contactpage() {
       description:
         "ติดต่อเจ้าหน้าที่ตำรวจในกรณีเหตุฉุกเฉิน",
       tel: "191",
-      icon: "/src/assets/contact/nbc.png",
+      icon: "/contact/nbc.png",
     },
   ];
   
   return (
     <div className="w-full">
-        <Banner imgSource="src/assets/banner/example.svg" />
+        <Banner imgSource="/banner/example.svg" />
       <div className="flex flex-col items-center py-6 sm:py-8 gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary text-center px-4">
           แนะนำช่องทางในการติดต่อขอความช่วยเหลือ

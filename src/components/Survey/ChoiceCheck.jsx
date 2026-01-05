@@ -15,7 +15,7 @@ export default function ChoiceCheck({ text, isSelect }) {
         `}
       >
         <img
-          src="/src/assets/icon/choice-check.svg"
+          src="/icon/choice-check.svg"
           alt="check"
           className={`
             w-4 h-4 transition-all

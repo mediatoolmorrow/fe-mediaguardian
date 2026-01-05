@@ -5,7 +5,7 @@ export default function Modal() {
   const socialShare = [
     {
       name: "Facebook",
-      icon: "/src/assets/social-media/facebook.svg",
+      icon: "/social-media/facebook.svg",
       onClick: () =>
         window.open(
           "https://www.facebook.com/sharer/sharer.php?u=https://mediaguardians.com",
@@ -14,7 +14,7 @@ export default function Modal() {
     },
     {
       name: "Twitter",
-      icon: "/src/assets/social-media/twitter.svg",
+      icon: "/social-media/twitter.svg",
       onClick: () =>
         window.open(
           "https://twitter.com/intent/tweet?url=https://mediaguardians.com",
@@ -23,7 +23,7 @@ export default function Modal() {
     },
     {
       name: "LINE",
-      icon: "/src/assets/social-media/line.svg",
+      icon: "/social-media/line.svg",
       onClick: () =>
         window.open(
           "https://social-plugins.line.me/lineit/share?url=https://mediaguardians.com",
@@ -32,7 +32,7 @@ export default function Modal() {
     },
     {
       name: "IG",
-      icon: "/src/assets/social-media/ig.svg",
+      icon: "/social-media/ig.svg",
       onClick: () =>
         window.open(
           "https://social-plugins.line.me/lineit/share?url=https://mediaguardians.com",
@@ -52,7 +52,7 @@ export default function Modal() {
     "
     >
     <img
-        src="/src/assets/icon/close.svg"
+        src="/icon/close.svg"
         alt="close"
         className="w-full h-full"
     />
@@ -83,7 +83,7 @@ export default function Modal() {
 
           <button className="flex items-center gap-2 text-xs px-2 hover:bg-button/10 rounded">
             <img
-              src="/src/assets/icon/copy.svg"
+              src="/icon/copy.svg"
               alt="Copy"
               className="w-3.5 h-3.5"
             />

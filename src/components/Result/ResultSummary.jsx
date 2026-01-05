@@ -15,7 +15,7 @@ export default function ResultSummary({ description }) {
       "
     >
       <img
-        src="/src/assets/icon/result.svg"
+        src="/icon/result.svg"
         className="w-10 h-10 flex-shrink-0"
         alt="Result"
       />
