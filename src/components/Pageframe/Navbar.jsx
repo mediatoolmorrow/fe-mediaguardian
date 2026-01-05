@@ -13,10 +13,7 @@ export default function Navbar(){
                 </div>
             </div>
             <div className="">
-                <Button
-                text="เข้าสู่ระบบ"
-                variant="loginButton"
-                />
+                <button className="btn-login"> เข้าสู่ระบบ </button>
             </div>
         </div>
     );

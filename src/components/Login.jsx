@@ -86,10 +86,7 @@ export default function Login() {
             )}
 
             <div className="flex justify-center mb-6">
-                <Button 
-                    text="เข้าสู่ระบบ"
-                    variant="normalActive"
-                />
+                <button className="btn-normal-active disable:btn-normal-inactive"> เข้าสู่ระบบ </button> 
             </div>
 
             <div className="text-center mb-6">
