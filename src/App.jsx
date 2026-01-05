@@ -1,9 +1,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Pageframe from "./components/Pageframe/Pageframe";
-import Homepage from "./page/Homepage"; {/* Remove This one Later*/}
+
+{/* Unprotected Routes */}
 import Loginpage from "./page/Loginpage"; 
 import Pdpapage from "./page/Pdpapage";
+
+{/* Protected Routes */}
 import Tutorialpage from "./page/Tutorialpage"
 import ResultViewpage from "./page/ResultViewpage";
 import ResultListpage from "./page/ResultListpage";
