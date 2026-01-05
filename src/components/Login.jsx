@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -86,7 +88,7 @@ export default function Login() {
             )}
 
             <div className="flex justify-center mb-6">
-                <button className="btn-normal-active disable:btn-normal-inactive"> เข้าสู่ระบบ </button> 
+                <button onClick={() => navigate("/tutorial")} className="btn-normal-active disable:btn-normal-inactive"> เข้าสู่ระบบ </button> 
             </div>
 
             <div className="text-center mb-6">

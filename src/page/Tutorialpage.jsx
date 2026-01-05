@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function Tutorialpage() {
+    const navigate = useNavigate();
     return (
         <div className="flex flex-col items-center justify-center bg-white w-full h-full p-4 sm:p-8">
             <div className="space-y-6 sm:space-y-12 items-center flex flex-col text-center max-w-[500px] w-full">
@@ -25,7 +27,7 @@ function Tutorialpage() {
                     </p>
                 </div>
                 <div className="flex w-full items-center justify-center">
-                    <button className="btn-normal-active disable:btn-normal-inactive"> ไปต่อ </button>
+                    <button onClick={() => navigate("/agentic")} className="btn-normal-active disable:btn-normal-inactive"> ไปต่อ </button>
                 </div>
             </div>
         </div>
