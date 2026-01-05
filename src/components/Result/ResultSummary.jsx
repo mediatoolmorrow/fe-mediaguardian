@@ -8,8 +8,8 @@ export default function ResultSummary({ description }) {
         w-full
         max-w-[648px]
         flex
-        flex-col
-        sm:flex-row
+        flex-row
+        items-start
         gap-3
         p-4
       "
@@ -29,14 +29,15 @@ export default function ResultSummary({ description }) {
           {description}
         </p>
 
-        <div className="mt-auto">
+        <div className="flex justify-center mt-auto">
           <Button
             text="เลือกและแก้ไข"
             variant="normalActive"
-            className="w-full sm:w-auto"
+            className="w-full max-w-xs"
           />
         </div>
       </div>
     </div>
   );
 }
+

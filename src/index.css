@@ -38,3 +38,55 @@
   --font-display: "KwamSook", sans-serif;
 }
 
+@layer components {
+  .btn-normal-active {
+    @apply
+      rounded-full
+      flex
+      items-center
+      justify-center
+      gap-2
+      sm:gap-5
+      transition-all
+      duration-200
+      w-full
+      sm:w-auto
+      sm:min-w-[327px]
+      sm:max-w-[400px]
+      min-h-[48px]
+      px-6
+      py-3
+      bg-primary
+      text-white
+      font-bold
+      hover:bg-primary/80;
+  }
+
+  .btn-logout {
+    @apply
+      w-12
+      h-12
+      sm:w-auto
+      sm:min-w-[180px]
+      sm:max-w-[221px]
+      sm:h-[50px]
+      sm:px-6
+      bg-white
+      text-primary
+      border
+      border-primary;
+  }
+
+  .btn-login {
+    @apply
+      w-full
+      sm:w-auto
+      px-6
+      py-4
+      font-bold;
+  }
+
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}

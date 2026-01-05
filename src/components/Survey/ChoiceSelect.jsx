@@ -6,7 +6,7 @@ export default function ChoiceSelect({ text, isSelect }) {
       className={`
         p-4
         max-h-[80px] max-w-[431px]
-        min-h-[60px] min-w-[398px]
+        min-h-[60px] min-w-[360px]
         border border-button rounded-md
         transition-colors
         ${

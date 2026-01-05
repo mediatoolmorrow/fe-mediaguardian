@@ -2,32 +2,43 @@ import React from "react";
 
 export default function ChoiceCard({
   title,
-  imageSource,
-  prompt,
-  selected = false,
+  iconSource,
+  selected,
+  onClick,
+  disabled,
 }) {
   return (
-    <div
-      className={`max-h-[100px] max-w-[650px] min-h-[80px] min-w-[395px] rounded-md
-        flex flex-col items-center justify-center shadow-md transition
-        ${
-          selected
-            ? "bg-accent text-white"
-            : "bg-white text-text"
-        }
-      `}
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`group p-4 rounded-lg shadow-md transition-all ${
+        selected
+          ? "bg-accent"
+          : disabled
+          ? "bg-gray-100 cursor-not-allowed opacity-50"
+          : "hover:bg-accent hover:shadow-md"
+      }`}
     >
-      <img
-        src={imageSource}
-        alt={title}
-        className={`w-7 h-7 sm:w-8 sm:h-8
-          ${selected ? "filter brightness-0 invert" : ""}
-        `}
-      />
+      <div className="flex flex-col items-center gap-2">
+        <img
+          src={iconSource}
+          alt={title}
+          className={`w-12 h-12 object-contain ${
+            selected ? "brightness-0 invert" : "group-hover:brightness-0 group-hover:invert"
+          }`}
+          onError={(e) => {
+            e.target.src = "/icons/default.svg";
+          }}
+        />
 
-      <p className="text-xs sm:text-sm font-bold">
-        {title}
-      </p>
-    </div>
+        <div
+          className={`text-sm font-medium text-center ${
+            selected ? "text-white" : "group-hover:text-white text-gray-700"
+          }`}
+        >
+          {title}
+        </div>
+      </div>
+    </button>
   );
 }

@@ -4,7 +4,7 @@ import logoutIcon from "../../assets/icon/logout.svg";
 
 export default function Navbar(){
     return (
-        <div className="max-w-screen max-h-[115px] max-h-[80px] bg-navbar flex justify-between py-4 px-6 sm:px-16 rounded-3xl rounded-b ">
+        <div className="max-w-screen max-h-[115px] max-h-[80px] bg-navbar flex justify-between py-4 px-6 sm:px-16 rounded-none sm:rounded-3xl sm:rounded-b">
             <div className="flex h-[53px] gap-3 justify-center">
                 <img src="./favicon.svg" /> 
                 <div className="flex flex-col -space-y-1 text-start justify-center"> 

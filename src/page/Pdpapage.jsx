@@ -1,25 +1,38 @@
 import React from "react";
-import Button from "../components/Button";
 
-function Pdpapage (){
+// Button component
+function Button({ text, variant }) {
+  const variants = {
+    normalActive: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg font-medium transition-colors"
+  };
+  
+  return (
+    <button className={variants[variant] || variants.normalActive}>
+      {text}
+    </button>
+  );
+}
+
+function Pdpapage() {
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-            <div className="max-h-[630px] max-w-[424px] min-h-[480px] min-w-[362px] text-center flex flex-col items-center justify-center space-y-6"> 
-            <p className="text-primary text-5xl font-bold">
-                PDPA
-            </p>
-            <p className="overflow-y-scroll">
-                Lorem ipsum dolor sit amet consectetur. Adipiscing quis sit gravida a et enim iaculis aliquam ultrices. Lorem vitae nec mi convallis mi. Sed aenean vitae et dictumst lacus elementum egestas eu urna. Amet turpis felis praesent vitae urna et faucibus. Urna dolor turpis pellentesque ut nisi molestie egestas aliquet. Proin enim pharetra imperdiet amet duis ac orci ac tortor. Phasellus augue diam malesuada nisi ut enim sagittis. Luctus molestie volutpat orci praesent a tortor pellentesque in malesuada. Eu sit a arcu hac
-
-                faucibus amet mollis.Lorem ipsum dolor sit amet consectetur. Adipiscing quis sit gravida a et enim iaculis aliquam ultrices. Lorem vitae nec mi convallis mi. Sed aenean vitae et dictumst lacus elementum egestas eu urna. Amet turpis felis praesent vitae urna et faucibus. Urna dolor turpis pellentesque ut nisi molestie egestas aliquet. Proin enim pharetra imperdiet amet duis ac orci ac tortor. Phasellus augue diam malesuada nisi ut enim sagittis. Luctus molestie volutpat orci praesent a tortor pellentesque in malesuada. Eu sit a arcu hac faucibus amet mollis.
-            </p>
-            <Button 
-                text = "ยอมรับ"
-                variant = "normalActive"
-            />
+        <div className="w-full h-full flex items-center justify-center p-4 sm:p-8">
+            <div className="w-full max-w-[424px] h-full max-h-[600px] flex flex-col items-center"> 
+                <h1 className="text-primary text-3xl sm:text-5xl font-bold mb-3 sm:mb-6 flex-shrink-0">
+                    PDPA
+                </h1>
+                <div className="w-full flex-1 min-h-0 overflow-y-auto text-sm sm:text-base mb-3 sm:mb-6 px-1">
+                    <p className="text-gray-700 leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Adipiscing quis sit gravida a et enim iaculis aliquam ultrices. Lorem vitae nec mi convallis mi. Sed aenean vitae et dictumst lacus elementum egestas eu urna. Amet turpis felis praesent vitae urna et faucibus. Urna dolor turpis pellentesque ut nisi molestie egestas aliquet. Proin enim pharetra imperdiet amet duis ac orci ac tortor. Phasellus augue diam malesuada nisi ut enim sagittis. Luctus molestie volutpat orci praesent a tortor pellentesque in malesuada. Eu sit a arcu hac
+                        <br /><br />
+                        faucibus amet mollis.Lorem ipsum dolor sit amet consectetur. Adipiscing quis sit gravida a et enim iaculis aliquam ultrices. Lorem vitae nec mi convallis mi. Sed aenean vitae et dictumst lacus elementum egestas eu urna. Amet turpis felis praesent vitae urna et faucibus. Urna dolor turpis pellentesque ut nisi molestie egestas aliquet. Proin enim pharetra imperdiet amet duis ac orci ac tortor. Phasellus augue diam malesuada nisi ut enim sagittis. Luctus molestie volutpat orci praesent a tortor pellentesque in malesuada. Eu sit a arcu hac faucibus amet mollis.
+                    </p>
+                </div>
+                <div className="flex w-full items-center justify-center">
+                    <button className="btn-normal-active disable:btn-normal-inactive"> ยอมรับ </button>
+                </div>
             </div>
         </div>
     );
 }
 
-export default Pdpapage; 
+export default Pdpapage;

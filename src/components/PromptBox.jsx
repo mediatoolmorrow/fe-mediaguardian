@@ -25,7 +25,7 @@ export default function PromptBox() {
   const current = mode.find((m) => m.id === selected);
 
   return (
-    <div className="max-w-[647px] max-h-[180px] min-h-[136px] border border-primary rounded-2xl p-4 space-y-3">
+    <div className="max-w-[647px] bg-white max-h-[180px] min-h-[136px] border border-primary rounded-2xl p-4 space-y-3">
         <div className="w-full min-h-[60px] max-h-[80px] border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
         <textarea
             placeholder="วางเนื้อหาของคุณที่นี่..."
