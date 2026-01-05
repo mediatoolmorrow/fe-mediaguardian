@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import PromptBox from "../components/PromptBox";
 import Button from "../components/Button";
 import ChoiceCard from "../components/ChoiceCard";
+import {useNavigate} from "react-router-dom";
 
 const iconMap = {
   "การถูกหลอกโดยข่าวปลอม": "/choice-icon/problem/fake-news.svg",
@@ -12,7 +13,7 @@ const iconMap = {
   "โฆษณาเกินจริง": "/choice-icon/problem/fake-promo.svg",
   "หลอกให้ลงทุน": "/choice-icon/problem/fake-inves.svg",
   
-  "ขโมยข้อมูลส่วนตัว": "/choice-icon/choice-icon/problem/phising.svg",
+  "ขโมยข้อมูลส่วนตัว": "/choice-icon/problem/phising.svg",
   "ใช้ภาพบุคคลโดยไม่ได้รับอนุญาต": "/choice-icon/problem/privacy.svg",
   "ละเมิดสิทธิเด็กและเยาวชน": "/choice-icon/problem/child-abuse.svg",
   
@@ -109,6 +110,8 @@ function PromptPage() {
     page1: [],
     page2: []
   });
+
+  const navigate = useNavigate();
 
   const toggleSelection = (section, title, maxSelect) => {
     setSelectedItems(prev => {
@@ -265,8 +268,7 @@ function PromptPage() {
             <div className="sticky bottom-6 left-0 z-50 flex justify-center">
             <button
                 onClick={() => {
-                  console.log('Selected:', selectedItems);
-                  alert('ทดสอบการเก็บช้อยส์ \n\nหน้า 1: ' + selectedItems.page1.length + ' รายการ\nหน้า 2: ' + selectedItems.page2.length + ' รายการ');
+                  navigate("/result")
                 }}      
                 className="btn-normal-active flex items-center gap-2 shadow-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >

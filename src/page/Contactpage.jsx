@@ -2,8 +2,10 @@ import React from "react";
 import Banner from "../components/Banner";
 import ContactCard from "../components/ContactCard";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
 function Contactpage() {
+  const navigate = useNavigate();
   const contact_list = [
     {
       id: 1,
@@ -52,12 +54,8 @@ function Contactpage() {
         </div>
       </div>
       <div className="flex gap-2 max-w-screen p-4 items-center justify-center"> 
-        <Button 
-        text = "กลับไปก่อนหน้า"
-        variant="normalInactive"/>
-        <Button 
-        text = "กลับไปหน้าแรก"
-        variant="normalActive"/>
+        <button className="btn-normal-active bg-button" onClick={()=>navigate("/survey")}> กลับไปก่อนหน้า </button> 
+        <button className="btn-normal-active" onClick={()=>navigate("/agentic")}> กลับไปหน้าแรก </button> 
       </div>
     </div>
   );

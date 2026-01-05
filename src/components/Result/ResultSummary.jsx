@@ -1,7 +1,9 @@
 import React from "react";
 import Button from "../Button";
+import { useNavigate } from "react-router-dom";
 
 export default function ResultSummary({ description }) {
+  const navigate = useNavigate();
   return (
     <div
       className="
@@ -30,11 +32,7 @@ export default function ResultSummary({ description }) {
         </p>
 
         <div className="flex justify-center mt-auto">
-          <Button
-            text="เลือกและแก้ไข"
-            variant="normalActive"
-            className="w-full max-w-xs"
-          />
+          <button className="btn-normal-active" onClick={()=>navigate("/result/example")}> เลือกและแก้ไข </button>
         </div>
       </div>
     </div>

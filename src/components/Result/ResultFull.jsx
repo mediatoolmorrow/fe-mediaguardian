@@ -41,7 +41,7 @@ export default function ResultFull({description}){
                         <textarea
                             value={editedText}
                             onChange={(e) => setEditedText(e.target.value)}
-                            className="flex-1 text-xs w-full p-2 mb-2 border border-button/20 rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
+                            className="flex-1 text-xs w-full p-2 mb-2 border border-button rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
                         />
                     ) : (
                         <div 

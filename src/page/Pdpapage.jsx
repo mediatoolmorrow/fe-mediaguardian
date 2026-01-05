@@ -1,19 +1,8 @@
 import React from "react";
-
-// Button component
-function Button({ text, variant }) {
-  const variants = {
-    normalActive: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg font-medium transition-colors"
-  };
-  
-  return (
-    <button className={variants[variant] || variants.normalActive}>
-      {text}
-    </button>
-  );
-}
+import { useNavigate } from "react-router-dom";
 
 function Pdpapage() {
+  const navigate = useNavigate();
     return (
         <div className="w-full h-full flex items-center justify-center p-4 sm:p-8">
             <div className="w-full max-w-[424px] h-full max-h-[600px] flex flex-col items-center"> 
@@ -28,7 +17,7 @@ function Pdpapage() {
                     </p>
                 </div>
                 <div className="flex w-full items-center justify-center">
-                    <button className="btn-normal-active disable:btn-normal-inactive"> ยอมรับ </button>
+                    <button className="btn-normal-active disable:btn-normal-inactive" onClick={()=>{navigate("/login");}}> ยอมรับ </button>
                 </div>
             </div>
         </div>

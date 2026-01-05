@@ -3,6 +3,7 @@ import ChoiceCheck from "../components/Survey/ChoiceCheck";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import Banner from "../components/Banner";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
 const surveyTemplate = {
   pages: [
@@ -46,6 +47,7 @@ const surveyTemplate = {
 function Surveypage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState({});
+  const navigate = useNavigate();
 
   const currentPageData = surveyTemplate.pages[currentPage];
   const isLastPage = currentPage === surveyTemplate.pages.length - 1;
@@ -62,7 +64,7 @@ function Surveypage() {
       setCurrentPage(currentPage + 1);
     } else {
       console.log("Survey completed:", answers);
-      alert("ขอบคุณสำหรับการตอบแบบสอบถาม!");
+      navigate("/contact")
     }
   };
 

@@ -1,8 +1,10 @@
 import React from "react";
 import Button from "../Button";
 import logoutIcon from "/icon/logout.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar(){
+    const navigate = useNavigate();
     return (
         <div className="max-w-screen max-h-[115px] max-h-[80px] bg-navbar flex justify-between py-4 px-6 sm:px-16 rounded-none sm:rounded-3xl sm:rounded-b">
             <div className="flex h-[53px] gap-3 justify-center">
@@ -13,7 +15,7 @@ export default function Navbar(){
                 </div>
             </div>
             <div className="">
-                <button className="btn-login"> เข้าสู่ระบบ </button>
+                <button className="btn-login" onClick={()=>navigate("/login")} > เข้าสู่ระบบ </button>
             </div>
         </div>
     );
