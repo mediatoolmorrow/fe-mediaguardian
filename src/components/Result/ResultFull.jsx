@@ -4,6 +4,7 @@ import Button from "../Button";
 export default function ResultFull({description}){
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(description);
+    const [showToast, setShowToast] = useState(false);
 
     const handleSave = () => {
         setIsEditing(false);
@@ -11,6 +12,8 @@ export default function ResultFull({description}){
 
     const handleCopy = () => {
         navigator.clipboard.writeText(editedText);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
     };
 
     const renderMarkdown = (text) => {
@@ -32,60 +35,80 @@ export default function ResultFull({description}){
     };
 
     return (
-        <div className="flex flex-col w-full max-w-[648px] h-full max-h-[598px] gap-2 p-4">
-            <div className="flex gap-4 flex-1 overflow-hidden">
-                <img src="/icon/result.svg" className="w-11 h-11 flex-shrink-0"/>
-                <div className="flex flex-col flex-1 min-h-0 min-w-0">
-                    <p className="mb-1 font-bold text-sm flex-shrink-0"> ผลลัพธ์จากการประมวลผล </p>
-                    {isEditing ? (
-                        <textarea
-                            value={editedText}
-                            onChange={(e) => setEditedText(e.target.value)}
-                            className="flex-1 text-xs w-full p-2 mb-2 border border-button rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
-                        />
-                    ) : (
-                        <div 
-                            className="flex-1 text-xs w-full mb-2 overflow-y-auto"
-                            dangerouslySetInnerHTML={{ __html: renderMarkdown(editedText) }}
-                        />
-                    )}
-                </div>
-            </div>
+        <>
+            <style>{`
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(-50%, -10px); }
+                    10% { opacity: 1; transform: translate(-50%, 0); }
+                    90% { opacity: 1; transform: translate(-50%, 0); }
+                    100% { opacity: 0; transform: translate(-50%, -10px); }
+                }
+                .animate-fade-in-out {
+                    animation: fadeInOut 2s ease-in-out;
+                }
+            `}</style>
             
-            <div className="flex gap-3 justify-end items-center flex-shrink-0">
-                {isEditing ? (
+            {showToast && (
+                <div className="fixed bottom-1/2 translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
+                    คัดลอกแล้ว
+                </div>
+            )}
+            
+            <div className="flex flex-col w-full max-w-[648px] h-full max-h-[598px] gap-2 p-4">
+                <div className="flex gap-4 flex-1 overflow-hidden">
+                    <img src="/icon/result.svg" className="w-11 h-11 flex-shrink-0"/>
+                    <div className="flex flex-col flex-1 min-h-0 min-w-0">
+                        <p className="mb-1 font-bold text-sm flex-shrink-0"> แนวทางการตอบกลับ </p>
+                        {isEditing ? (
+                            <textarea
+                                value={editedText}
+                                onChange={(e) => setEditedText(e.target.value)}
+                                className="flex-1 text-xs w-full p-2 mb-2 border border-button rounded-md resize-none focus:outline-none focus:border-accent overflow-y-auto"
+                            />
+                        ) : (
+                            <div 
+                                className="flex-1 text-xs w-full mb-2 overflow-y-auto"
+                                dangerouslySetInnerHTML={{ __html: renderMarkdown(editedText) }}
+                            />
+                        )}
+                    </div>
+                </div>
+                
+                <div className="flex gap-3 justify-end items-center flex-shrink-0">
+                    {isEditing ? (
+                        <button 
+                            onClick={handleSave}
+                            className="flex items-center gap-2 text-sm px-4 py-2 bg-accent text-white rounded hover:bg-accent/90 transition-colors"
+                        >
+                            บันทึก
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => setIsEditing(true)}
+                            className="flex items-center gap-2 text-sm px-4 py-2 hover:bg-button/10 rounded transition-colors"
+                        >
+                            <img
+                                src="/icon/edit.svg"
+                                alt="Edit"
+                                className="w-4 h-4"
+                            />
+                            แก้ไข
+                        </button>
+                    )}
+                    
                     <button 
-                        onClick={handleSave}
-                        className="flex items-center gap-2 text-sm px-4 py-2 bg-accent text-white rounded hover:bg-accent/90 transition-colors"
-                    >
-                        บันทึก
-                    </button>
-                ) : (
-                    <button 
-                        onClick={() => setIsEditing(true)}
+                        onClick={handleCopy}
                         className="flex items-center gap-2 text-sm px-4 py-2 hover:bg-button/10 rounded transition-colors"
                     >
                         <img
-                            src="/icon/edit.svg"
-                            alt="Edit"
+                            src="/icon/copy.svg"
+                            alt="Copy"
                             className="w-4 h-4"
                         />
-                        แก้ไข
+                        คัดลอก
                     </button>
-                )}
-                
-                <button 
-                    onClick={handleCopy}
-                    className="flex items-center gap-2 text-sm px-4 py-2 hover:bg-button/10 rounded transition-colors"
-                >
-                    <img
-                        src="/icon/copy.svg"
-                        alt="Copy"
-                        className="w-4 h-4"
-                    />
-                    คัดลอก
-                </button>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

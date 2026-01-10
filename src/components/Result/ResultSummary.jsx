@@ -24,7 +24,7 @@ export default function ResultSummary({ description }) {
 
       <div className="flex flex-col flex-1">
         <p className="mb-1 font-bold text-sm">
-          ผลลัพธ์จากการประมวลผล
+          แนวทางการตอบกลับ
         </p>
 
         <p className="mb-4 text-xs text-text break-words">
@@ -32,7 +32,7 @@ export default function ResultSummary({ description }) {
         </p>
 
         <div className="flex justify-center mt-auto">
-          <button className="btn-normal-active" onClick={()=>navigate("/result/example")}> เลือกและแก้ไข </button>
+          <button className="btn-normal-active" onClick={()=>navigate("/result/example")}> เลือกแนวนี้ </button>
         </div>
       </div>
     </div>

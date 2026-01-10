@@ -10,7 +10,7 @@ function ResultViewpage (){
             <ResultFull 
                 description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." 
             />
-            <button className="btn-normal-active" onClick={()=>navigate("/survey")}> ต่อไป </button> 
+            <button className="btn-normal-active" onClick={()=>navigate("/survey")}> ไปต่อ </button> 
         </div>
     );
 }
