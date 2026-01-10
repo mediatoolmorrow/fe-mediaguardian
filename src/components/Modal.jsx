@@ -42,7 +42,7 @@ export default function Modal() {
   ];
 
   return (
-    <div className="relative shadow min-h-[338px] min-w-[395px] max-w-[703px] max-h-[500px] rounded-xl bg-white sm:p-6">
+    <div className="relative shadow min-h-[338px] min-w-[340px] max-w-[703px] max-h-[500px] rounded-xl bg-white sm:p-6">
     <button
     type="button"
     className="
@@ -58,7 +58,7 @@ export default function Modal() {
     />
     </button>
 
-    <div className="flex flex-col items-center justify-center  p-24"> 
+    <div className="flex flex-col items-center justify-center p-8"> 
       <p className="text-xl font-bold mb-4">แชร์ลิงก์</p>
 
       <Button text="แชร์ผ่านเมนูมือถือ" variant="normalActive" />

@@ -15,6 +15,7 @@ import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
 import AdminDashboard from "./page/Adminpage/AdminDashboardpage";
 import AdminLoginpage from "./page/Adminpage/Loginpage"; 
+import NextSteppage from "./page/NextSteppage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/survey" element={<Surveypage />} />
           <Route path="/contact" element={<Contactpage />} />
           <Route path="/agentic" element={<Promptpage />} />
+          <Route path="/nextstep" element={<NextSteppage/> }/>
         </Route>
         <Route> 
           <Route path="/admin" element={<AdminDashboard/>} />
