@@ -13,6 +13,8 @@ import ResultListpage from "./page/ResultListpage";
 import Contactpage from "./page/Contactpage";
 import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
+import AdminDashboard from "./page/Adminpage/AdminDashboardpage";
+import AdminLoginpage from "./page/Adminpage/Loginpage"; 
 
 function App() {
   return (
@@ -28,7 +30,10 @@ function App() {
           <Route path="/survey" element={<Surveypage />} />
           <Route path="/contact" element={<Contactpage />} />
           <Route path="/agentic" element={<Promptpage />} />
-
+        </Route>
+        <Route> 
+          <Route path="/admin" element={<AdminDashboard/>} />
+          <Route path="/adminlogin" element={<AdminLoginpage/>} />
         </Route>
       </Routes>
     </BrowserRouter>
