@@ -1,115 +1,150 @@
-import React, { useState } from "react";
-import ChoiceCheck from "../components/Survey/ChoiceCheck";
+import React, { useState, useEffect } from "react";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
+import ChoiceCheck from "../components/Survey/ChoiceCheck";
+import ChoiceBox from "../components/Survey/ChoiceBox";
 import Banner from "../components/Banner";
-import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
+import { surveyTemplate } from "../utils/surveyTemplate";
 
-const surveyTemplate = {
-  pages: [
-    {
-      pageId: 1,
-      questions: [
-        {
-          id: "q1",
-          type: "rating",
-          label: "คุณพึงพอใจมากแค่ไหน",
-          options: ["น้อยที่สุด", "น้อย", "ปานกลาง", "มาก", "มากที่สุด"]
-        },
-        {
-          id: "q2",
-          type: "rating",
-          label: "คุณอยากแนะนำให้ผู้อื่นหรือไม่",
-          options: ["น้อยที่สุด", "น้อย", "ปานกลาง", "มาก", "มากที่สุด"]
-        },
-        {
-          id: "q3",
-          type: "select",
-          label: "สิ่งที่คุณชอบมากที่สุด",
-          options: ["การออกแบบ", "การใช้งาน", "ความเร็ว", "เนื้อหา"]
-        }
-      ]
-    },
-    {
-      pageId: 2,
-      questions: [
-        {
-          id: "q4",
-          type: "select",
-          label: "สิ่งที่ควรปรับปรุง",
-          options: ["UI", "Performance", "Feature", "Support"]
-        }
-      ]
-    }
-  ]
-};
+const RATING_OPTIONS = [
+  "ไม่เห็นด้วย",
+  "ค่อนข้างไม่เห็นด้วย",
+  "ไม่แน่ใจ",
+  "ค่อนข้างเห็นด้วย",
+  "เห็นด้วยมาก"
+];
 
 function Surveypage() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [userState, setUserState] = useState({
+    isFirstTime: true,
+    isFirstFormSubmitted: false,
+    isSecondFormSubmitted: false
+  });
+
+  const [currentFormSet, setCurrentFormSet] = useState(null);
   const [answers, setAnswers] = useState({});
-  const navigate = useNavigate();
 
-  const currentPageData = surveyTemplate.pages[currentPage];
-  const isLastPage = currentPage === surveyTemplate.pages.length - 1;
+  useEffect(() => {
+    determineFormToShow();
+  }, [userState]);
 
-  const handleSelectAnswer = (questionId, optionIndex) => {
-    setAnswers({
-      ...answers,
-      [questionId]: optionIndex
-    });
-  };
-
-  const handleNext = () => {
-    if (currentPage < surveyTemplate.pages.length - 1) {
-      setCurrentPage(currentPage + 1);
+  const determineFormToShow = () => {
+    if (!userState.isFirstFormSubmitted) {
+      setCurrentFormSet(1);
+    } else if (!userState.isSecondFormSubmitted) {
+      setCurrentFormSet(2);
     } else {
-      console.log("Survey completed:", answers);
-      navigate("/nextstep")
+      setCurrentFormSet(3);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+  const currentSetData = surveyTemplate.Set.find(set => set.formSet === currentFormSet);
+
+  const handleSelectAnswer = (questionId, optionIndex, maxAnswer) => {
+    const currentAnswers = answers[questionId] || [];
+    const max = parseInt(maxAnswer) || 1;
+
+    if (max === 1) {
+      setAnswers({
+        ...answers,
+        [questionId]: [optionIndex]
+      });
+    } else {
+      if (currentAnswers.includes(optionIndex)) {
+        setAnswers({
+          ...answers,
+          [questionId]: currentAnswers.filter(i => i !== optionIndex)
+        });
+      } else {
+        if (currentAnswers.length < max) {
+          setAnswers({
+            ...answers,
+            [questionId]: [...currentAnswers, optionIndex]
+          });
+        }
+      }
     }
   };
+
+  const handleSubmit = () => {
+    console.log("Form submitted:", { formSet: currentFormSet, answers });
+    
+    if (currentFormSet === 1) {
+      setUserState({
+        ...userState,
+        isFirstTime: false,
+        isFirstFormSubmitted: true
+      });
+      alert("ส่งแบบฟอร์มที่ 1 สำเร็จ!");
+    } else if (currentFormSet === 2) {
+      setUserState({
+        ...userState,
+        isSecondFormSubmitted: true
+      });
+      alert("ส่งแบบฟอร์มที่ 2 สำเร็จ!");
+    } else if (currentFormSet === 3) {
+      alert("ขอบคุณสำหรับข้อเสนอแนะของคุณ!");
+    }
+    
+    setAnswers({});
+  };
+
+  const resetUserState = () => {
+    setUserState({
+      isFirstTime: true,
+      isFirstFormSubmitted: false,
+      isSecondFormSubmitted: false
+    });
+    setAnswers({});
+  };
+
+  if (!currentSetData) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <Banner imgSource="/banner/example.svg" />
-      
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 ">
-        <div className="max-w-[395px] mx-auto space-y-6 sm:space-y-10">
+    <div className="w-full min-h-screen flex flex-col bg-gray-50">
+      <Banner imgSource="public/banner/example.svg" />
+
+      <div className="flex-1 p-4 sm:p-6 md:p-8">
+        <div className="max-w-[600px] mx-auto space-y-6 sm:space-y-10">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary text-center">
+            {currentSetData.formLabel}
+          </h1>
 
           <div className="space-y-8 sm:space-y-12">
-            {currentPageData.questions.map((question) => {
-              const currentAnswer = answers[question.id];
+            {currentSetData.questions.map((question) => {
+              const currentAnswer = answers[question.id] || [];
+              const maxAnswer = parseInt(question.maxAnswer) || 1;
               
               return (
                 <div key={question.id} className="space-y-4 sm:space-y-6">
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-primary">
-                    {question.label}
+                  <h2 className="text-base sm:text-lg font-semibold text-primary">
+                    {currentSetData.questions.indexOf(question) + 1}. {question.label}
+                    {maxAnswer > 1 && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        (เลือกได้สูงสุด {maxAnswer} ข้อ)
+                      </span>
+                    )}
                   </h2>
-
                   {question.type === "rating" ? (
-                    <div className="grid grid-cols-5 sm:grid-cols-5 justify-items-center">
-                      {question.options.map((option, index) => (
+                    <div className="grid grid-cols-5 gap-2 justify-items-center">
+                      {RATING_OPTIONS.map((option, index) => (
                         <ChoiceCheck
-                          key={index}
+                          key={`${question.id}-rating-${index}`}
                           text={option}
-                          isSelect={currentAnswer === index}
-                          onClick={() => handleSelectAnswer(question.id, index)}
+                          isSelect={currentAnswer.includes(index)}
+                          onChange={() => handleSelectAnswer(question.id, index, 1)}
                         />
                       ))}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-3 sm:gap-4">
-                      {question.options.map((option, index) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      {question.options?.map((option, index) => (
                         <ChoiceSelect
-                          key={index}
+                          key={`${question.id}-${index}`}
                           text={option}
-                          isSelect={currentAnswer === index}
-                          onClick={() => handleSelectAnswer(question.id, index)}
+                          isSelect={currentAnswer.includes(index)}
+                          onClick={() => handleSelectAnswer(question.id, index, question.maxAnswer)}
                         />
                       ))}
                     </div>
@@ -119,10 +154,13 @@ function Surveypage() {
             })}
           </div>
 
-            <div className="sticky bottom-6 left-0 z-50 flex justify-center">
-            <button className="btn-normal-active"
-              onClick={handleNext}
-            > ยอมรับ </button>
+          <div className="flex justify-center pt-8 pb-8">
+            <button
+              onClick={handleSubmit}
+              className="btn-normal-active disable:btn-normal-inactive"
+            >
+              ส่งแบบฟอร์ม
+            </button>
           </div>
         </div>
       </div>

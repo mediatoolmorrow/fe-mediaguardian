@@ -1,6 +1,5 @@
 import React from "react";
 import Button from "../Button";
-import logoutIcon from "/icon/logout.svg";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar(){
