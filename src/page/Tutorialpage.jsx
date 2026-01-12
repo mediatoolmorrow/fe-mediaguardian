@@ -51,9 +51,9 @@ function Tutorialpage() {
                             className="w-full h-auto rounded-2xl shadow-2xl"
                         />
                         
-                        {/* YouTube link - top right */}
+  
                         <a 
-                            href="YOUR_YOUTUBE_URL_HERE" 
+                            href="https://youtu.be/d4HwO3ZUCUw?si=Rbo3dyDstemqnf90" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all underline"
