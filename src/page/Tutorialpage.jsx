@@ -44,7 +44,7 @@ function Tutorialpage() {
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
                 <div className="flex-1 w-full flex flex-col items-center justify-center relative">
                     
-                    <div className="relative w-full max-w-3xl">
+                    <div className="relative w-full max-w-xl">
                         <img 
                             src={slides[currentSlide].image} 
                             alt={slides[currentSlide].title}
