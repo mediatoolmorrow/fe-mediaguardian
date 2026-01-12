@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import Banner from "../components/Banner";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
  
 function NextSteppage() {
   const [showShareModal, setShowShareModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleContactClick = () => {
-    console.log("Navigate to contact");
+    navigate("/contact")
   };
 
   const handleShareClick = () => {
@@ -16,6 +18,7 @@ function NextSteppage() {
 
   const handleHomeClick = () => {
     console.log("Navigate to home");
+    navigate("/agentic")
   };
 
   const closeModal = () => {

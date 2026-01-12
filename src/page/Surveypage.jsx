@@ -64,7 +64,7 @@ function Surveypage() {
       setCurrentPage(currentPage + 1);
     } else {
       console.log("Survey completed:", answers);
-      navigate("/contact")
+      navigate("/nextstep")
     }
   };
 

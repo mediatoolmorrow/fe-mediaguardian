@@ -54,7 +54,7 @@ function Contactpage() {
         </div>
       </div>
       <div className="flex gap-2 max-w-screen p-4 items-center justify-center"> 
-        <button className="btn-normal-active bg-button" onClick={()=>navigate("/survey")}> กลับไปก่อนหน้า </button> 
+        <button className="btn-normal-active bg-button" onClick={()=>navigate("/nextstep")}> กลับไปก่อนหน้า </button> 
         <button className="btn-normal-active" onClick={()=>navigate("/agentic")}> กลับไปหน้าแรก </button> 
       </div>
     </div>
