@@ -8,17 +8,17 @@ function Tutorialpage() {
     
     const slides = [
         {
-            image: "https://placehold.co/1200x800/24A9C4/FFFFFF/png?text=Slide+1",
+            image: "https://placehold.co/1200x800/4F46E5/FFFFFF/png?text=Slide+1",
             title: "เริ่มต้นใช้งาน",
             description: "วิธีการใช้งานในการเลือกหน้า Prompt ตัวอย่าง"
         },
         {
-            image: "https://placehold.co/1200x800/24A9C4/FFFFFF/png?text=Slide+2",
+            image: "https://placehold.co/1200x800/7C3AED/FFFFFF/png?text=Slide+2",
             title: "สำรวจฟีเจอร์",
             description: "ตัวอย่างข้อความ วิธีการอัพโหลดภาพ และลิงก์"
         },
         {
-            image: "https://placehold.co/1200x800/24A9C4/FFFFFF/png?text=Slide+3",
+            image: "https://placehold.co/1200x800/2563EB/FFFFFF/png?text=Slide+3",
             title: "สื่อสาร",
             description: "ตัวอย่างข้อความ ผลที่ได้จาก AI นำไปใช้ได้อย่างง่าย ๆ"
         }
@@ -40,7 +40,7 @@ function Tutorialpage() {
     const isFirstSlide = currentSlide === 0;
     
     return (
-        <div className="flex flex-col items-center justify-center w-full max-h-screen overflow-hidden p-4 sm:p-8">
+        <div className="flex flex-col items-center justify-center w-full max-h-screen overflow-hidden p-2 sm:p-4">
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
                 <div className="flex-1 w-full flex flex-col items-center justify-center relative">
                     
@@ -80,7 +80,7 @@ function Tutorialpage() {
                         )}
                     </div>
                     
-                    <div className="flex gap-2 mt-6">
+                    <div className="flex gap-2 mt-4">
                         {slides.map((_, index) => (
                             <button
                                 key={index}
@@ -104,7 +104,7 @@ function Tutorialpage() {
                     </div>
                 </div>
                 
-                <div className="flex w-full items-center justify-center pt-6 pb-4">
+                <div className="flex w-full items-center justify-center mt-4">
                     <button 
                         onClick={() => navigate("/agentic")} 
                         disabled={!isLastSlide}
