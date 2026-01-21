@@ -233,7 +233,7 @@ function PromptPage() {
                 disabled={selectedItems.page1.length === 0}
                 className="btn-normal-active flex items-center gap-2 shadow-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-                ยอมรับ
+                ไปต่อ
             </button>
             </div>
           </div>
@@ -272,7 +272,7 @@ function PromptPage() {
                 }}      
                 className="btn-normal-active flex items-center gap-2 shadow-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-                ยอมรับ
+                ไปต่อ
             </button>
             </div>
           </div>
