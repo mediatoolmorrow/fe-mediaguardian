@@ -7,7 +7,7 @@ import communicationWays from "../utils/communication.json";
 
 const iconMap = {
   "Mental Health": "/choice-icon/impact/impact-mental-health.svg",
-  "Imitate": "/choice-icon/impact/impact-imitate.svg",
+  "Imitate": "/choice-icon/impact/impact-Imitate.svg",
   "Impact on user": "/choice-icon/impact/impact-user.svg",
   "Property lost": "/choice-icon/impact/impact-bankrupt.svg",
   "Rights and Law Violation": "/choice-icon/impact/impact-legal-abuse.svg",
@@ -30,9 +30,10 @@ function PromptPage() {
 
   // ===== STATE =====
   const [selectedItems, setSelectedItems] = useState({
-    page1: [],          // category ids
-    impacts: [],        // impact.en
-    communication: [],  // communication.id
+    page1: [],          
+    impacts: [],         
+    communication: [],
+    contacts: []
   });
 
   // ===== TOGGLE SELECT =====
@@ -50,17 +51,14 @@ function PromptPage() {
     });
   };
 
-  // ===== PAGE 1 DATA =====
   const page1Categories = categoriesData.categories;
 
-  // ===== SELECTED CATEGORIES =====
   const selectedCategories = useMemo(() => {
     return categoriesData.categories.filter(cat =>
       selectedItems.page1.includes(cat.id)
     );
   }, [selectedItems.page1]);
 
-  // ===== PAGE 2 IMPACTS (DEDUPLICATED) =====
   const page2Impacts = useMemo(() => {
     const map = new Map();
 
@@ -79,7 +77,6 @@ function PromptPage() {
 
         <PromptBox />
 
-        {/* ===== HEADER ===== */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-cyan-500">
             {currentPage === 1
@@ -134,7 +131,7 @@ function PromptPage() {
                     iconSource={iconMap[impact.en] || iconMap.default}
                     selected={selectedItems.impacts.includes(impact.en)}
                     onClick={() =>
-                      toggleSelection("impacts", impact.en, 3)
+                      toggleSelection("impacts", impact.en, 1)
                     }
                   />
                 ))}
@@ -193,7 +190,13 @@ function PromptPage() {
               </button>
 
               <button
-                onClick={() => navigate("/contact")}
+                onClick={() =>
+                  navigate("/contact", {
+                    state: {
+                        problemIds: selectedItems.page1
+                      }
+                  })
+                }
                 className="btn-normal-active"
               >
                 ไปต่อ
@@ -220,7 +223,6 @@ function PromptPage() {
 
       </div>
 
-      {/* ===== ANIMATION ===== */}
       <style>{`
         @keyframes fadeIn {
           from {
