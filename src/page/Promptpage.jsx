@@ -73,7 +73,7 @@ function PromptPage() {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       <div className="max-w-xl mx-auto space-y-6">
 
-        <PromptBox />
+        <PromptBox readOnly={currentPage === 2} />
 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-cyan-500">
@@ -137,7 +137,7 @@ function PromptPage() {
             </section>
             <section>
               <h2 className="text-base font-semibold text-primary mb-4">
-                แนวทางการสื่อสาร
+                  เป้าหมายในการใช้งาน
               </h2>
 
               <div className="space-y-3">
@@ -179,31 +179,37 @@ function PromptPage() {
                 </div>
               </div>
             </section>
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-2 items-center">
               <button
                 onClick={() => setCurrentPage(1)}
-                className="btn-normal"
+                className="btn-normal-inactive sm:min-w-[280px]"
               >
                 ย้อนกลับ
               </button>
 
-              <button
-                onClick={() =>
-                  navigate("/contact", {
-                    state: {
-                        problemIds: selectedItems.page1
-                      }
-                  })
-                }
-                className="btn-normal-active"
-              >
-                ไปต่อ
-              </button>
+             <button
+              onClick={() => {
+                const promptData = {
+                  problems: selectedItems.page1,
+                  impacts: selectedItems.impacts,
+                  communication: selectedItems.communication,
+                };
+
+                localStorage.setItem(
+                  "promptData",
+                  JSON.stringify(promptData)
+                );
+
+                navigate("/result");
+              }}
+              className="btn-normal-active sm:min-w-[280px]"
+            >
+              ไปต่อ
+            </button>
             </div>
           </div>
         )}
 
-        {/* ================= SUMMARY ================= */}
         {(selectedItems.page1.length > 0 ||
           selectedItems.impacts.length > 0 ||
           selectedItems.communication.length > 0) && (
