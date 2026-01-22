@@ -4,6 +4,7 @@ import ChoiceCheck from "../components/Survey/ChoiceCheck";
 import ChoiceBox from "../components/Survey/ChoiceBox";
 import Banner from "../components/Banner";
 import { surveyTemplate } from "../utils/surveyTemplate";
+import { useNavigate } from "react-router-dom";
 
 const RATING_OPTIONS = [
   "ไม่เห็นด้วย",
@@ -19,6 +20,8 @@ function Surveypage() {
     isFirstFormSubmitted: false,
     isSecondFormSubmitted: false
   });
+
+  const navigate = useNavigate();
 
   const [currentFormSet, setCurrentFormSet] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -83,6 +86,7 @@ function Surveypage() {
       alert("ส่งแบบฟอร์มที่ 2 สำเร็จ!");
     } else if (currentFormSet === 3) {
       alert("ขอบคุณสำหรับข้อเสนอแนะของคุณ!");
+      navigate("/nextstep");
     }
     
     setAnswers({});
