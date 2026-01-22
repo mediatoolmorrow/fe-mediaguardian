@@ -9,17 +9,17 @@
     {
       "id": "child",
       "en": "communicate with child",
-      "th": "คุยกับลูก"
+      "th": "ตั้งคำถามชวนคุยกับลูก"
     },
     {
       "id": "friend",
       "en": "communicate with friend",
-      "th": "คุยกับเพื่อน"
+      "th": "ตั้งคำถามชวนคุยกับเพื่อน"
     },
     {
       "id": "elder",
       "en": "communicate with elder",
-      "th": "คุยกับคนอายุมากกว่า"
+      "th": "ตั้งคำถามชวนคุยกับผู้ใหญ่"
     }
   ]
 }
