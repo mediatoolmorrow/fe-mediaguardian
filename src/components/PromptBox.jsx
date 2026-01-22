@@ -172,4 +172,4 @@ export default function PromptBox({ readOnly = false }) {
       </div>
     </div>
   );
-}c
+}

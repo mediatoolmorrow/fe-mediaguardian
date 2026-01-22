@@ -1,9 +1,10 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Pageframe from "./components/Pageframe/Pageframe";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 {/* Unprotected Routes */}
-import Loginpage from "./page/Loginpage"; 
+import Loginpage from "./page/Loginpage";
 import Pdpapage from "./page/Pdpapage";
 
 {/* Protected Routes */}
@@ -14,7 +15,7 @@ import Contactpage from "./page/Contactpage";
 import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
 import AdminDashboard from "./page/Adminpage/AdminDashboardpage";
-import AdminLoginpage from "./page/Adminpage/Loginpage"; 
+import AdminLoginpage from "./page/Adminpage/Loginpage";
 import NextSteppage from "./page/NextSteppage";
 
 function App() {
@@ -22,19 +23,22 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Pageframe />}>
+          {/* Public Routes */}
           <Route path="/" element={<Pdpapage />} />
           <Route path="/login" element={<Loginpage />} />
           <Route path="/pdpa" element={<Pdpapage />} />
-          <Route path="/tutorial" element={<Tutorialpage />} />
-          <Route path="/result" element={<ResultListpage />} />
-          <Route path="/result/:id" element={<ResultViewpage />} />
-          <Route path="/survey" element={<Surveypage />} />
-          <Route path="/contact" element={<Contactpage />} />
-          <Route path="/agentic" element={<Promptpage />} />
-          <Route path="/nextstep" element={<NextSteppage/> }/>
+
+          {/* Protected Routes */}
+          <Route path="/tutorial" element={<ProtectedRoute><Tutorialpage /></ProtectedRoute>} />
+          <Route path="/result" element={<ProtectedRoute><ResultListpage /></ProtectedRoute>} />
+          <Route path="/result/:id" element={<ProtectedRoute><ResultViewpage /></ProtectedRoute>} />
+          <Route path="/survey" element={<ProtectedRoute><Surveypage /></ProtectedRoute>} />
+          <Route path="/contact" element={<ProtectedRoute><Contactpage /></ProtectedRoute>} />
+          <Route path="/agentic" element={<ProtectedRoute><Promptpage /></ProtectedRoute>} />
+          <Route path="/nextstep" element={<ProtectedRoute><NextSteppage /></ProtectedRoute>} />
         </Route>
-        <Route> 
-          <Route path="/admin" element={<AdminDashboard/>} />
+        <Route>
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/adminlogin" element={<AdminLoginpage/>} />
         </Route>
       </Routes>
