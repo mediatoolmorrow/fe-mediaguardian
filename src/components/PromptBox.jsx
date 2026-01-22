@@ -10,17 +10,17 @@ export default function PromptBox({ readOnly = false }) {
     {
       id: "text",
       displayName: "Text Content",
-      icon: "public/icon/message.svg",
+      icon: "/icon/message.svg",
     },
     {
       id: "link",
       displayName: "Link Content",
-      icon: "public/icon/link.svg",
+      icon: "/icon/link.svg",
     },
     {
       id: "image",
       displayName: "Image Content",
-      icon: "public/icon/image.svg",
+      icon: "/icon/image.svg",
     },
   ];
 
@@ -172,4 +172,4 @@ export default function PromptBox({ readOnly = false }) {
       </div>
     </div>
   );
-}
+}c
