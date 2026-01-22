@@ -95,7 +95,11 @@
       sm:px-6
       bg-white
       text-primary
-      border
+      sm:border
+      sm:rounded-full
+      hover:bg-primary
+      hover:text-white
+      transition-all
       border-primary;
   }
 
