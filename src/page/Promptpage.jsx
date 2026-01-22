@@ -28,15 +28,13 @@ function PromptPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ===== STATE =====
-  const [selectedItems, setSelectedItems] = useState({
+   const [selectedItems, setSelectedItems] = useState({
     page1: [],          
     impacts: [],         
     communication: [],
     contacts: []
   });
 
-  // ===== TOGGLE SELECT =====
   const toggleSelection = (section, value, maxSelect) => {
     setSelectedItems(prev => {
       const current = prev[section];
@@ -98,7 +96,7 @@ function PromptPage() {
                 iconSource={iconMap[category.title_en] || iconMap.default}
                 selected={selectedItems.page1.includes(category.id)}
                 onClick={() =>
-                  toggleSelection("page1", category.id)
+                  toggleSelection("page1", category.id, 1)
                 }
               />
             ))}
@@ -131,7 +129,7 @@ function PromptPage() {
                     iconSource={iconMap[impact.en] || iconMap.default}
                     selected={selectedItems.impacts.includes(impact.en)}
                     onClick={() =>
-                      toggleSelection("impacts", impact.en, 1)
+                      toggleSelection("impacts", impact.en, 3)
                     }
                   />
                 ))}
@@ -156,7 +154,7 @@ function PromptPage() {
                       toggleSelection(
                         "communication",
                         communicationWays.options[0].id,
-                        communicationWays.maxSelect
+                        1,
                       )
                     }
                   />
@@ -173,7 +171,7 @@ function PromptPage() {
                         toggleSelection(
                           "communication",
                           option.id,
-                          communicationWays.maxSelect
+                          1
                         )
                       }
                     />
