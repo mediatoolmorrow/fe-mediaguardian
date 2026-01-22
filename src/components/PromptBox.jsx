@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function PromptBox() {
+export default function PromptBox({ readOnly = false }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("text");
   const [dragActive, setDragActive] = useState(false);
@@ -29,6 +29,7 @@ export default function PromptBox() {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (readOnly) return;
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
     } else if (e.type === "dragleave") {
@@ -37,6 +38,7 @@ export default function PromptBox() {
   };
 
   const handleDrop = (e) => {
+    if (readOnly) return;
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -61,13 +63,15 @@ export default function PromptBox() {
   };
 
   return (
-    <div className="max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col" style={{ height: '180px' }}>
+    <div   className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col"
+    style={{ height: '180px' }}>
       <div className="flex-1 mb-3 overflow-hidden">
         {selected === "text" && (
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
             <textarea
               placeholder="วางเนื้อหาของคุณที่นี่..."
               className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
+              readOnly={readOnly}
             />
           </div>
         )}
@@ -78,6 +82,7 @@ export default function PromptBox() {
               type="url"
               placeholder="https://example.com"
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+              readOnly={readOnly}
             />
           </div>
         )}
@@ -109,6 +114,7 @@ export default function PromptBox() {
                   accept="image/*" 
                   onChange={handleFileInput}
                   className="hidden" 
+                  disabled={readOnly}
                 />
                 <div className="text-sm text-gray-400">
                   <span className="text-primary">อัปโหลดรูปภาพ</span> หรือลากไฟล์มาวางที่นี่
@@ -122,6 +128,7 @@ export default function PromptBox() {
       <div> 
         <div className="relative w-[133px]">
           <button
+            disabled={readOnly}
             type="button"
             onClick={() => setOpen(!open)}
             className="w-full h-[27px] text-white bg-primary rounded-lg px-2 flex items-center justify-between text-xs"
@@ -157,6 +164,11 @@ export default function PromptBox() {
             </div>
           )}
         </div>
+         {readOnly && (
+          <span className="absolute bottom-1/10 right-4 text-xs underline text-gray-400">
+            *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
+          </span>
+        )}
       </div>
     </div>
   );
