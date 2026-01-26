@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import ChoiceCheck from "../components/Survey/ChoiceCheck";
-import ChoiceBox from "../components/Survey/ChoiceBox";
 import Banner from "../components/Banner";
 import { surveyTemplate } from "../utils/surveyTemplate";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 
 const RATING_OPTIONS = [
   "ไม่เห็นด้วย",
@@ -15,30 +16,14 @@ const RATING_OPTIONS = [
 ];
 
 function Surveypage() {
-  const [userState, setUserState] = useState({
-    isFirstTime: true,
-    isFirstFormSubmitted: false,
-    isSecondFormSubmitted: false
-  });
-
+  const { formSet } = useParams();
   const navigate = useNavigate();
+  const { backendUser, refreshBackendUser } = useAuth();
 
-  const [currentFormSet, setCurrentFormSet] = useState(null);
+  const currentFormSet = parseInt(formSet) || 1;
   const [answers, setAnswers] = useState({});
-
-  useEffect(() => {
-    determineFormToShow();
-  }, [userState]);
-
-  const determineFormToShow = () => {
-    if (!userState.isFirstFormSubmitted) {
-      setCurrentFormSet(1);
-    } else if (!userState.isSecondFormSubmitted) {
-      setCurrentFormSet(2);
-    } else {
-      setCurrentFormSet(3);
-    }
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const currentSetData = surveyTemplate.Set.find(set => set.formSet === currentFormSet);
 
@@ -68,46 +53,68 @@ function Surveypage() {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", { formSet: currentFormSet, answers });
-    
-    if (currentFormSet === 1) {
-      setUserState({
-        ...userState,
-        isFirstTime: false,
-        isFirstFormSubmitted: true
-      });
-      alert("ส่งแบบฟอร์มที่ 1 สำเร็จ!");
-    } else if (currentFormSet === 2) {
-      setUserState({
-        ...userState,
-        isSecondFormSubmitted: true
-      });
-      alert("ส่งแบบฟอร์มที่ 2 สำเร็จ!");
-    } else if (currentFormSet === 3) {
-      alert("ขอบคุณสำหรับข้อเสนอแนะของคุณ!");
-      navigate("/nextstep");
-    }
-    
-    setAnswers({});
-  };
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('backend_token');
 
-  const resetUserState = () => {
-    setUserState({
-      isFirstTime: true,
-      isFirstFormSubmitted: false,
-      isSecondFormSubmitted: false
-    });
-    setAnswers({});
+    if (!token) {
+      setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+      return;
+    }
+
+    // Validate that all questions are answered
+    const unansweredQuestions = currentSetData.questions.filter(
+      q => !answers[q.id] || answers[q.id].length === 0
+    );
+
+    if (unansweredQuestions.length > 0) {
+      setError("กรุณาตอบคำถามให้ครบทุกข้อ");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Submit survey answers to backend (userId is extracted from JWT token on backend)
+      // Backend will update user flags (isFirstTime, isSubmitFirstForm) based on formSet
+      await api.submitSurvey(token, currentFormSet, answers);
+
+      // Refresh user data to get updated flags
+      await refreshBackendUser();
+
+      // Navigate based on which form was submitted
+      if (currentFormSet === 1) {
+        navigate("/tutorial");
+      } else {
+        navigate("/nextstep");
+      }
+    } catch (err) {
+      console.error("Survey submission error:", err);
+      setError(err.message || "เกิดข้อผิดพลาดในการส่งแบบฟอร์ม กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!currentSetData) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">ไม่พบแบบสอบถาม</p>
+          <button
+            onClick={() => navigate("/tutorial")}
+            className="btn-normal-active"
+          >
+            กลับหน้าหลัก
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gray-50">
-      <Banner imgSource="public/banner/example.svg" />
+      <Banner imgSource="/banner/example.svg" />
 
       <div className="flex-1 p-4 sm:p-6 md:p-8">
         <div className="max-w-[600px] mx-auto space-y-6 sm:space-y-10">
@@ -115,15 +122,27 @@ function Surveypage() {
             {currentSetData.formLabel}
           </h1>
 
+          {error && (
+            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
+              <span className="text-sm">{error}</span>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-700 hover:text-red-900"
+              >
+                &times;
+              </button>
+            </div>
+          )}
+
           <div className="space-y-8 sm:space-y-12">
-            {currentSetData.questions.map((question) => {
+            {currentSetData.questions.map((question, questionIndex) => {
               const currentAnswer = answers[question.id] || [];
               const maxAnswer = parseInt(question.maxAnswer) || 1;
-              
+
               return (
                 <div key={question.id} className="space-y-4 sm:space-y-6">
                   <h2 className="text-base sm:text-lg font-semibold text-primary">
-                    {currentSetData.questions.indexOf(question) + 1}. {question.label}
+                    {questionIndex + 1}. {question.label}
                     {maxAnswer > 1 && (
                       <span className="text-sm text-gray-500 ml-2">
                         (เลือกได้สูงสุด {maxAnswer} ข้อ)
@@ -161,13 +180,31 @@ function Surveypage() {
           <div className="flex justify-center pt-8 pb-8">
             <button
               onClick={handleSubmit}
-              className="btn-normal-active disable:btn-normal-inactive"
+              disabled={isSubmitting}
+              className="btn-normal-active disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ส่งแบบฟอร์ม
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  กำลังส่ง...
+                </span>
+              ) : (
+                "ส่งแบบฟอร์ม"
+              )}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-gray-700">กำลังส่งแบบสอบถาม...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

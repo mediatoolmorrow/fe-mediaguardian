@@ -40,7 +40,9 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('backend_token');
         if (token) {
           try {
-            const userData = await api.getCurrentUser(token);
+            const response = await api.getCurrentUser(token);
+            // Handle both { user: {...} } and direct user object response formats
+            const userData = response.user || response;
             setBackendUser(userData);
           } catch (err) {
             console.error('Failed to get backend user:', err);
@@ -275,6 +277,41 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Update user flags (isFirstTime, isSubmitFirstForm)
+  const updateUserFlags = async (updates) => {
+    setError(null);
+    try {
+      const token = localStorage.getItem('backend_token');
+      if (!token) {
+        throw new Error('No authentication token');
+      }
+      const updatedUser = await api.updateUserFlags(token, updates);
+      setBackendUser(updatedUser.user || updatedUser);
+      return { success: true, user: updatedUser };
+    } catch (err) {
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Refresh backend user data
+  const refreshBackendUser = async () => {
+    try {
+      const token = localStorage.getItem('backend_token');
+      if (token) {
+        const response = await api.getCurrentUser(token);
+        // Handle both { user: {...} } and direct user object response formats
+        const userData = response.user || response;
+        setBackendUser(userData);
+        return { success: true, user: userData };
+      }
+      return { success: false, error: 'No token' };
+    } catch (err) {
+      console.error('Failed to refresh backend user:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
   const value = {
     user,
     backendUser,
@@ -289,6 +326,8 @@ export const AuthProvider = ({ children }) => {
     signInWithLine,
     logout,
     resetPassword,
+    updateUserFlags,
+    refreshBackendUser,
     clearError: () => setError(null),
     clearSuccessMessage: () => setSuccessMessage(null)
   };

@@ -1,7 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export const api = {
-  // Sync Firebase user to backend
+  /* Auth */
   async syncFirebaseUser(firebaseUser, provider) {
     const idToken = await firebaseUser.getIdToken();
 
@@ -28,7 +28,6 @@ export const api = {
     return response.json();
   },
 
-  // Sync LINE user to backend
   async syncLineUser(lineProfile, accessToken) {
     const response = await fetch(`${API_BASE_URL}/api/auth/line`, {
       method: 'POST',
@@ -52,7 +51,6 @@ export const api = {
     return response.json();
   },
 
-  // Email/Password registration
   async registerWithEmail(email, password) {
     const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
@@ -70,7 +68,6 @@ export const api = {
     return response.json();
   },
 
-  // Email/Password login
   async loginWithEmail(email, password) {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
@@ -88,7 +85,6 @@ export const api = {
     return response.json();
   },
 
-  // Get current user from backend
   async getCurrentUser(token) {
     const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: {
@@ -103,7 +99,6 @@ export const api = {
     return response.json();
   },
 
-  // Logout
   async logout(token) {
     const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
       method: 'POST',
@@ -113,6 +108,144 @@ export const api = {
     });
 
     return response.ok;
+  },
+
+  /* LLM */
+  async generateAdviceText(token, { content, problem, concerning, approach, goal }) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        mode: 'text',
+        content,
+        problem,
+        concerning,
+        approach,
+        goal
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to generate advice');
+    }
+
+    return response.json();
+  },
+
+  async generateAdviceImage(token, imageUrl) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        mode: 'image',
+        imageUrl
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to analyze image');
+    }
+
+    return response.json();
+  },
+
+  async generateAdviceLink(token, videoUrl) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        mode: 'link',
+        videoUrl
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to analyze video');
+    }
+
+    return response.json();
+  },
+  /* Results */
+  async getResultById(token, resultId) {
+    const response = await fetch(`${API_BASE_URL}/api/prompts/${resultId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch result');
+    }
+
+    return response.json();
+  },
+
+  async getLatestResults(token, limit = 5) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/prompts?limit=${limit}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch results');
+    }
+
+    return response.json();
+  },
+
+  /* Survey */
+  async submitSurvey(token, formSet, answers) {
+    const response = await fetch(`${API_BASE_URL}/api/survey/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        formSet,
+        answers
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to submit survey');
+    }
+
+    return response.json();
+  },
+
+  async updateUserFlags(token, updates) {
+    const response = await fetch(`${API_BASE_URL}/api/auth/update-flags`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updates)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update user flags');
+    }
+
+    return response.json();
   }
 };
 

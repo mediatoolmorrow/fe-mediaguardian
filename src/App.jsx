@@ -32,7 +32,7 @@ function App() {
           <Route path="/tutorial" element={<ProtectedRoute><Tutorialpage /></ProtectedRoute>} />
           <Route path="/result" element={<ProtectedRoute><ResultListpage /></ProtectedRoute>} />
           <Route path="/result/:id" element={<ProtectedRoute><ResultViewpage /></ProtectedRoute>} />
-          <Route path="/survey" element={<ProtectedRoute><Surveypage /></ProtectedRoute>} />
+          <Route path="/survey/:formSet" element={<ProtectedRoute><Surveypage /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><Contactpage /></ProtectedRoute>} />
           <Route path="/agentic" element={<ProtectedRoute><Promptpage /></ProtectedRoute>} />
           <Route path="/nextstep" element={<ProtectedRoute><NextSteppage /></ProtectedRoute>} />

@@ -31,9 +31,9 @@ export default function Login() {
     // Navigate when user is authenticated
     useEffect(() => {
         if (backendUser && !loading) {
-            // Check if user needs to complete first-time setup
+            // Check if user needs to complete first-time survey
             if (backendUser.isFirstTime) {
-                navigate("/tutorial");
+                navigate("/survey/1");
             } else {
                 navigate("/tutorial");
             }

@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function PromptBox({ readOnly = false }) {
+export default function PromptBox({
+  readOnly = false,
+  onModeChange,
+  onContentChange,
+  initialMode = "text",
+  initialContent = ""
+}) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("text");
+  const [selected, setSelected] = useState(initialMode);
   const [dragActive, setDragActive] = useState(false);
+  const [textContent, setTextContent] = useState(initialContent);
+  const [linkContent, setLinkContent] = useState(initialContent);
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const mode = [
     {
@@ -26,6 +35,28 @@ export default function PromptBox({ readOnly = false }) {
 
   const current = mode.find((m) => m.id === selected);
 
+  // Notify parent of mode changes
+  useEffect(() => {
+    if (onModeChange) {
+      onModeChange(selected);
+    }
+  }, [selected, onModeChange]);
+
+  // Notify parent of content changes
+  useEffect(() => {
+    if (onContentChange) {
+      let content = null;
+      if (selected === "text") {
+        content = textContent;
+      } else if (selected === "link") {
+        content = linkContent;
+      } else if (selected === "image") {
+        content = { preview: uploadedImage, file: imageFile };
+      }
+      onContentChange(content);
+    }
+  }, [selected, textContent, linkContent, uploadedImage, imageFile, onContentChange]);
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -42,10 +73,11 @@ export default function PromptBox({ readOnly = false }) {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
+        setImageFile(file);
         const reader = new FileReader();
         reader.onload = (e) => setUploadedImage(e.target.result);
         reader.readAsDataURL(file);
@@ -56,14 +88,20 @@ export default function PromptBox({ readOnly = false }) {
   const handleFileInput = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => setUploadedImage(e.target.result);
       reader.readAsDataURL(file);
     }
   };
 
+  const clearImage = () => {
+    setUploadedImage(null);
+    setImageFile(null);
+  };
+
   return (
-    <div   className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col"
+    <div className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col"
     style={{ height: '180px' }}>
       <div className="flex-1 mb-3 overflow-hidden">
         {selected === "text" && (
@@ -72,6 +110,8 @@ export default function PromptBox({ readOnly = false }) {
               placeholder="วางเนื้อหาของคุณที่นี่..."
               className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
+              value={textContent}
+              onChange={(e) => setTextContent(e.target.value)}
             />
           </div>
         )}
@@ -83,12 +123,14 @@ export default function PromptBox({ readOnly = false }) {
               placeholder="https://example.com"
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
+              value={linkContent}
+              onChange={(e) => setLinkContent(e.target.value)}
             />
           </div>
         )}
 
         {selected === "image" && (
-          <div 
+          <div
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -100,20 +142,22 @@ export default function PromptBox({ readOnly = false }) {
             {uploadedImage ? (
               <div className="relative w-full h-full">
                 <img src={uploadedImage} alt="Uploaded" className="w-full h-full object-cover rounded-lg" />
-                <button 
-                  onClick={() => setUploadedImage(null)}
-                  className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600"
-                >
-                  ×
-                </button>
+                {!readOnly && (
+                  <button
+                    onClick={clearImage}
+                    className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             ) : (
               <label className="cursor-pointer text-center p-4">
-                <input 
-                  type="file" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  accept="image/*"
                   onChange={handleFileInput}
-                  className="hidden" 
+                  className="hidden"
                   disabled={readOnly}
                 />
                 <div className="text-sm text-gray-400">
@@ -125,7 +169,7 @@ export default function PromptBox({ readOnly = false }) {
         )}
       </div>
 
-      <div> 
+      <div>
         <div className="relative w-[133px]">
           <button
             disabled={readOnly}
@@ -153,8 +197,8 @@ export default function PromptBox({ readOnly = false }) {
                     }}
                     className="group w-full px-2 py-1.5 flex items-center gap-2 text-xs text-text hover:bg-primary hover:text-white rounded-lg transition-colors"
                   >
-                    <img 
-                      src={item.icon} 
+                    <img
+                      src={item.icon}
                       className="w-3 h-3 brightness-50 group-hover:brightness-0 group-hover:invert transition-all"
                       alt=""
                     />

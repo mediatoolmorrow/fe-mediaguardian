@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import PromptBox from "../components/PromptBox";
 import ChoiceCard from "../components/ChoiceCard";
 import categoriesData from "../utils/matchingPrompt.json";
 import communicationWays from "../utils/communication.json";
+import { api } from "../services/api";
 
 const iconMap = {
   "Mental Health": "/choice-icon/impact/impact-mental-health.svg",
@@ -27,13 +28,27 @@ const iconMap = {
 function PromptPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-   const [selectedItems, setSelectedItems] = useState({
-    page1: [],          
-    impacts: [],         
+  // Content from PromptBox
+  const [promptMode, setPromptMode] = useState("text");
+  const [promptContent, setPromptContent] = useState(null);
+
+  const [selectedItems, setSelectedItems] = useState({
+    page1: [],
+    impacts: [],
     communication: [],
     contacts: []
   });
+
+  const handleModeChange = useCallback((mode) => {
+    setPromptMode(mode);
+  }, []);
+
+  const handleContentChange = useCallback((content) => {
+    setPromptContent(content);
+  }, []);
 
   const toggleSelection = (section, value, maxSelect) => {
     setSelectedItems(prev => {
@@ -69,11 +84,131 @@ function PromptPage() {
     return Array.from(map.values());
   }, [selectedCategories]);
 
+  // Get labels for selected items
+  const getSelectedLabels = () => {
+    const problemLabels = selectedCategories.map(cat => cat.title_th).join(", ");
+    const impactLabels = selectedItems.impacts
+      .map(impactEn => {
+        const impact = page2Impacts.find(i => i.en === impactEn);
+        return impact?.th || impactEn;
+      })
+      .join(", ");
+    const commOption = communicationWays.options.find(
+      opt => opt.id === selectedItems.communication[0]
+    );
+    const communicationLabel = commOption?.th || "";
+
+    return { problemLabels, impactLabels, communicationLabel };
+  };
+
+  // Upload image and get URL (you may need to implement image upload endpoint)
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = localStorage.getItem('backend_token');
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+    const response = await fetch(`${API_BASE_URL}/api/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
+
+    const data = await response.json();
+    return data.url;
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('backend_token');
+
+    if (!token) {
+      setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+      return;
+    }
+
+    // Validate content
+    if (promptMode === "text" && (!promptContent || promptContent.trim() === "")) {
+      setError("กรุณากรอกเนื้อหาที่ต้องการวิเคราะห์");
+      return;
+    }
+    if (promptMode === "link" && (!promptContent || promptContent.trim() === "")) {
+      setError("กรุณากรอกลิงก์วิดีโอ");
+      return;
+    }
+    if (promptMode === "image" && (!promptContent?.file)) {
+      setError("กรุณาอัปโหลดรูปภาพ");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
+      let result;
+
+      if (promptMode === "text") {
+        result = await api.generateAdviceText(token, {
+          content: promptContent,
+          problem: problemLabels,
+          concerning: impactLabels,
+          approach: communicationLabel,
+          goal: communicationLabel
+        });
+      } else if (promptMode === "image") {
+        // Upload image first, then send URL to API
+        const imageUrl = await uploadImage(promptContent.file);
+        result = await api.generateAdviceImage(token, imageUrl);
+      } else if (promptMode === "link") {
+        result = await api.generateAdviceLink(token, promptContent);
+      }
+
+      // Store result and navigate to result list page
+      localStorage.setItem("promptData", JSON.stringify({
+        mode: promptMode,
+        problems: selectedItems.page1,
+        impacts: selectedItems.impacts,
+        communication: selectedItems.communication,
+      }));
+
+      // Navigate to result list page first
+      navigate("/result");
+    } catch (err) {
+      console.error("LLM API Error:", err);
+      setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       <div className="max-w-xl mx-auto space-y-6">
 
-        <PromptBox readOnly={currentPage === 2} />
+        <PromptBox
+          readOnly={currentPage === 2}
+          onModeChange={handleModeChange}
+          onContentChange={handleContentChange}
+        />
+
+        {error && (
+          <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
+            <span className="text-sm">{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-700 hover:text-red-900"
+            >
+              &times;
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-cyan-500">
@@ -182,50 +317,41 @@ function PromptPage() {
             <div className="flex justify-center gap-2 items-center">
               <button
                 onClick={() => setCurrentPage(1)}
-                className="btn-normal-inactive sm:min-w-[280px]"
+                disabled={isLoading}
+                className="btn-normal-inactive sm:min-w-[280px] disabled:opacity-50"
               >
                 ย้อนกลับ
               </button>
 
-             <button
-              onClick={() => {
-                const promptData = {
-                  problems: selectedItems.page1,
-                  impacts: selectedItems.impacts,
-                  communication: selectedItems.communication,
-                };
-
-                localStorage.setItem(
-                  "promptData",
-                  JSON.stringify(promptData)
-                );
-
-                navigate("/result");
-              }}
-              className="btn-normal-active sm:min-w-[280px]"
-            >
-              ไปต่อ
-            </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isLoading || selectedItems.communication.length === 0}
+                className="btn-normal-active sm:min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    กำลังวิเคราะห์...
+                  </span>
+                ) : (
+                  "วิเคราะห์เนื้อหา"
+                )}
+              </button>
             </div>
           </div>
         )}
-
-        {(selectedItems.page1.length > 0 ||
-          selectedItems.impacts.length > 0 ||
-          selectedItems.communication.length > 0) && (
-          <div className="mt-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
-            <p className="text-sm font-semibold text-cyan-800 mb-2">
-              สรุปรายการที่เลือก
-            </p>
-            <p className="text-xs text-cyan-700 space-y-1">
-              <span>• ประเภทเนื้อหา: {selectedItems.page1.length} รายการ</span><br />
-              <span>• ผลกระทบ: {selectedItems.impacts.length} รายการ</span><br />
-              <span>• วิธีการสื่อสาร: {selectedItems.communication.length} รายการ</span>
-            </p>
-          </div>
-        )}
-
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-gray-700">กำลังวิเคราะห์เนื้อหา...</p>
+            <p className="text-sm text-gray-500">อาจใช้เวลาสักครู่</p>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn {

@@ -6,7 +6,6 @@ export default function ProtectedRoute({ children }) {
     const { backendUser, loading } = useAuth();
     const location = useLocation();
 
-    // Show loading spinner while checking auth state
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -15,7 +14,6 @@ export default function ProtectedRoute({ children }) {
         );
     }
 
-    // Redirect to login if not authenticated
     if (!backendUser) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
