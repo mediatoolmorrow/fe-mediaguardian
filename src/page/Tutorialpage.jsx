@@ -9,20 +9,11 @@ function Tutorialpage() {
     
     const slides = [
         {
-            image: "https://placehold.co/1200x800/4F46E5/FFFFFF/png?text=Slide+1",
+            imageDesktop: "/banner/Agentic_Desktop_Size.webp",
+            imageMobile: "/banner/Agentic_Mobile_Size.webp",  
             title: "เริ่มต้นใช้งาน",
             description: "วิธีการใช้งานในการเลือกหน้า Prompt ตัวอย่าง"
         },
-        {
-            image: "https://placehold.co/1200x800/7C3AED/FFFFFF/png?text=Slide+2",
-            title: "สำรวจฟีเจอร์",
-            description: "ตัวอย่างข้อความ วิธีการอัพโหลดภาพ และลิงก์"
-        },
-        {
-            image: "https://placehold.co/1200x800/2563EB/FFFFFF/png?text=Slide+3",
-            title: "สื่อสาร",
-            description: "ตัวอย่างข้อความ ผลที่ได้จาก AI นำไปใช้ได้อย่างง่าย ๆ"
-        }
     ];
     
     const nextSlide = () => {
@@ -41,18 +32,23 @@ function Tutorialpage() {
     const isFirstSlide = currentSlide === 0;
     
     return (
-        <div className="flex flex-col items-center justify-center w-full max-h-screen overflow-hidden p-2 sm:p-4">
+        <div className="flex flex-col items-center justify-center w-full max-h-screen overflow-hidden p-4 sm:p-4">
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
                 <div className="flex-1 w-full flex flex-col items-center justify-center relative">
                     
                     <div className="relative w-full max-w-xl">
                         <img 
-                            src={slides[currentSlide].image} 
+                            src={slides[currentSlide].imageDesktop} 
                             alt={slides[currentSlide].title}
-                            className="w-full h-auto rounded-2xl shadow-2xl"
+                            className="hidden sm:block w-full h-auto rounded-2xl shadow-2xl"
                         />
                         
-  
+                        <img 
+                            src={slides[currentSlide].imageMobile} 
+                            alt={slides[currentSlide].title}
+                            className="block sm:hidden w-full h-auto rounded-2xl shadow-2xl"
+                        />
+                        
                         <a 
                             href="YOUR_YOUTUBE_URL_HERE" 
                             target="_blank" 

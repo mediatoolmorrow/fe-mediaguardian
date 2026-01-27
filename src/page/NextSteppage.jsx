@@ -27,7 +27,7 @@ function NextSteppage() {
 
   return (
     <div className="w-full max-h-screen flex flex-col">
-      <Banner imgSource="./banner/example.svg" />
+      <Banner imgSource="./banner/03_Agentic_Banner.webp" />
       
       {showShareModal && (
         <div 
@@ -39,8 +39,8 @@ function NextSteppage() {
       )}
 
       <div className="w-full flex-1 flex flex-col items-center p-4 sm:p-8 py-8">
-        <div className="w-full max-w-[424px] mb-6">
-          <h2 className="text-base sm:text-lg md:text-xl font-bold text-primary text-start px-4 mx-8 sm:px-0">
+        <div className="w-full items-center justify-center mb-6">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-primary text-center px-4 mx-8 sm:px-0">
             คุณต้องการทำอะไรกับข้อมูลนี้ต่อ ?
           </h2>
         </div>

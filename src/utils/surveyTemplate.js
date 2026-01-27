@@ -1,8 +1,8 @@
-// data/surveyTemplate.js
 export const surveyTemplate = {
-  pages: [
+  Set: [
     {
-      pageId: 1,
+      formSet: 1,
+      formLabel: "แบบสอบถามข้อมูลพื้นฐาน",
       questions: [
         {
           id: "q1",
@@ -16,7 +16,8 @@ export const surveyTemplate = {
         {
           id: "q2",
           type: "select",
-          label: "เพศของท่าน",
+          maxAnswer : "1",
+          label: "อายุของท่าน",
           options: [
             "น้อยกว่า 29 ปี",
             "29-44 ปี",
@@ -26,6 +27,7 @@ export const surveyTemplate = {
         {
           id: "q3",
           type: "select",
+          maxAnswer : "1",
           label: "อาชีพของท่าน",
           options: [
             "ข้าราชการ",
@@ -43,8 +45,9 @@ export const surveyTemplate = {
           ]
         },
         {
-          id: "q3",
+          id: "q4",
           type: "select",
+          maxAnswer : "1",
           label: "รายได้เฉลี่ยต่อเดือน",
           options: [
             "ไม่เกิน 15,000 บาท",
@@ -55,17 +58,67 @@ export const surveyTemplate = {
             "มากกว่า 55,000 บาท",
           ]
         },
-       
+        {
+          id: "q5",
+          type: "select",
+          maxAnswer : "6",
+          label: "ช่วงอายุของบุตรท่าน (หากมีบุตรหลายช่วงอายุตอบได้มากกว่า 1 ข้อ)",
+          options: [
+            "ไม่มีบุตร",
+            "0-5 ปี",
+            "6-12 ปี",
+            "13-15 ปี",
+            "15-18 ปี",
+            "18 ปีขึ้นไป",
+          ]
+        },
       ]
     },
     {
-      pageId: 2,
+      formSet: 2,
+      formLabel: "แบบสอบถามความพึงพอใจในการใช้งานและการปรับพฤติกรรม",
       questions: [
         {
-          id: "q4",
-          type: "select",
-          label: "สิ่งที่ควรปรับปรุง",
-          options: ["UI", "Performance", "Feature", "Support"]
+          id: "q6",
+          type: "rating",
+          label: "ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด",
+          maxAnswer : "1",
+        },
+        {
+          id: "q7",
+          type: "rating",
+          label: "ท่านตั้งใจว่าจะแนะนำแพลตฟอร์มนี้ให้เพื่อนหรือคนรู้จักของท่านได้ใช้งาน",
+          maxAnswer : "1",
+        }
+      ]
+    },
+    {
+      formSet: 3,
+      formLabel : "แบบสอบถามพฤติกรรมการหลังการใช้งาน",
+      questions: [
+        {
+          id: "q8",
+          type: "rating",
+          maxAnswer : "1",
+          label: "ฉันได้นำข้อความจากเครื่องมือนี้ไปปรับใช้ในการสื่อสารจริงบนโลกออนไลน์",
+        },
+        {
+          id: "q9",
+          type: "rating",
+          maxAnswer : "1",
+          label: "ฉันได้รับประโยชน์จากการใช้งานแพลตฟอร์มนี้เพื่อสื่อสารอย่างสร้างสรรค์",
+        },
+        {
+          id: "q10",
+          type: "rating",
+          maxAnswer : "1",
+          label: "หลังจากที่ฉันได้ลองใช้เครื่องมือนี้ ฉันรู้สึกว่า การสื่อสารของฉันดีขึ้น และส่งผลเชิงบวกต่อผู้อื่นมากขึ้น",
+        },
+        {
+          id: "q11",
+          type: "rating",
+          maxAnswer : "1",
+          label: "ถ้าฉันอยากสื่อสารเชิงบวกบนโลกออนไลน์ ฉันอยากเข้ามาใช้เครื่องมือนี้เพื่อช่วยให้สื่อสารได้ดีขึ้น",
         }
       ]
     }

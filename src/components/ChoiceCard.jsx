@@ -15,7 +15,7 @@ export default function ChoiceCard({
         selected
           ? "bg-accent"
           : disabled
-          ? "bg-gray-100 cursor-not-allowed opacity-50"
+          ? "bg-white cursor-not-allowed opacity-50"
           : "hover:bg-accent hover:shadow-md"
       }`}
     >

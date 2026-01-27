@@ -1,0 +1,25 @@
+{
+  "group": "เป้าหมายการใช้งาน",
+  "options": [
+    {
+      "id": "creative",
+      "en": "communicate with creativity",
+      "th": "ตอบกลับอย่างสร้างสรรค์"
+    },
+    {
+      "id": "child",
+      "en": "communicate with child",
+      "th": "ตั้งคำถามชวนคุยกับลูก"
+    },
+    {
+      "id": "friend",
+      "en": "communicate with friend",
+      "th": "ตั้งคำถามชวนคุยกับเพื่อน"
+    },
+    {
+      "id": "elder",
+      "en": "communicate with elder",
+      "th": "ตั้งคำถามชวนคุยกับผู้ใหญ่"
+    }
+  ]
+}

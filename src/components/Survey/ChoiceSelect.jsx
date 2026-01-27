@@ -1,28 +1,23 @@
-import React from "react";
-
 export default function ChoiceSelect({ text, isSelect, onClick }) {
   return (
     <button
       onClick={onClick}
       className={`
+        w-full
         p-4
-        max-h-[80px] max-w-[431px]
-        min-h-[60px] min-w-[360px]
+        h-[60px] sm:h-[72px]
         border border-button rounded-md
-        transition-colors group
+        transition-colors
         ${
           isSelect
-            ? "bg-accent"
-            : "bg-white hover:bg-accent"
+            ? "bg-accent text-white"
+            : "bg-white hover:bg-accent hover:text-white"
         }
       `}
     >
-      <p className={`font-medium text-sm group-hover:text-white ${
-          isSelect
-            ? "text-white "
-            : "group-hover:text-white text-text"
-        }`}>{text} 
-        </p>
+      <p className="font-medium text-sm text-center">
+        {text}
+      </p>
     </button>
   );
 }

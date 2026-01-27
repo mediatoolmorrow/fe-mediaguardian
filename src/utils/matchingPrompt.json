@@ -1,0 +1,144 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "title_th": "ไม่เหมาะสมด้านเพศ",
+      "title_en": "sexual content inappropriate",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "เด็กเลียนแบบการกระทำที่ไม่เหมาะสม",
+          "en": "Imitate"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["mso", "thot"]
+    },
+    {
+      "id": 2,
+      "title_th": "ไม่เหมาะสมด้านภาษา",
+      "title_en": "inappropriate language",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "เด็กเลียนแบบการกระทำที่ไม่เหมาะสม",
+          "en": "Imitate"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["mso", "thot"]
+    },
+    {
+      "id": 3,
+      "title_th": "ไม่เหมาะสมด้านความรุนแรง",
+      "title_en": "violation and violence",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "เด็กเลียนแบบการกระทำที่ไม่เหมาะสม",
+          "en": "Imitate"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["mso", "thot"]
+    },
+    {
+      "id": 4,
+      "title_th": "ไม่เหมาะสมต่อความคิดความเชื่อ",
+      "title_en": "believe violation",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "เด็กเลียนแบบการกระทำที่ไม่เหมาะสม",
+          "en": "Imitate"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["mso", "thot", "ocpb", "cemc"]
+    },
+    {
+      "id": 5,
+      "title_th": "อาชญากรรมทางเทคโนโลยี ฉ้อโกง หลอกลวง",
+      "title_en": "cyber crime and fraud",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "การเสียทรัพย์สิน",
+          "en": "Property lost"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["thot", "cycob", "cemc", "etda", "antifake", "nbtc"]
+    },
+    {
+      "id": 6,
+      "title_th": "พนันออนไลน์",
+      "title_en": "online gambling",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "การเสียทรัพย์สิน",
+          "en": "Property lost"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["thot", "cycob"]
+    },
+    {
+      "id": 7,
+      "title_th": "การกลั่นแกล้งทางไซเบอร์",
+      "title_en": "cyberbullying",
+      "impacts": [
+        {
+          "th": "สภาพจิตใจ อารมณ์ ความรู้สึก",
+          "en": "Mental Health"
+        },
+        {
+          "th": "การถูกละเมิดสิทธิ จริยธรรม และกฎหมาย",
+          "en": "Rights and Law Violation"
+        },
+        {
+          "th": "ผลกระทบต่อตัวผู้ใช้สื่อ และบุคคลรอบข้าง",
+          "en": "Impact on user"
+        }
+      ],
+      "contacts": ["thot", "cycob"]
+    }
+  ]
+}

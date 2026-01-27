@@ -1,299 +1,357 @@
-import React, {useState} from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import PromptBox from "../components/PromptBox";
-import Button from "../components/Button";
 import ChoiceCard from "../components/ChoiceCard";
-import {useNavigate} from "react-router-dom";
+import categoriesData from "../utils/matchingPrompt.json";
+import communicationWays from "../utils/communication.json";
+import { api } from "../services/api";
 
 const iconMap = {
-  "การถูกหลอกโดยข่าวปลอม": "/choice-icon/problem/fake-news.svg",
-  "ไม่มั่นใจในข้อมูล": "/choice-icon/problem/confusion.svg",
-  "ข้อมูลบิดเบือน": "/choice-icon/problem/dis-info.svg",
-  "สินค้าไม่ตรงปก": "/choice-icon/problem/fake-merch.svg",
-  "หลอกให้รักออนไลน์": "/choice-icon/problem/fake-love.svg",
-  "โฆษณาเกินจริง": "/choice-icon/problem/fake-promo.svg",
-  "หลอกให้ลงทุน": "/choice-icon/problem/fake-inves.svg",
-  
-  "ขโมยข้อมูลส่วนตัว": "/choice-icon/problem/phising.svg",
-  "ใช้ภาพบุคคลโดยไม่ได้รับอนุญาต": "/choice-icon/problem/privacy.svg",
-  "ละเมิดสิทธิเด็กและเยาวชน": "/choice-icon/problem/child-abuse.svg",
-  
-  "ต่อสุขภาพกาย": "/choice-icon/problem/health-risk.svg",
-  "ต่อสุขภาพจิต": "/choice-icon/problem/mentalhealth-risk.svg",
-  "ต่อสังคม": "/choice-icon/problem/social-risk.svg",
-  
-  "การถูกคุกคาม": "/choice-icon/problem/abuse.svg",
-  "การลามกอนาจาร": "/choice-icon/problem/pervert.svg",
-  
-  "การตกเป็นเหยื่อ": "/choice-icon/worry/victimize.svg",
-  "การเสียทรัพสิน": "/choice-icon/worry/money.svg",
-  "เรื่องสุขภาพจิต": "/choice-icon/worry/mental-health.svg",
-  "เกิดอันตราย": "/choice-icon/worry/danger.svg",
-  
-  "ตอบกลับอย่างสร้างสรรค์": "/choice-icon/worry/creative-commu.svg",
-  "ตั้งคำถามเชิญชวน": "/choice-icon/worry/question.svg",
-  "คุยกับลูก": "/choice-icon/worry/talk-child.svg",
-  "คุยกับเพื่อน": "/choice-icon/worry/talk-friend.svg",
-  "คุยกับคนอายุมากกว่า": "/choice-icon/worry/talk-elder.svg"
-};
-
-const questions = {
-  page1: {
-    section: "หัวข้อปัญหาที่พบ",
-    groups: [
-      {
-        groupTitle: "ปัญหาการหลอกลวงและข้อมูล",
-        options: [
-          "การถูกหลอกโดยข่าวปลอม",
-          "ไม่มั่นใจในข้อมูล",
-          "ข้อมูลบิดเบือน",
-          "สินค้าไม่ตรงปก",
-          "หลอกให้รักออนไลน์",
-          "โฆษณาเกินจริง",
-          "หลอกให้ลงทุน"
-        ],
-        maxSelect: 3
-      },
-      {
-        groupTitle: "ปัญหาการละเมิดสิทธิ",
-        options: [
-          "ขโมยข้อมูลส่วนตัว",
-          "ใช้ภาพบุคคลโดยไม่ได้รับอนุญาต",
-          "ละเมิดสิทธิเด็กและเยาวชน"
-        ]
-      },
-      {
-        groupTitle: "ปัญหาเนื้อหาอันตราย",
-        options: [
-          "ต่อสุขภาพกาย",
-          "ต่อสุขภาพจิต",
-          "ต่อสังคม"
-        ]
-      },
-      {
-        groupTitle: "ปัญหาความรุนแรงทางเพศ",
-        options: [
-          "การถูกคุกคาม",
-          "การลามกอนาจาร"
-        ]
-      }
-    ]
-  },
-  page2: {
-    section: "หัวข้อความกังวล",
-    groups: [
-      {
-        groupTitle: "ความกังวลที่เกิดขึ้น",
-        options: [
-          "การตกเป็นเหยื่อ",
-          "การเสียทรัพสิน",
-          "เรื่องสุขภาพจิต",
-          "เกิดอันตราย"
-        ]
-      },
-      {
-        groupTitle: "เป้าหมายการใช้งาน",
-        options: [
-          "ตอบกลับอย่างสร้างสรรค์",
-          "ตั้งคำถามเชิญชวน",
-          "คุยกับลูก",
-          "คุยกับเพื่อน",
-          "คุยกับคนอายุมากกว่า"
-        ]
-      }
-    ]
-  }
+  "Mental Health": "/choice-icon/impact/impact-mental-health.svg",
+  "Imitate": "/choice-icon/impact/impact-Imitate.svg",
+  "Impact on user": "/choice-icon/impact/impact-user.svg",
+  "Property lost": "/choice-icon/impact/impact-bankrupt.svg",
+  "Rights and Law Violation": "/choice-icon/impact/impact-legal-abuse.svg",
+  "sexual content inappropriate": "/choice-icon/problem/problem-sexual.svg",
+  "inappropriate language": "/choice-icon/problem/problem-language.svg",
+  "violation and violence": "/choice-icon/problem/problem-abuse.svg",
+  "believe violation": "/choice-icon/problem/problem-belief.svg",
+  "cyber crime and fraud": "/choice-icon/problem/problem-pishing.svg",
+  "online gambling": "/choice-icon/problem/problem-gambling.svg",
+  "cyberbullying": "/choice-icon/problem/problem-cyberbullying.svg",
+  "elder" : "/choice-icon/talk/talk-elder.svg",
+  "friend" : "/choice-icon/talk/talk-friend.svg",
+  "child" : "/choice-icon/talk/talk-child.svg",
+  "creative" : "/choice-icon/talk/talk-creative.svg",
 };
 
 function PromptPage() {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Content from PromptBox
+  const [promptMode, setPromptMode] = useState("text");
+  const [promptContent, setPromptContent] = useState(null);
+
   const [selectedItems, setSelectedItems] = useState({
     page1: [],
-    page2: []
+    impacts: [],
+    communication: [],
+    contacts: []
   });
 
-  const navigate = useNavigate();
+  const handleModeChange = useCallback((mode) => {
+    setPromptMode(mode);
+  }, []);
 
-  const toggleSelection = (section, title, maxSelect) => {
+  const handleContentChange = useCallback((content) => {
+    setPromptContent(content);
+  }, []);
+
+  const toggleSelection = (section, value, maxSelect) => {
     setSelectedItems(prev => {
-      const currentSelected = prev[section];
-      const isSelected = currentSelected.includes(title);
-      
-      if (isSelected) {
-        return {
-          ...prev,
-          [section]: currentSelected.filter(item => item !== title)
-        };
+      const current = prev[section];
+
+      if (current.includes(value)) {
+        return { ...prev, [section]: current.filter(v => v !== value) };
       }
-      
-      if (maxSelect && currentSelected.length >= maxSelect) {
-        return prev; 
-      }
-      
-      return {
-        ...prev,
-        [section]: [...currentSelected, title]
-      };
+
+      if (maxSelect && current.length >= maxSelect) return prev;
+
+      return { ...prev, [section]: [...current, value] };
     });
   };
 
-  const nextPage = () => setCurrentPage(2);
-  const prevPage = () => setCurrentPage(1);
+  const page1Categories = categoriesData.categories;
 
-  const renderOptions = (group, section) => {
-    const { options, groupTitle, maxSelect } = group;
-    const currentSelected = selectedItems[section];
-    const isMaxReached = maxSelect && currentSelected.length >= maxSelect;
+  const selectedCategories = useMemo(() => {
+    return categoriesData.categories.filter(cat =>
+      selectedItems.page1.includes(cat.id)
+    );
+  }, [selectedItems.page1]);
 
-    if (groupTitle === "เป้าหมายการใช้งาน") {
-      return (
-        <div className="space-y-3">
-          <div className="grid grid-cols-1 gap-3">
-            {options.slice(0, 2).map((option, index) => (
-              <ChoiceCard
-                key={index}
-                title={option}
-                iconSource={iconMap[option] || "/icons/default.svg"}
-                selected={currentSelected.includes(option)}
-                onClick={() => toggleSelection(section, option, maxSelect)}
-                disabled={isMaxReached && !currentSelected.includes(option)}
-              />
-            ))}
-          </div>
-          
-          <div className="grid grid-cols-3 gap-3">
-            {options.slice(2, 5).map((option, index) => (
-              <ChoiceCard
-                key={index + 2}
-                title={option}
-                iconSource={iconMap[option] || "/icons/default.svg"}
-                selected={currentSelected.includes(option)}
-                onClick={() => toggleSelection(section, option, maxSelect)}
-                disabled={isMaxReached && !currentSelected.includes(option)}
-              />
-            ))}
-          </div>
-        </div>
-      );
+  const page2Impacts = useMemo(() => {
+    const map = new Map();
+
+    selectedCategories.forEach(cat => {
+      cat.impacts.forEach(impact => {
+        map.set(impact.en, impact);
+      });
+    });
+
+    return Array.from(map.values());
+  }, [selectedCategories]);
+
+  // Get labels for selected items
+  const getSelectedLabels = () => {
+    const problemLabels = selectedCategories.map(cat => cat.title_th).join(", ");
+    const impactLabels = selectedItems.impacts
+      .map(impactEn => {
+        const impact = page2Impacts.find(i => i.en === impactEn);
+        return impact?.th || impactEn;
+      })
+      .join(", ");
+    const commOption = communicationWays.options.find(
+      opt => opt.id === selectedItems.communication[0]
+    );
+    const communicationLabel = commOption?.th || "";
+
+    return { problemLabels, impactLabels, communicationLabel };
+  };
+
+  // Upload image and get URL (you may need to implement image upload endpoint)
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = localStorage.getItem('backend_token');
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+    const response = await fetch(`${API_BASE_URL}/api/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
     }
 
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {options.map((option, index) => (
-          <ChoiceCard
-            key={index}
-            title={option}
-            iconSource={iconMap[option] || "/icons/default.svg"}
-            selected={currentSelected.includes(option)}
-            onClick={() => toggleSelection(section, option, maxSelect)}
-            disabled={isMaxReached && !currentSelected.includes(option)}
-          />
-        ))}
-      </div>
-    );
+    const data = await response.json();
+    return data.url;
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('backend_token');
+
+    if (!token) {
+      setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+      return;
+    }
+
+    // Validate content
+    if (promptMode === "text" && (!promptContent || promptContent.trim() === "")) {
+      setError("กรุณากรอกเนื้อหาที่ต้องการวิเคราะห์");
+      return;
+    }
+    if (promptMode === "link" && (!promptContent || promptContent.trim() === "")) {
+      setError("กรุณากรอกลิงก์วิดีโอ");
+      return;
+    }
+    if (promptMode === "image" && (!promptContent?.file)) {
+      setError("กรุณาอัปโหลดรูปภาพ");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
+      let result;
+
+      if (promptMode === "text") {
+        result = await api.generateAdviceText(token, {
+          content: promptContent,
+          problem: problemLabels,
+          concerning: impactLabels,
+          approach: communicationLabel,
+          goal: communicationLabel
+        });
+      } else if (promptMode === "image") {
+        // Upload image first, then send URL to API
+        const imageUrl = await uploadImage(promptContent.file);
+        result = await api.generateAdviceImage(token, imageUrl);
+      } else if (promptMode === "link") {
+        result = await api.generateAdviceLink(token, promptContent);
+      }
+
+      // Store result and navigate to result list page
+      localStorage.setItem("promptData", JSON.stringify({
+        mode: promptMode,
+        problems: selectedItems.page1,
+        impacts: selectedItems.impacts,
+        communication: selectedItems.communication,
+      }));
+
+      // Navigate to result list page first
+      navigate("/result");
+    } catch (err) {
+      console.error("LLM API Error:", err);
+      setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      <div className="max-w-xl mx-auto space-y-4">
-        <PromptBox />
+      <div className="max-w-xl mx-auto space-y-6">
 
-        <div className="flex items-center justify-between mb-6">
+        <PromptBox
+          readOnly={currentPage === 2}
+          onModeChange={handleModeChange}
+          onContentChange={handleContentChange}
+        />
+
+        {error && (
+          <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
+            <span className="text-sm">{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-700 hover:text-red-900"
+            >
+              &times;
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-cyan-500">
-            {currentPage === 1 ? questions.page1.section : questions.page2.section}
+            {currentPage === 1
+              ? "เลือกประเภทเนื้อหา"
+              : "เลือกผลกระทบและวิธีการสื่อสาร"}
           </h1>
           <p className="text-sm text-gray-500">
-            ขั้นตอนที่ {currentPage} ใน 2
+            ขั้นตอนที่ {currentPage} จาก 2
           </p>
         </div>
 
+        {/* ================= PAGE 1 ================= */}
         {currentPage === 1 && (
-          <div className="space-y-8 animate-fadeIn">
-            {questions.page1.groups.map((group, groupIndex) => (
-              <section key={groupIndex}>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-semibold text-primary">
-                    {group.groupTitle}
-                  </h2>
-                </div>
-                
-                {renderOptions(group, 'page1')}
-                
-                {group.maxSelect && selectedItems.page1.length >= group.maxSelect && (
-                  <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
-                    <span>⚠️</span>
-                    คุณเลือกครบจำนวนสูงสุดแล้ว (ยกเลิกบางรายการเพื่อเลือกใหม่)
-                  </p>
-                )}
-              </section>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 animate-fadeIn">
+            {page1Categories.map(category => (
+              <ChoiceCard
+                key={category.id}
+                title={category.title_th}
+                iconSource={iconMap[category.title_en] || iconMap.default}
+                selected={selectedItems.page1.includes(category.id)}
+                onClick={() =>
+                  toggleSelection("page1", category.id, 1)
+                }
+              />
             ))}
 
-          <div className="sticky bottom-6 left-0 z-50 flex justify-center">
-            <button
-                onClick={nextPage}
+            <div className="col-span-full flex justify-center mt-6">
+              <button
                 disabled={selectedItems.page1.length === 0}
-                className="btn-normal-active flex items-center gap-2 shadow-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-                ยอมรับ
-            </button>
+                onClick={() => setCurrentPage(2)}
+                className="btn-normal-active disabled:bg-gray-300"
+              >
+                ไปต่อ
+              </button>
             </div>
           </div>
         )}
 
+        {/* ================= PAGE 2 ================= */}
         {currentPage === 2 && (
           <div className="space-y-8 animate-fadeIn">
-            {questions.page2.groups.map((group, groupIndex) => (
-              <section key={groupIndex}>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-semibold text-primary">
-                    {group.groupTitle}
-                  </h2>
-                  {group.maxSelect && (
-                    <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      เลือกแล้ว {selectedItems.page2.length}/{group.maxSelect}
-                    </span>
-                  )}
+            <section>
+              <h2 className="text-base font-semibold text-primary mb-4">
+                ผลกระทบที่อาจเกิดขึ้น
+              </h2>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {page2Impacts.map(impact => (
+                  <ChoiceCard
+                    key={impact.en}
+                    title={impact.th}
+                    iconSource={iconMap[impact.en] || iconMap.default}
+                    selected={selectedItems.impacts.includes(impact.en)}
+                    onClick={() =>
+                      toggleSelection("impacts", impact.en, 3)
+                    }
+                  />
+                ))}
+              </div>
+            </section>
+            <section>
+              <h2 className="text-base font-semibold text-primary mb-4">
+                  เป้าหมายในการใช้งาน
+              </h2>
+
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
+                  <ChoiceCard
+                    title={communicationWays.options[0].th}
+                    iconSource={
+                      iconMap[communicationWays.options[0].id] || iconMap.default
+                    }
+                    selected={selectedItems.communication.includes(
+                      communicationWays.options[0].id
+                    )}
+                    onClick={() =>
+                      toggleSelection(
+                        "communication",
+                        communicationWays.options[0].id,
+                        1,
+                      )
+                    }
+                  />
                 </div>
-                
-                {renderOptions(group, 'page2')}
-                
-                {group.maxSelect && selectedItems.page2.length >= group.maxSelect && (
-                  <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
-                    <span>⚠️</span>
-                    คุณเลือกครบจำนวนสูงสุดแล้ว (ยกเลิกบางรายการเพื่อเลือกใหม่)
-                  </p>
+
+                <div className="grid grid-cols-3 gap-3">
+                  {communicationWays.options.slice(1).map(option => (
+                    <ChoiceCard
+                      key={option.id}
+                      title={option.th}
+                      iconSource={iconMap[option.id] || iconMap.default}
+                      selected={selectedItems.communication.includes(option.id)}
+                      onClick={() =>
+                        toggleSelection(
+                          "communication",
+                          option.id,
+                          1
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+            <div className="flex justify-center gap-2 items-center">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={isLoading}
+                className="btn-normal-inactive sm:min-w-[280px] disabled:opacity-50"
+              >
+                ย้อนกลับ
+              </button>
+
+              <button
+                onClick={handleSubmit}
+                disabled={isLoading || selectedItems.communication.length === 0}
+                className="btn-normal-active sm:min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    กำลังวิเคราะห์...
+                  </span>
+                ) : (
+                  "วิเคราะห์เนื้อหา"
                 )}
-              </section>
-            ))}
-
-            <div className="sticky bottom-6 left-0 z-50 flex justify-center">
-            <button
-                onClick={() => {
-                  navigate("/result")
-                }}      
-                className="btn-normal-active flex items-center gap-2 shadow-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-                ยอมรับ
-            </button>
-            </div>
-          </div>
-        )}
-
-        {(selectedItems.page1.length > 0 || selectedItems.page2.length > 0) && (
-          <div className="mt-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
-            <p className="text-sm font-semibold text-cyan-800 mb-2">
-              รายการที่เลือกทั้งหมด: {selectedItems.page1.length + selectedItems.page2.length} รายการ
-            </p>
-            <div className="text-xs text-cyan-700 space-y-1">
-              {selectedItems.page1.length > 0 && (
-                <p>• หน้า 1: {selectedItems.page1.join(', ')}</p>
-              )}
-              {selectedItems.page2.length > 0 && (
-                <p>• หน้า 2: {selectedItems.page2.join(', ')}</p>
-              )}
+              </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-gray-700">กำลังวิเคราะห์เนื้อหา...</p>
+            <p className="text-sm text-gray-500">อาจใช้เวลาสักครู่</p>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn {

@@ -1,61 +1,91 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Banner from "../components/Banner";
 import ContactCard from "../components/ContactCard";
-import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import categories from "../utils/matchingPrompt.json";
+import contactData from "../utils/contact.json";
 
 function Contactpage() {
   const navigate = useNavigate();
-  const contact_list = [
-    {
-      id: 1,
-      title:
-        "ศูนย์ช่วยเหลือสังคม กระทรวงการพัฒนาสังคม และความมั่นคงของมนุษย์ (พม.)",
-      description:
-        "ให้คำปรึกษาและช่วยเหลือด้านสังคมสำหรับประชาชนทั่วไป",
-      tel: "02-000-1234",
-      icon: "/contact/pm.png",
-    },
-    {
-      id: 2,
-      title: "สายด่วนสุขภาพจิต กรมสุขภาพจิต",
-      description:
-        "บริการรับฟังปัญหา ให้คำแนะนำ และดูแลด้านสุขภาพจิต",
-      tel: "1323",
-      icon: "/contact/sorkorbor.png",
-    },
-    {
-      id: 3,
-      title: "แจ้งเหตุฉุกเฉิน สายด่วน 191",
-      description:
-        "ติดต่อเจ้าหน้าที่ตำรวจในกรณีเหตุฉุกเฉิน",
-      tel: "191",
-      icon: "/contact/nbc.png",
-    },
-  ];
-  
+
+  const promptData = JSON.parse(
+    localStorage.getItem("promptData")
+  );
+
+  const problemIds = promptData?.problems || [];
+
+  if (!promptData) {
+    navigate("/");
+    return null;
+  }
+
+  const matchedContactIds = useMemo(() => {
+    if (problemIds.length === 0) return [];
+
+    const ids = new Set();
+
+    categories.categories.forEach(cat => {
+      if (problemIds.includes(cat.id)) {
+        cat.contacts.forEach(cid => ids.add(cid));
+      }
+    });
+
+    return Array.from(ids);
+  }, [problemIds]);
+
+  const matchedContacts = useMemo(() => {
+    return contactData.contacts
+      .filter(contact => matchedContactIds.includes(contact.id))
+      .sort((a, b) => a.order - b.order);
+  }, [matchedContactIds]);
+
   return (
     <div className="w-full">
-        <Banner imgSource="/banner/example.svg" />
+      <Banner imgSource="/banner/03_Agentic_Banner.webp" />
+
       <div className="flex flex-col items-center py-6 sm:py-8 gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary text-center px-4">
           แนะนำช่องทางในการติดต่อขอความช่วยเหลือ
         </h1>
-        <div className="w-full max-w-4xl px-3 sm:px-4 flex flex-col items-center gap-4 sm:gap-6">
-          {contact_list.map((item) => (
-            <ContactCard
-              key={item.id}
-              imageSource={item.icon}
-              title={item.title}
-              description={item.description}
-              tel={`Call : ${item.tel}`}
-            />
-          ))}
-        </div>
+
+        {matchedContacts.length === 0 && (
+          <p className="text-sm text-gray-500 text-center">
+            ยังไม่พบช่องทางช่วยเหลือที่ตรงกับปัญหานี้
+          </p>
+        )}
+
+        {matchedContacts.map(item => (
+          <ContactCard
+            key={item.id}
+            imageSource={item.image}
+            title={item.name_th}
+            description={item.description}
+            tel={item.channels.call}
+            link={item.channels.website}
+            email={item.channels.email}
+            facebook={item.channels.facebook}
+            line={item.channels.line}
+          />
+        ))}
       </div>
-      <div className="flex gap-2 max-w-screen p-4 items-center justify-center"> 
-        <button className="btn-normal-active bg-button" onClick={()=>navigate("/nextstep")}> กลับไปก่อนหน้า </button> 
-        <button className="btn-normal-active" onClick={()=>navigate("/agentic")}> กลับไปหน้าแรก </button> 
+
+      <div className="flex gap-2 p-4 items-center justify-center">
+        <button
+          className="btn-normal-active bg-button"
+          onClick={() => navigate(-1)}
+        >
+          กลับไปก่อนหน้า
+        </button>
+
+        <button
+          className="btn-normal-active"
+          onClick={() => {
+            localStorage.removeItem("promptData"); 
+            navigate("/agentic");
+          }}
+        >
+          กลับไปหน้าแรก
+        </button>
       </div>
     </div>
   );

@@ -1,115 +1,168 @@
 import React, { useState } from "react";
-import ChoiceCheck from "../components/Survey/ChoiceCheck";
+import { useParams, useNavigate } from "react-router-dom";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
+import ChoiceCheck from "../components/Survey/ChoiceCheck";
 import Banner from "../components/Banner";
-import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
+import { surveyTemplate } from "../utils/surveyTemplate";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 
-const surveyTemplate = {
-  pages: [
-    {
-      pageId: 1,
-      questions: [
-        {
-          id: "q1",
-          type: "rating",
-          label: "คุณพึงพอใจมากแค่ไหน",
-          options: ["น้อยที่สุด", "น้อย", "ปานกลาง", "มาก", "มากที่สุด"]
-        },
-        {
-          id: "q2",
-          type: "rating",
-          label: "คุณอยากแนะนำให้ผู้อื่นหรือไม่",
-          options: ["น้อยที่สุด", "น้อย", "ปานกลาง", "มาก", "มากที่สุด"]
-        },
-        {
-          id: "q3",
-          type: "select",
-          label: "สิ่งที่คุณชอบมากที่สุด",
-          options: ["การออกแบบ", "การใช้งาน", "ความเร็ว", "เนื้อหา"]
-        }
-      ]
-    },
-    {
-      pageId: 2,
-      questions: [
-        {
-          id: "q4",
-          type: "select",
-          label: "สิ่งที่ควรปรับปรุง",
-          options: ["UI", "Performance", "Feature", "Support"]
-        }
-      ]
-    }
-  ]
-};
+const RATING_OPTIONS = [
+  "ไม่เห็นด้วย",
+  "ค่อนข้างไม่เห็นด้วย",
+  "ไม่แน่ใจ",
+  "ค่อนข้างเห็นด้วย",
+  "เห็นด้วยมาก"
+];
 
 function Surveypage() {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const { formSet } = useParams();
   const navigate = useNavigate();
+  const { backendUser, refreshBackendUser } = useAuth();
 
-  const currentPageData = surveyTemplate.pages[currentPage];
-  const isLastPage = currentPage === surveyTemplate.pages.length - 1;
+  const currentFormSet = parseInt(formSet) || 1;
+  const [answers, setAnswers] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSelectAnswer = (questionId, optionIndex) => {
-    setAnswers({
-      ...answers,
-      [questionId]: optionIndex
-    });
-  };
+  const currentSetData = surveyTemplate.Set.find(set => set.formSet === currentFormSet);
 
-  const handleNext = () => {
-    if (currentPage < surveyTemplate.pages.length - 1) {
-      setCurrentPage(currentPage + 1);
+  const handleSelectAnswer = (questionId, optionIndex, maxAnswer) => {
+    const currentAnswers = answers[questionId] || [];
+    const max = parseInt(maxAnswer) || 1;
+
+    if (max === 1) {
+      setAnswers({
+        ...answers,
+        [questionId]: [optionIndex]
+      });
     } else {
-      console.log("Survey completed:", answers);
-      navigate("/nextstep")
+      if (currentAnswers.includes(optionIndex)) {
+        setAnswers({
+          ...answers,
+          [questionId]: currentAnswers.filter(i => i !== optionIndex)
+        });
+      } else {
+        if (currentAnswers.length < max) {
+          setAnswers({
+            ...answers,
+            [questionId]: [...currentAnswers, optionIndex]
+          });
+        }
+      }
     }
   };
 
-  const handlePrevious = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('backend_token');
+
+    if (!token) {
+      setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+      return;
+    }
+
+    const unansweredQuestions = currentSetData.questions.filter(
+      q => !answers[q.id] || answers[q.id].length === 0
+    );
+
+    if (unansweredQuestions.length > 0) {
+      setError("กรุณาตอบคำถามให้ครบทุกข้อ");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await api.submitSurvey(token, currentFormSet, answers);
+
+      await refreshBackendUser();
+
+      if (currentFormSet === 1) {
+        navigate("/tutorial");
+      } else {
+        navigate("/nextstep");
+      }
+    } catch (err) {
+      console.error("Survey submission error:", err);
+      setError(err.message || "เกิดข้อผิดพลาดในการส่งแบบฟอร์ม กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (!currentSetData) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">ไม่พบแบบสอบถาม</p>
+          <button
+            onClick={() => navigate("/tutorial")}
+            className="btn-normal-active"
+          >
+            กลับหน้าหลัก
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <Banner imgSource="/banner/example.svg" />
-      
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 ">
-        <div className="max-w-[395px] mx-auto space-y-6 sm:space-y-10">
+    <div className="w-full min-h-screen flex flex-col bg-gray-50">
+      <Banner imgSource="/banner/03_Agentic_Banner.webp" />
+
+      <div className="flex-1 p-4 sm:p-6 md:p-8">
+        <div className="max-w-[600px] mx-auto space-y-6 sm:space-y-10">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary text-center">
+            {currentSetData.formLabel}
+          </h1>
+
+          {error && (
+            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
+              <span className="text-sm">{error}</span>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-700 hover:text-red-900"
+              >
+                &times;
+              </button>
+            </div>
+          )}
 
           <div className="space-y-8 sm:space-y-12">
-            {currentPageData.questions.map((question) => {
-              const currentAnswer = answers[question.id];
-              
+            {currentSetData.questions.map((question, questionIndex) => {
+              const currentAnswer = answers[question.id] || [];
+              const maxAnswer = parseInt(question.maxAnswer) || 1;
+
               return (
                 <div key={question.id} className="space-y-4 sm:space-y-6">
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-primary">
-                    {question.label}
+                  <h2 className="text-base sm:text-lg font-semibold text-primary">
+                    {questionIndex + 1}. {question.label}
+                    {maxAnswer > 1 && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        (เลือกได้สูงสุด {maxAnswer} ข้อ)
+                      </span>
+                    )}
                   </h2>
-
                   {question.type === "rating" ? (
-                    <div className="grid grid-cols-5 sm:grid-cols-5 justify-items-center">
-                      {question.options.map((option, index) => (
+                    <div className="grid grid-cols-5 gap-2 justify-items-center">
+                      {RATING_OPTIONS.map((option, index) => (
                         <ChoiceCheck
-                          key={index}
+                          key={`${question.id}-rating-${index}`}
                           text={option}
-                          isSelect={currentAnswer === index}
-                          onClick={() => handleSelectAnswer(question.id, index)}
+                          isSelect={currentAnswer.includes(index)}
+                          onChange={() => handleSelectAnswer(question.id, index, 1)}
                         />
                       ))}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-3 sm:gap-4">
-                      {question.options.map((option, index) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      {question.options?.map((option, index) => (
                         <ChoiceSelect
-                          key={index}
+                          key={`${question.id}-${index}`}
                           text={option}
-                          isSelect={currentAnswer === index}
-                          onClick={() => handleSelectAnswer(question.id, index)}
+                          isSelect={currentAnswer.includes(index)}
+                          onClick={() => handleSelectAnswer(question.id, index, question.maxAnswer)}
                         />
                       ))}
                     </div>
@@ -119,13 +172,34 @@ function Surveypage() {
             })}
           </div>
 
-            <div className="sticky bottom-6 left-0 z-50 flex justify-center">
-            <button className="btn-normal-active"
-              onClick={handleNext}
-            > ยอมรับ </button>
+          <div className="flex justify-center pt-8 pb-8">
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="btn-normal-active disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  กำลังส่ง...
+                </span>
+              ) : (
+                "ส่งแบบฟอร์ม"
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-gray-700">กำลังส่งแบบสอบถาม...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

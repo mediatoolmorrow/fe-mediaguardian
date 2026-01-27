@@ -1,41 +1,89 @@
 import React from "react";
-import Button from "../Button";
 import { useNavigate } from "react-router-dom";
 
-export default function ResultSummary({ description }) {
+export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber }) {
   const navigate = useNavigate();
+
+  // Truncate description for preview (shorter for list view)
+  const truncatedDescription = description && description.length > 150
+    ? description.substring(0, 150) + "..."
+    : description;
+
+  // Format date safely
+  const formatDate = (dateValue) => {
+    if (!dateValue) return null;
+    try {
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return null;
+      return date.toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return null;
+    }
+  };
+
+  const formattedDate = formatDate(createdAt);
+
+  const getModeInfo = () => {
+    switch (mode) {
+      case 'text':
+        return { label: 'ข้อความ', icon: '/icon/message.svg' };
+      case 'image':
+        return { label: 'รูปภาพ', icon: '/icon/image.svg' };
+      case 'link':
+        return { label: 'ลิงก์', icon: '/icon/link.svg' };
+      default:
+        return { label: mode, icon: '/icon/message.svg' };
+    }
+  };
+
+  const modeInfo = getModeInfo();
+
+  const handleClick = () => {
+    navigate(`/result/${id}`);
+  };
+
   return (
-    <div
-      className="
-        w-full
-        max-w-[648px]
-        flex
-        flex-row
-        items-start
-        gap-3
-        p-4
-      "
-    >
-      <img
-        src="/icon/result.svg"
-        className="w-10 h-10 flex-shrink-0"
-        alt="Result"
-      />
-
-      <div className="flex flex-col flex-1">
-        <p className="mb-1 font-bold text-sm">
-          แนวทางการตอบกลับ
-        </p>
-
-        <p className="mb-4 text-xs text-text break-words">
-          {description}
-        </p>
-
-        <div className="flex justify-center mt-auto">
-          <button className="btn-normal-active" onClick={()=>navigate("/result/example")}> เลือกแนวนี้ </button>
+    <div className="w-full max-w-[648px] flex flex-col gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all">
+      <div className="flex flex-row items-start gap-3">
+        <img
+          src="/icon/result.svg"
+          className="w-10 h-10 flex-shrink-0"
+          alt="Result"
+        />
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-medium"> แนวทางการสื่อสาร {resultNumber}</span>
+            </div>
+            {formattedDate && (
+              <span className="text-xs text-gray-400">{formattedDate}</span>
+            )}
+          </div>
+          {inputPreview && (
+            <p className="text-xs text-gray-500 mb-2 truncate">
+              <span className="font-medium">เนื้อหา:</span> {inputPreview}
+            </p>
+          )}
+          <p className="text-xs text-text break-words line-clamp-3">
+            {truncatedDescription || "ไม่มีเนื้อหา"}
+          </p>
         </div>
+      </div>
+      
+      <div className="flex justify-center">
+        <button
+          onClick={handleClick}
+          className="btn-normal-active"
+        >
+          เลือกแนวนี้
+        </button>
       </div>
     </div>
   );
 }
-
