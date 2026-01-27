@@ -182,9 +182,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   // LINE Sign In - Initiates the OAuth flow
-  const signInWithLine = () => {
+  const signInWithLine = async () => {
     setError(null);
-    lineAuth.login();
+    await lineAuth.login();
   };
 
   // Handle LINE OAuth callback
@@ -312,12 +312,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Role-based access helpers
+  const isAdmin = backendUser?.isAdmin === true || backendUser?.role === 'admin' || backendUser?.role === 'superadmin';
+  const isSuperAdmin = backendUser?.isSuperAdmin === true || backendUser?.role === 'superadmin';
+
   const value = {
     user,
     backendUser,
     loading,
     error,
     successMessage,
+    isAdmin,
+    isSuperAdmin,
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,

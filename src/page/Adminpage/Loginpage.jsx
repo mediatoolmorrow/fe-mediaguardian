@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 
 export default function AdminLoginpage({ onLogin }) {
   const [loginData, setLoginData] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -11,32 +14,24 @@ export default function AdminLoginpage({ onLogin }) {
     setIsLoggingIn(true);
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: `Simulate admin login validation. Username: ${loginData.username}, Password: ${loginData.password}. Return JSON only: {"success": boolean, "token": "string", "message": "string"}. Use success=true if username is "admin" and password is "admin123", otherwise false.`
-          }]
-        })
-      });
+      const response = await api.adminLogin(loginData.username, loginData.password);
 
-      const data = await response.json();
-      const resultText = data.content.find(item => item.type === 'text')?.text || '';
-      const cleanText = resultText.replace(/```json|```/g, '').trim();
-      const result = JSON.parse(cleanText);
-
-      if (result.success) {
-        localStorage.setItem('adminToken', result.token);
-        onLogin();
+      if (response.token) {
+        localStorage.setItem('adminToken', response.token);
+        // Store user role info
+        if (response.user) {
+          localStorage.setItem('adminUser', JSON.stringify(response.user));
+        }
+        if (onLogin) {
+          onLogin(response.user);
+        } else {
+          navigate('/admin');
+        }
       } else {
-        setLoginError(result.message || 'Invalid credentials');
+        setLoginError(response.message || 'Invalid credentials');
       }
     } catch (error) {
-      setLoginError('Login failed. Please try again.');
+      setLoginError(error.message || 'Login failed. Please try again.');
       console.error('Login error:', error);
     } finally {
       setIsLoggingIn(false);
@@ -93,12 +88,6 @@ export default function AdminLoginpage({ onLogin }) {
           </button>
         </form>
 
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600 text-center">
-            Demo credentials: <br />
-            <span className="font-mono font-medium">admin / admin123</span>
-          </p>
-        </div>
       </div>
     </div>
   );

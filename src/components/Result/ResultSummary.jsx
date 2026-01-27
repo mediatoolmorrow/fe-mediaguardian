@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ResultSummary({ id, description, mode, createdAt, inputPreview }) {
+export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber }) {
   const navigate = useNavigate();
 
   // Truncate description for preview (shorter for list view)
@@ -29,7 +29,6 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
 
   const formattedDate = formatDate(createdAt);
 
-  // Mode label and icon
   const getModeInfo = () => {
     switch (mode) {
       case 'text':
@@ -50,51 +49,40 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
   };
 
   return (
-    <div
-      onClick={handleClick}
-      className="w-full max-w-[648px] flex flex-row items-start gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-100 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all"
-    >
-      <img
-        src="/icon/result.svg"
-        className="w-10 h-10 flex-shrink-0"
-        alt="Result"
-      />
-
-      <div className="flex flex-col flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            {mode && (
-              <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                <img src={modeInfo.icon} alt="" className="w-3 h-3" />
-                {modeInfo.label}
-              </span>
+    <div className="w-full max-w-[648px] flex flex-col gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all">
+      <div className="flex flex-row items-start gap-3">
+        <img
+          src="/icon/result.svg"
+          className="w-10 h-10 flex-shrink-0"
+          alt="Result"
+        />
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-medium"> แนวทางการสื่อสาร {resultNumber}</span>
+            </div>
+            {formattedDate && (
+              <span className="text-xs text-gray-400">{formattedDate}</span>
             )}
           </div>
-          {formattedDate && (
-            <span className="text-xs text-gray-400">{formattedDate}</span>
+          {inputPreview && (
+            <p className="text-xs text-gray-500 mb-2 truncate">
+              <span className="font-medium">เนื้อหา:</span> {inputPreview}
+            </p>
           )}
-        </div>
-
-        {/* Input preview if available */}
-        {inputPreview && (
-          <p className="text-xs text-gray-500 mb-2 truncate">
-            <span className="font-medium">เนื้อหา:</span> {inputPreview}
+          <p className="text-xs text-text break-words line-clamp-3">
+            {truncatedDescription || "ไม่มีเนื้อหา"}
           </p>
-        )}
-
-        {/* LLM Response preview */}
-        <p className="text-xs text-text break-words line-clamp-3">
-          {truncatedDescription || "ไม่มีเนื้อหา"}
-        </p>
-
-        <div className="flex justify-end mt-3">
-          <span className="text-xs text-primary font-medium flex items-center gap-1">
-            ดูรายละเอียด
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-          </span>
         </div>
+      </div>
+      
+      <div className="flex justify-center">
+        <button
+          onClick={handleClick}
+          className="btn-normal-active"
+        >
+          เลือกแนวนี้
+        </button>
       </div>
     </div>
   );

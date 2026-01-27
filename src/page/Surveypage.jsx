@@ -61,7 +61,6 @@ function Surveypage() {
       return;
     }
 
-    // Validate that all questions are answered
     const unansweredQuestions = currentSetData.questions.filter(
       q => !answers[q.id] || answers[q.id].length === 0
     );
@@ -75,14 +74,10 @@ function Surveypage() {
     setError(null);
 
     try {
-      // Submit survey answers to backend (userId is extracted from JWT token on backend)
-      // Backend will update user flags (isFirstTime, isSubmitFirstForm) based on formSet
       await api.submitSurvey(token, currentFormSet, answers);
 
-      // Refresh user data to get updated flags
       await refreshBackendUser();
 
-      // Navigate based on which form was submitted
       if (currentFormSet === 1) {
         navigate("/tutorial");
       } else {
@@ -114,7 +109,7 @@ function Surveypage() {
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gray-50">
-      <Banner imgSource="/banner/example.svg" />
+      <Banner imgSource="/banner/03_Agentic_Banner.webp" />
 
       <div className="flex-1 p-4 sm:p-6 md:p-8">
         <div className="max-w-[600px] mx-auto space-y-6 sm:space-y-10">

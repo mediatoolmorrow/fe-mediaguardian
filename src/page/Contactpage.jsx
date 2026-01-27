@@ -41,7 +41,7 @@ function Contactpage() {
 
   return (
     <div className="w-full">
-      <Banner imgSource="/banner/example.svg" />
+      <Banner imgSource="/banner/03_Agentic_Banner.webp" />
 
       <div className="flex flex-col items-center py-6 sm:py-8 gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary text-center px-4">

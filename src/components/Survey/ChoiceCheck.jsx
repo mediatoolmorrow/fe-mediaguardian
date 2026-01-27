@@ -19,7 +19,7 @@ export default function ChoiceCheck({ text, isSelect, onChange }) {
         `}
       >
         <img
-          src="public/icon/choice-check.svg"
+          src="/icon/choice-check.svg"
           alt=""
           className={`
             w-4 h-4 transition-all

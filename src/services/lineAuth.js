@@ -51,10 +51,9 @@ export const lineAuth = {
       code_challenge_method: 'S256'
     });
 
-    window.location.href = `https://access-line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
   },
 
-  // Handle callback from LINE
   handleCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');

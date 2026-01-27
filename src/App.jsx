@@ -15,7 +15,6 @@ import Contactpage from "./page/Contactpage";
 import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
 import AdminDashboard from "./page/Adminpage/AdminDashboardpage";
-import AdminLoginpage from "./page/Adminpage/Loginpage";
 import NextSteppage from "./page/NextSteppage";
 
 function App() {
@@ -37,10 +36,8 @@ function App() {
           <Route path="/agentic" element={<ProtectedRoute><Promptpage /></ProtectedRoute>} />
           <Route path="/nextstep" element={<ProtectedRoute><NextSteppage /></ProtectedRoute>} />
         </Route>
-        <Route>
-          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/adminlogin" element={<AdminLoginpage/>} />
-        </Route>
+        {/* Admin Dashboard - protected by AuthContext inside the component */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

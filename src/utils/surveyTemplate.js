@@ -1,4 +1,3 @@
-// data/surveyTemplate.js
 export const surveyTemplate = {
   Set: [
     {

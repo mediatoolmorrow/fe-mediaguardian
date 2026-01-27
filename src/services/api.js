@@ -110,6 +110,106 @@ export const api = {
     return response.ok;
   },
 
+  /* Admin Management (Super Admin only) */
+  async getAdminMe(token) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to get admin info');
+    }
+
+    return response.json();
+  },
+
+  async getAdminList(token) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch admin list');
+    }
+
+    return response.json();
+  },
+
+  async getUserList(token) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch user list');
+    }
+
+    return response.json();
+  },
+
+  async addAdmin(token, email) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/add-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to add admin');
+    }
+
+    return response.json();
+  },
+
+  async removeAdmin(token, email) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/remove-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to remove admin');
+    }
+
+    return response.json();
+  },
+
+  async addSuperAdmin(token, email) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/add-superadmin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to add super admin');
+    }
+
+    return response.json();
+  },
+
   /* LLM */
   async generateAdviceText(token, { content, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
@@ -246,6 +346,84 @@ export const api = {
     }
 
     return response.json();
+  },
+
+  /* Survey Admin */
+  async getSurveyChartData(token) {
+    const response = await fetch(`${API_BASE_URL}/api/survey/admin/charts`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch chart data');
+    }
+
+    return response.json();
+  },
+
+  async downloadSurveyCSV(token) {
+    const response = await fetch(`${API_BASE_URL}/api/survey/admin/download/csv`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to download CSV');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `survey-data-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  },
+
+  /* Prompt Admin */
+  async getPromptChartData(token) {
+    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/charts`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch prompt chart data');
+    }
+
+    return response.json();
+  },
+
+  async downloadPromptCSV(token) {
+    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/download/csv`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to download CSV');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prompt-data-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 };
 
