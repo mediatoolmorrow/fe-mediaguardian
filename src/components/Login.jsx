@@ -133,11 +133,13 @@ export default function Login() {
             icon: "/social-media/google.svg",
             onClick: handleGoogleLogin,
         },
+        /*
         {
             name: "Apple",
             icon: "/social-media/apple.svg",
             onClick: handleAppleLogin,
         },
+        */
         {
             name: "LINE",
             icon: "/social-media/line.svg",
@@ -145,7 +147,6 @@ export default function Login() {
         },
     ];
 
-    // Show loading while checking auth state
     if (loading) {
         return (
             <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl flex items-center justify-center">
