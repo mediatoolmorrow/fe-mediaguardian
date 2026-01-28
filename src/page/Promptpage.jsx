@@ -101,7 +101,6 @@ function PromptPage() {
     return { problemLabels, impactLabels, communicationLabel };
   };
 
-  // Upload image and get URL (you may need to implement image upload endpoint)
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append('image', file);

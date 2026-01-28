@@ -377,39 +377,6 @@ export default function SurveyAnalyticspage({
           </div>
         </div>
       </div>
-
-      {/* Timeline Section */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6"> แบบสอบถามที่ถูกส่งเข้ามา </h2>
-        <div className="h-80">
-          <Line
-            data={{
-              labels: timeline?.labels || [],
-              datasets: [
-                {
-                  label: "Survey Completions",
-                  data: timeline?.data || [],
-                  borderColor: "#3B82F6",
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  fill: true,
-                  tension: 0.4,
-                },
-              ],
-            }}
-            options={{
-              ...chartOptions,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    stepSize: 1,
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-      </div>
     </div>
   );
 }

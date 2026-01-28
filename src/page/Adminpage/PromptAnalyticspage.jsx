@@ -141,9 +141,34 @@ export default function PromptAnalyticspage({
     return num.toString();
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("th-TH", {
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "-";
+
+    let date;
+
+    // Handle Firestore Timestamp object {_seconds, _nanoseconds}
+    if (dateValue._seconds !== undefined) {
+      date = new Date(dateValue._seconds * 1000);
+    }
+    // Handle Firestore Timestamp with seconds/nanoseconds
+    else if (dateValue.seconds !== undefined) {
+      date = new Date(dateValue.seconds * 1000);
+    }
+    // Handle Unix timestamp in seconds (10 digits)
+    else if (typeof dateValue === 'number' && dateValue < 10000000000) {
+      date = new Date(dateValue * 1000);
+    }
+    // Handle Unix timestamp in milliseconds or ISO string
+    else {
+      date = new Date(dateValue);
+    }
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return date.toLocaleDateString("th-TH", {
       year: "numeric",
       month: "short",
       day: "numeric",

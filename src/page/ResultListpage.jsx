@@ -14,6 +14,7 @@ function ResultListpage() {
     const [displayCount, setDisplayCount] = useState(5);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
 
     useEffect(() => {
          if (authLoading) {
@@ -32,20 +33,27 @@ function ResultListpage() {
             try {
                 const data = await api.getLatestResults(token, displayCount);
                 let resultsList = [];
+                let total = 0;
+
                 if (Array.isArray(data)) {
                     resultsList = data;
+                    total = data.length;
                 } else if (data && Array.isArray(data.results)) {
                     resultsList = data.results;
+                    total = data.total || data.totalCount || data.results.length;
                 } else if (data && Array.isArray(data.prompts)) {
                     resultsList = data.prompts;
+                    total = data.total || data.totalCount || data.prompts.length;
                 } else if (data && Array.isArray(data.data)) {
                     resultsList = data.data;
+                    total = data.total || data.totalCount || data.data.length;
                 }
-                
+
                 resultsList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
+
                 setResults(resultsList);
-                setHasMore(resultsList.length === displayCount);
+                setTotalCount(total);
+                setHasMore(resultsList.length === displayCount && resultsList.length < total);
                 setError(null);
             } catch (err) {
                 console.error("Error fetching results:", err);
@@ -110,7 +118,7 @@ function ResultListpage() {
                             <p className="text-xs text-gray-500">คลิกที่รายการเพื่อดูรายละเอียด</p>
                         </div>
                         <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                            {results.length} รายการล่าสุด
+                            {results.length} / {totalCount} รายการ
                         </span>
                     </div>
 
@@ -141,7 +149,7 @@ function ResultListpage() {
                                         mode={result.mode}
                                         createdAt={result.createdAt}
                                         inputPreview={getInputPreview(result)}
-                                        resultNumber={results.length - index}
+                                        resultNumber={totalCount - index}
                                     />
                                 ))}
                             </div>

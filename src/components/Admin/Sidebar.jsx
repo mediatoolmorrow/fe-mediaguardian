@@ -5,7 +5,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
   return (
     <div className={`${isOpen ? 'w-64' : 'w-0'} bg-gray-900 text-white transition-all duration-300 overflow-hidden relative`}>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-8">Admin Panel</h1>
+        <h1 className="text-2xl font-bold mb-8"> Admin Panel </h1>
         <nav className="space-y-2">
           <button
             onClick={() => onPageChange('survey')}
@@ -14,7 +14,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
             }`}
           >
             <ClipboardList size={20} />
-            <span>Survey Analytics</span>
+            <span> วิเคราะห์แบบสำรวจ </span>
           </button>
           <button
             onClick={() => onPageChange('prompts')}
@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
             }`}
           >
             <MessageSquare size={20} />
-            <span>Prompt Analytics</span>
+            <span> สถิติการใช้งาน </span>
           </button>
 
           {isSuperAdmin && (
@@ -37,7 +37,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
                 }`}
               >
                 <Shield size={20} />
-                <span>Admin Management</span>
+                <span>จัดการ Admin</span>
               </button>
               <button
                 onClick={() => onPageChange('user-list')}
@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
                 }`}
               >
                 <Users size={20} />
-                <span>User List</span>
+                <span>รายการผู้ใช้งาน</span>
               </button>
             </>
           )}
