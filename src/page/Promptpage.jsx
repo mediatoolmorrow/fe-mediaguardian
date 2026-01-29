@@ -30,6 +30,7 @@ function PromptPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [rateLimitReached, setRateLimitReached] = useState(false);
 
   // Content from PromptBox
   const [promptMode, setPromptMode] = useState("text");
@@ -181,7 +182,23 @@ function PromptPage() {
       navigate("/result");
     } catch (err) {
       console.error("LLM API Error:", err);
-      setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
+
+      // Check for rate limit error (429 status or specific messages)
+      const errorMessage = err.message?.toLowerCase() || '';
+      const isRateLimit =
+        err.status === 429 ||
+        errorMessage.includes('rate limit') ||
+        errorMessage.includes('limit reached') ||
+        errorMessage.includes('daily limit') ||
+        errorMessage.includes('too many requests') ||
+        errorMessage.includes('exceeded');
+
+      if (isRateLimit) {
+        setRateLimitReached(true);
+        setError(null);
+      } else {
+        setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -196,6 +213,38 @@ function PromptPage() {
           onModeChange={handleModeChange}
           onContentChange={handleContentChange}
         />
+
+        {/* Rate Limit Alert */}
+        {rateLimitReached && (
+          <div className="p-4 bg-amber-50 border border-amber-300 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-amber-800">
+                  ถึงขีดจำกัดการใช้งานวันนี้แล้ว
+                </h3>
+                <p className="text-sm text-amber-700 mt-1">
+                  คุณสามารถใช้งานได้ 3 ครั้งต่อวัน กรุณากลับมาใหม่ในวันพรุ่งนี้
+                </p>
+                <p className="text-xs text-amber-600 mt-2">
+                  ขีดจำกัดจะรีเซ็ตเวลาเที่ยงคืน
+                </p>
+              </div>
+              <button
+                onClick={() => setRateLimitReached(false)}
+                className="text-amber-500 hover:text-amber-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
@@ -324,7 +373,7 @@ function PromptPage() {
 
               <button
                 onClick={handleSubmit}
-                disabled={isLoading || selectedItems.communication.length === 0}
+                disabled={isLoading || selectedItems.communication.length === 0 || rateLimitReached}
                 className="btn-normal-active sm:min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
@@ -332,6 +381,8 @@ function PromptPage() {
                     <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
                     กำลังวิเคราะห์...
                   </span>
+                ) : rateLimitReached ? (
+                  "ถึงขีดจำกัดวันนี้แล้ว"
                 ) : (
                   "วิเคราะห์เนื้อหา"
                 )}

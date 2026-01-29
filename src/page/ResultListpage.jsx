@@ -49,7 +49,23 @@ function ResultListpage() {
                     total = data.total || data.totalCount || data.data.length;
                 }
 
-                resultsList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                // Helper to parse Firestore Timestamp or regular date
+                const getTimestamp = (dateValue) => {
+                    if (!dateValue) return 0;
+                    // Firestore Timestamp with _seconds
+                    if (dateValue._seconds !== undefined) {
+                        return dateValue._seconds * 1000;
+                    }
+                    // Firestore Timestamp with seconds
+                    if (dateValue.seconds !== undefined) {
+                        return dateValue.seconds * 1000;
+                    }
+                    // Regular date string or timestamp
+                    return new Date(dateValue).getTime() || 0;
+                };
+
+                // Sort by newest first
+                resultsList.sort((a, b) => getTimestamp(b.createdAt) - getTimestamp(a.createdAt));
 
                 setResults(resultsList);
                 setTotalCount(total);

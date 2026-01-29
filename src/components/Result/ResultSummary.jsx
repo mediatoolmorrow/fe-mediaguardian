@@ -9,11 +9,25 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
     ? description.substring(0, 150) + "..."
     : description;
 
-  // Format date safely
+  // Format date safely (handles Firestore Timestamp)
   const formatDate = (dateValue) => {
     if (!dateValue) return null;
     try {
-      const date = new Date(dateValue);
+      let date;
+
+      // Handle Firestore Timestamp with _seconds
+      if (dateValue._seconds !== undefined) {
+        date = new Date(dateValue._seconds * 1000);
+      }
+      // Handle Firestore Timestamp with seconds
+      else if (dateValue.seconds !== undefined) {
+        date = new Date(dateValue.seconds * 1000);
+      }
+      // Handle regular date string or timestamp
+      else {
+        date = new Date(dateValue);
+      }
+
       if (isNaN(date.getTime())) return null;
       return date.toLocaleDateString('th-TH', {
         year: 'numeric',

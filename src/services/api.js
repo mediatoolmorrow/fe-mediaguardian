@@ -156,6 +156,24 @@ export const api = {
     return response.json();
   },
 
+  async resetUserRateLimit(token, userId) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/reset-rate-limit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ userId })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to reset rate limit');
+    }
+
+    return response.json();
+  },
+
   async addAdmin(token, email) {
     const response = await fetch(`${API_BASE_URL}/api/admin/add-admin`, {
       method: 'POST',
