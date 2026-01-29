@@ -123,11 +123,13 @@ export default function Login() {
     };
 
     const socialLogins = [
+        /* 
         {
             name: "Facebook",
             icon: "/social-media/facebook.svg",
             onClick: handleFacebookLogin,
         },
+        */
         {
             name: "Google",
             icon: "/social-media/google.svg",
