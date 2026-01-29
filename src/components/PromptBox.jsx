@@ -120,7 +120,7 @@ export default function PromptBox({
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary flex items-center">
             <input
               type="url"
-              placeholder="โปรดใส่ลิงก์วิดีโอ ความยาวไม่เกิน 3 นาที"
+              placeholder="โปรดใส่ลิงก์วิดีโอ ที่มีเนื้อหาคำพูดที่ไม่เหมาะสม ความยาวไม่เกิน 3 นาที "
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
               value={linkContent}
