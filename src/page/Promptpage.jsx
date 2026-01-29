@@ -261,8 +261,8 @@ function PromptPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-cyan-500">
             {currentPage === 1
-              ? "เลือกประเภทเนื้อหา"
-              : "เลือกผลกระทบและวิธีการสื่อสาร"}
+              ? "ปัญหาที่พบ"
+              : "ความกังวลที่พบ"}
           </h1>
           <p className="text-sm text-gray-500">
             ขั้นตอนที่ {currentPage} จาก 2

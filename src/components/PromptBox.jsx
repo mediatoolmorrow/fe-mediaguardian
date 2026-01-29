@@ -107,7 +107,7 @@ export default function PromptBox({
         {selected === "text" && (
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
             <textarea
-              placeholder="วางเนื้อหาของคุณที่นี่..."
+              placeholder="วางคอนเทนต์ที่เป็นตัวหนังสือของคุณที่นี่..."
               className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
               value={textContent}
