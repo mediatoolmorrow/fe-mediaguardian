@@ -59,7 +59,7 @@ export default function AdminDashboard() {
   const getToken = () => localStorage.getItem('backend_token');
 
   const handleBackToApp = () => {
-    navigate('/tutorial');
+    navigate('/agentic');
   };
 
   const handleLogout = async () => {
