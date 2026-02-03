@@ -89,6 +89,8 @@ export default function Login() {
 
     const handleLineLogin = () => {
         // LINE login redirects to LINE's OAuth page
+        // Set loading to prevent multiple clicks while redirecting
+        setIsLoading(true);
         signInWithLine();
     };
 
