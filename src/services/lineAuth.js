@@ -64,10 +64,10 @@ export const lineAuth = {
     localStorage.setItem('line_state', state);
     localStorage.setItem('line_code_verifier', codeVerifier);
 
-    const params = new URLSearchParams({
+   const params = new URLSearchParams({
       response_type: 'code',
       client_id: LINE_CLIENT_ID,
-      redirect_uri: LINE_REDIRECT_URI, // This will be URL-encoded automatically
+      redirect_uri: LINE_REDIRECT_URI,
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
