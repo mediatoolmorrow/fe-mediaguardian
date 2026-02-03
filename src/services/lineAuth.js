@@ -48,16 +48,39 @@ export const lineAuth = {
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
-      code_challenge_method: 'S256'
+      code_challenge_method: 'S256',
+      // Important: Add these for better app detection
+      bot_prompt: 'normal',
+      disable_auto_login: 'false',
+      disable_ios_auto_login: 'false'
     });
 
-    // Use LINE's official OAuth URL
-    // This should automatically open LINE app on mobile when LINE app is installed
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
     
-    // Direct redirect - most reliable method
-    // LINE's server will detect mobile and redirect to app
-    window.location.replace(lineAuthUrl);
+    // Check if we're on mobile
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isMobile = isIOS || isAndroid;
+    
+    if (isMobile) {
+      // For mobile: Create an anchor tag and simulate click
+      // This is more reliable than window.location for app deep links
+      const a = document.createElement('a');
+      a.href = lineAuthUrl;
+      a.target = '_self'; // Open in same window, not new tab
+      
+      // Add to DOM temporarily
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+      }, 100);
+    } else {
+      // Desktop
+      window.location.href = lineAuthUrl;
+    }
   },
 
   handleCallback() {
