@@ -75,7 +75,7 @@ export const lineAuth = {
     });
 
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-    
+
     console.log('=== FULL AUTH URL ===');
     console.log(lineAuthUrl);
     console.log('=== PARAMS ===');
@@ -83,11 +83,49 @@ export const lineAuth = {
     console.log('redirect_uri:', LINE_REDIRECT_URI);
     console.log('redirect_uri (encoded):', encodeURIComponent(LINE_REDIRECT_URI));
     console.log('==================');
-    
-    // Use standard LINE OAuth URL for both mobile and desktop
-    // The universal link (line.me/R/au/authorize) can cause issues on some mobile browsers
-    console.log('Opening LINE login...');
-    window.location.href = lineAuthUrl;
+
+    // Check if we're on mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      console.log('Opening LINE app on mobile...');
+
+      // Store fallback URL
+      const fallbackUrl = lineAuthUrl;
+
+      if (isAndroid) {
+        // Android: Use intent URL to open LINE app with fallback to web
+        const intentUrl = `intent://authorize?${params.toString()}#Intent;scheme=line;package=jp.naver.line.android;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
+        window.location.href = intentUrl;
+      } else if (isIOS) {
+        // iOS: Try LINE URL scheme first, with timeout fallback to web
+        const lineAppUrl = `line://authorize?${params.toString()}`;
+
+        // Set fallback timeout - if app doesn't open within 1.5s, redirect to web
+        const fallbackTimeout = setTimeout(() => {
+          console.log('LINE app not responding, falling back to web...');
+          window.location.href = fallbackUrl;
+        }, 1500);
+
+        // Listen for page visibility change (app opened successfully)
+        const handleVisibilityChange = () => {
+          if (document.hidden) {
+            clearTimeout(fallbackTimeout);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Try to open LINE app
+        window.location.href = lineAppUrl;
+      }
+    } else {
+      // Desktop: Use standard web URL
+      console.log('Opening LINE web login...');
+      window.location.href = lineAuthUrl;
+    }
   },
 
   handleCallback() {
