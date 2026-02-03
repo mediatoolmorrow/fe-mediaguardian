@@ -84,10 +84,21 @@ export const lineAuth = {
     console.log('redirect_uri (encoded):', encodeURIComponent(LINE_REDIRECT_URI));
     console.log('==================');
     
-    // Always use web URL for all platforms (more reliable, same browser context)
-    // LINE's web login works on mobile and keeps localStorage intact
-    console.log('Opening LINE web login...');
-    window.location.href = lineAuthUrl;
+    // Check if we're on mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // On mobile: Use LINE's universal link which will open LINE app if installed
+      // This keeps the same browser context when returning
+      const lineUniversalLink = `https://line.me/R/au/authorize?${params.toString()}`;
+
+      console.log('Opening LINE on mobile via universal link...');
+      window.location.href = lineUniversalLink;
+    } else {
+      // Desktop: Use standard web URL
+      console.log('Opening LINE web login...');
+      window.location.href = lineAuthUrl;
+    }
   },
 
   handleCallback() {
