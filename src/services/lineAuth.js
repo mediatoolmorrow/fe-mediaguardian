@@ -48,10 +48,19 @@ export const lineAuth = {
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
-      code_challenge_method: 'S256'
+      code_challenge_method: 'S256',
+      // Add these parameters to ensure app opens on mobile
+      prompt: 'consent',
+      ui_locales: 'th-TH' // Optional: set to Thai locale, change as needed
     });
 
-    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    
+    // This URL will automatically:
+    // - Open LINE app on mobile devices (iOS/Android) if installed
+    // - Fall back to web browser if app is not installed
+    // - Open web version on desktop
+    window.location.href = lineAuthUrl;
   },
 
   handleCallback() {
