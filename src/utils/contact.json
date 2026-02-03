@@ -9,7 +9,7 @@
       "channels": {
         "call": "1300",
         "line": "@hotline1300",
-        "facebook": "สายด่วน 1300 พม.",
+        "facebook": "https://www.facebook.com/1300.msociety.go.th",
         "email": "oscc1300@m-society.go.th"
       }
     },
@@ -22,8 +22,8 @@
       "channels": {
         "call": "1166",
         "line": "@ocpbconnect",
-        "facebook": "สำนักงานคณะกรรมการคุ้มครองผู้บริโภค",
-        "website": "complaint.ocpb.go.th"
+        "facebook": "https://www.facebook.com/ocpb.official/?locale=th_TH",
+        "website": "https://complaint.ocpb.go.th"
       }
     },
     {
@@ -35,7 +35,7 @@
       "channels": {
         "call": "1556",
         "line": "@FDAThai",
-        "website": "cemc.fda.moph.go.th",
+        "website": "https://cemc.fda.moph.go.th",
         "email": "1556@fda.moph.go.th"
       }
     },
@@ -47,8 +47,8 @@
       "description": "ศูนย์กลางรับเรื่องร้องเรียนและคุ้มครองสิทธิผู้บริโภคจากปัญหาค่าบริการ สัญญาไม่เป็นธรรม คุณภาพสัญญาณ เน็ตช้า สายหลุด รวมถึง SMS กวนใจและแก๊งคอลเซ็นเตอร์ เพื่อให้ประชาชนเข้าถึงบริการสื่อสารได้อย่างทั่วถึงและปลอดภัย",
       "channels": {
         "call": "1200",
-        "facebook": "กสทช.",
-        "website": "tcp.nbtc.go.th",
+        "facebook": "https://www.facebook.com/ONBTC?locale=th_TH",
+        "website": "https://tcp.nbtc.go.th",
         "email": "1200@nbtc.go.th"
       }
     },
@@ -61,7 +61,7 @@
       "channels": {
         "call": "02 860 1358",
         "line": "@inetfoundation",
-        "facebook": "Thaihotline",
+        "facebook": "https://www.facebook.com/thaihotline.org?locale=th_TH",
         "website": "https://www.thaihotline.org/report/",
         "email": "admin@thaihotline.org"
       }
@@ -74,7 +74,7 @@
       "description": "ตำรวจไซเบอร์ป้องกันและปราบปรามอาชญากรรมทางเทคโนโลยี เช่น การฉ้อโกงออนไลน์ แก๊งคอลเซ็นเตอร์ การแฮกข้อมูล เว็บพนัน และข่าวปลอม พร้อมบริหารจัดการระบบรับแจ้งความออนไลน์",
       "channels": {
         "call": "1441",       
-        "facebook": "CybercopTH",
+        "facebook": "https://www.facebook.com/CybercopTH?locale=th_TH",
         "website": "https://ccib.go.th",
         "online_report": "www.thaipoliceonline.com"
       }
@@ -88,7 +88,7 @@
       "channels": {
         "call": "1212",
         "line": "@1212etda",
-        "facebook": "Thaihotline",
+        "facebook": "https://www.facebook.com/thaihotline.org?locale=th_TH",
         "website": "https://www.thaihotline.org/report/",
         "email": "1212@mdes.go.th"
       }
@@ -101,7 +101,7 @@
       "description": "ศูนย์กลางตรวจสอบและคัดกรองข่าวปลอมด้านภัยพิบัติ สุขภาพ นโยบายรัฐบาล และเศรษฐกิจ โดยประสานงานกับหน่วยงานที่เกี่ยวข้องเพื่อยืนยันข้อเท็จจริงและเผยแพร่ข้อมูลที่ถูกต้อง",
       "channels": {
         "line": "@antifakenewscenter",
-        "facebook": "Anti-Fake News Center Thailand",
+        "facebook": "https://www.facebook.com/AntiFakeNewsCenter?locale=th_TH",
         "website": "https://www.thaihotline.org/report/"
       }
     }
