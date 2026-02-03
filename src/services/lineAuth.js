@@ -2,6 +2,13 @@
 const LINE_CLIENT_ID = import.meta.env.VITE_LINE_CLIENT_ID;
 const LINE_REDIRECT_URI = import.meta.env.VITE_LINE_REDIRECT_URI || `${window.location.origin}/login`;
 
+// Debug: Log the configuration
+console.log('=== LINE CONFIG ===');
+console.log('Client ID:', LINE_CLIENT_ID);
+console.log('Redirect URI:', LINE_REDIRECT_URI);
+console.log('Window Origin:', window.location.origin);
+console.log('==================');
+
 // Generate random state for CSRF protection
 const generateState = () => {
   const array = new Uint32Array(8);
@@ -33,6 +40,22 @@ const generateCodeChallenge = async (verifier) => {
 export const lineAuth = {
   // Initiate LINE login
   async login() {
+    // Validate required environment variables
+    if (!LINE_CLIENT_ID) {
+      console.error('LINE_CLIENT_ID is not configured');
+      throw new Error('LINE Client ID is not configured');
+    }
+    
+    if (!LINE_REDIRECT_URI) {
+      console.error('LINE_REDIRECT_URI is not configured');
+      throw new Error('LINE Redirect URI is not configured');
+    }
+    
+    console.log('LINE Login Config:', {
+      clientId: LINE_CLIENT_ID,
+      redirectUri: LINE_REDIRECT_URI
+    });
+
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
@@ -44,7 +67,7 @@ export const lineAuth = {
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: LINE_CLIENT_ID,
-      redirect_uri: LINE_REDIRECT_URI,
+      redirect_uri: LINE_REDIRECT_URI, // This will be URL-encoded automatically
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
@@ -52,6 +75,14 @@ export const lineAuth = {
     });
 
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    
+    console.log('=== FULL AUTH URL ===');
+    console.log(lineAuthUrl);
+    console.log('=== PARAMS ===');
+    console.log('client_id:', LINE_CLIENT_ID);
+    console.log('redirect_uri:', LINE_REDIRECT_URI);
+    console.log('redirect_uri (encoded):', encodeURIComponent(LINE_REDIRECT_URI));
+    console.log('==================');
     
     // Check if we're on mobile
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -62,11 +93,13 @@ export const lineAuth = {
       // Format: line://au/authorize?params
       const lineAppScheme = `line://au/authorize?${params.toString()}`;
       
+      console.log('Opening LINE app on iOS...');
       // Try to open LINE app
       window.location.href = lineAppScheme;
       
       // Fallback to web after a delay if app doesn't open
       setTimeout(() => {
+        console.log('Fallback to web...');
         window.location.href = lineAuthUrl;
       }, 2000);
       
@@ -74,10 +107,12 @@ export const lineAuth = {
       // Android: Use intent URL to trigger app or fallback to Play Store
       const intentUrl = `intent://au/authorize?${params.toString()}#Intent;scheme=line;package=jp.naver.line.android;S.browser_fallback_url=${encodeURIComponent(lineAuthUrl)};end`;
       
+      console.log('Opening LINE app on Android...');
       window.location.href = intentUrl;
       
     } else {
       // Desktop: Use web URL
+      console.log('Opening LINE web login...');
       window.location.href = lineAuthUrl;
     }
   },
