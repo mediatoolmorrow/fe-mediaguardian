@@ -35,6 +35,7 @@ function PromptPage() {
   // Content from PromptBox
   const [promptMode, setPromptMode] = useState("text");
   const [promptContent, setPromptContent] = useState(null);
+  const [isContentValid, setIsContentValid] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState({
     page1: [],
@@ -49,6 +50,10 @@ function PromptPage() {
 
   const handleContentChange = useCallback((content) => {
     setPromptContent(content);
+  }, []);
+
+  const handleValidationChange = useCallback((isValid) => {
+    setIsContentValid(isValid);
   }, []);
 
   const toggleSelection = (section, value, maxSelect) => {
@@ -212,6 +217,7 @@ function PromptPage() {
           readOnly={currentPage === 2}
           onModeChange={handleModeChange}
           onContentChange={handleContentChange}
+          onValidationChange={handleValidationChange}
         />
 
         {/* Rate Limit Alert */}
@@ -286,7 +292,7 @@ function PromptPage() {
 
             <div className="col-span-full flex justify-center mt-6">
               <button
-                disabled={selectedItems.page1.length === 0}
+                disabled={selectedItems.page1.length === 0 || !isContentValid}
                 onClick={() => setCurrentPage(2)}
                 className="btn-normal-active disabled:bg-gray-300"
               >

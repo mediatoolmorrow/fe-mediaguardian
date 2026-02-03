@@ -4,6 +4,7 @@ export default function PromptBox({
   readOnly = false,
   onModeChange,
   onContentChange,
+  onValidationChange,
   initialMode = "text",
   initialContent = ""
 }) {
@@ -56,6 +57,21 @@ export default function PromptBox({
       onContentChange(content);
     }
   }, [selected, textContent, linkContent, uploadedImage, imageFile, onContentChange]);
+
+  // Validate content and notify parent
+  useEffect(() => {
+    if (onValidationChange) {
+      let isValid = false;
+      if (selected === "text") {
+        isValid = textContent.trim().length > 0;
+      } else if (selected === "link") {
+        isValid = linkContent.trim().length > 0;
+      } else if (selected === "image") {
+        isValid = uploadedImage !== null;
+      }
+      onValidationChange(isValid);
+    }
+  }, [selected, textContent, linkContent, uploadedImage, onValidationChange]);
 
   const handleDrag = (e) => {
     e.preventDefault();
