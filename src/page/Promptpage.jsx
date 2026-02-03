@@ -64,6 +64,11 @@ function PromptPage() {
         return { ...prev, [section]: current.filter(v => v !== value) };
       }
 
+      // If maxSelect is 1, replace the current selection instead of blocking
+      if (maxSelect === 1) {
+        return { ...prev, [section]: [value] };
+      }
+
       if (maxSelect && current.length >= maxSelect) return prev;
 
       return { ...prev, [section]: [...current, value] };
