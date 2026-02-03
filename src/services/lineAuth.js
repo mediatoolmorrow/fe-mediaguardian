@@ -48,11 +48,7 @@ export const lineAuth = {
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-      // Important: Add these for better app detection
-      bot_prompt: 'normal',
-      disable_auto_login: 'false',
-      disable_ios_auto_login: 'false'
+      code_challenge_method: 'S256'
     });
 
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
@@ -60,25 +56,28 @@ export const lineAuth = {
     // Check if we're on mobile
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isAndroid = /Android/i.test(navigator.userAgent);
-    const isMobile = isIOS || isAndroid;
     
-    if (isMobile) {
-      // For mobile: Create an anchor tag and simulate click
-      // This is more reliable than window.location for app deep links
-      const a = document.createElement('a');
-      a.href = lineAuthUrl;
-      a.target = '_self'; // Open in same window, not new tab
+    if (isIOS) {
+      // iOS: Use LINE's custom URL scheme to trigger "Open in LINE?" popup
+      // Format: line://au/authorize?params
+      const lineAppScheme = `line://au/authorize?${params.toString()}`;
       
-      // Add to DOM temporarily
-      document.body.appendChild(a);
-      a.click();
+      // Try to open LINE app
+      window.location.href = lineAppScheme;
       
-      // Clean up
+      // Fallback to web after a delay if app doesn't open
       setTimeout(() => {
-        document.body.removeChild(a);
-      }, 100);
+        window.location.href = lineAuthUrl;
+      }, 2000);
+      
+    } else if (isAndroid) {
+      // Android: Use intent URL to trigger app or fallback to Play Store
+      const intentUrl = `intent://au/authorize?${params.toString()}#Intent;scheme=line;package=jp.naver.line.android;S.browser_fallback_url=${encodeURIComponent(lineAuthUrl)};end`;
+      
+      window.location.href = intentUrl;
+      
     } else {
-      // Desktop
+      // Desktop: Use web URL
       window.location.href = lineAuthUrl;
     }
   },
