@@ -163,14 +163,10 @@ function ResultViewpage() {
                     onClick={handleContinue}
                     disabled={!isSurveySubmitted}
                 >
-                    {isSurveySubmitted ? 'ไปต่อ' : 'กรุณาทำแบบสอบถามก่อน'}
+                    {isSurveySubmitted ? 'ไปต่อ' : 'ไปต่อ'}
                 </button>
                 
-                {!isSurveySubmitted && (
-                    <p className="text-xs text-gray-500 text-center mt-2">
-                        คลิก "คัดลอก" เพื่อไปทำแบบสอบถาม
-                    </p>
-                )}
+                
             </div>
         </div>
     );
