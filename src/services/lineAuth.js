@@ -48,19 +48,16 @@ export const lineAuth = {
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-      // Add these parameters to ensure app opens on mobile
-      prompt: 'consent',
-      ui_locales: 'th-TH' // Optional: set to Thai locale, change as needed
+      code_challenge_method: 'S256'
     });
 
+    // Use LINE's official OAuth URL
+    // This should automatically open LINE app on mobile when LINE app is installed
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
     
-    // This URL will automatically:
-    // - Open LINE app on mobile devices (iOS/Android) if installed
-    // - Fall back to web browser if app is not installed
-    // - Open web version on desktop
-    window.location.href = lineAuthUrl;
+    // Direct redirect - most reliable method
+    // LINE's server will detect mobile and redirect to app
+    window.location.replace(lineAuthUrl);
   },
 
   handleCallback() {
