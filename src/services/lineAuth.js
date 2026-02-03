@@ -64,17 +64,20 @@ export const lineAuth = {
     localStorage.setItem('line_state', state);
     localStorage.setItem('line_code_verifier', codeVerifier);
 
-   const params = new URLSearchParams({
+const params = new URLSearchParams({
       response_type: 'code',
       client_id: LINE_CLIENT_ID,
-      redirect_uri: LINE_REDIRECT_URI,
+      redirect_uri: LINE_REDIRECT_URI, // ค่านี้ต้องตรงกับ Console เป๊ะๆ
       state: state,
       scope: 'profile openid email',
       code_challenge: codeChallenge,
       code_challenge_method: 'S256'
     });
 
+    // ใช้ URL นี้แทนการใช้ Intent/Scheme เพื่อลดความผิดพลาดบนมือถือ
     const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    
+    window.location.href = lineAuthUrl;
 
     console.log('=== FULL AUTH URL ===');
     console.log(lineAuthUrl);
