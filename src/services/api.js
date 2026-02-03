@@ -1,5 +1,24 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Token expiration event handling
+let onTokenExpiredCallback = null;
+
+export const setTokenExpiredCallback = (callback) => {
+  onTokenExpiredCallback = callback;
+};
+
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    // Token expired or invalid
+    localStorage.removeItem('backend_token');
+    if (onTokenExpiredCallback) {
+      onTokenExpiredCallback();
+    }
+    throw new Error('Session expired. Please login again.');
+  }
+  return response;
+};
+
 export const api = {
   /* Auth */
   async syncFirebaseUser(firebaseUser, provider) {
@@ -19,6 +38,8 @@ export const api = {
         avatar: firebaseUser.photoURL
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -92,6 +113,8 @@ export const api = {
       }
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       throw new Error('Failed to get user');
     }
@@ -118,6 +141,8 @@ export const api = {
       }
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to get admin info');
@@ -133,6 +158,8 @@ export const api = {
       }
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to fetch admin list');
@@ -147,6 +174,8 @@ export const api = {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -166,6 +195,8 @@ export const api = {
       body: JSON.stringify({ userId })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to reset rate limit');
@@ -183,6 +214,8 @@ export const api = {
       },
       body: JSON.stringify({ email })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -202,6 +235,8 @@ export const api = {
       body: JSON.stringify({ email })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to remove admin');
@@ -219,6 +254,8 @@ export const api = {
       },
       body: JSON.stringify({ email })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -246,6 +283,8 @@ export const api = {
       })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to generate advice');
@@ -266,6 +305,8 @@ export const api = {
         imageUrl
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -288,6 +329,8 @@ export const api = {
       })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || error.error || 'Failed to analyze video');
@@ -302,6 +345,8 @@ export const api = {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();

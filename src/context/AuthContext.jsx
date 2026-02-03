@@ -11,7 +11,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail
 } from '../config/firebase';
-import { api } from '../services/api';
+import { api, setTokenExpiredCallback } from '../services/api';
 import { lineAuth } from '../services/lineAuth';
 
 const AuthContext = createContext(null);
@@ -80,6 +80,22 @@ export const AuthProvider = ({ children }) => {
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
+
+  // Set up token expiration callback
+  useEffect(() => {
+    setTokenExpiredCallback(() => {
+      // Clear auth state
+      setUser(null);
+      setBackendUser(null);
+      localStorage.removeItem('backend_token');
+      // Redirect to login page
+      window.location.href = '/login';
+    });
+
+    return () => {
+      setTokenExpiredCallback(null);
+    };
+  }, []);
 
   // Email/Password Sign In
   const signInWithEmail = async (email, password) => {

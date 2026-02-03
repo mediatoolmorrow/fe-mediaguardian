@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Pageframe from "./components/Pageframe/Pageframe";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -10,7 +10,6 @@ import Pdpapage from "./page/Pdpapage";
 {/* Protected Routes */}
 import Tutorialpage from "./page/Tutorialpage"
 import ResultViewpage from "./page/ResultViewpage";
-import ResultListpage from "./page/ResultListpage";
 import Contactpage from "./page/Contactpage";
 import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
@@ -29,7 +28,7 @@ function App() {
 
           {/* Protected Routes */}
           <Route path="/tutorial" element={<ProtectedRoute><Tutorialpage /></ProtectedRoute>} />
-          <Route path="/result" element={<ProtectedRoute><ResultListpage /></ProtectedRoute>} />
+          <Route path="/result" element={<Navigate to="/agentic" replace />} />
           <Route path="/result/:id" element={<ProtectedRoute><ResultViewpage /></ProtectedRoute>} />
           <Route path="/survey/:formSet" element={<ProtectedRoute><Surveypage /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><Contactpage /></ProtectedRoute>} />

@@ -180,7 +180,7 @@ function PromptPage() {
         result = await api.generateAdviceLink(token, promptContent);
       }
 
-      // Store result and navigate to result list page
+      // Store result and navigate directly to result view page
       localStorage.setItem("promptData", JSON.stringify({
         mode: promptMode,
         problems: selectedItems.page1,
@@ -188,8 +188,15 @@ function PromptPage() {
         communication: selectedItems.communication,
       }));
 
-      // Navigate to result list page first
-      navigate("/result");
+      // Navigate directly to the result view page with the result ID
+      const resultId = result._id || result.id || result.promptId;
+      if (resultId) {
+        navigate(`/result/${resultId}`);
+      } else {
+        // Fallback: navigate to agentic page if no ID
+        console.error("No result ID returned from API");
+        navigate("/agentic");
+      }
     } catch (err) {
       console.error("LLM API Error:", err);
 
@@ -308,99 +315,134 @@ function PromptPage() {
         )}
 
         {/* ================= PAGE 2 ================= */}
-        {currentPage === 2 && (
-          <div className="space-y-8 animate-fadeIn">
-            <section>
-              <h2 className="text-base font-semibold text-primary mb-4">
-                ผลกระทบที่อาจเกิดขึ้น
-              </h2>
+{/* ================= PAGE 2 ================= */}
+{currentPage === 2 && (
+  <div className="space-y-8 animate-fadeIn">
+    <section>
+      <h2 className="text-base font-semibold text-primary mb-4">
+        ผลกระทบที่อาจเกิดขึ้น
+      </h2>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {page2Impacts.map(impact => (
-                  <ChoiceCard
-                    key={impact.en}
-                    title={impact.th}
-                    iconSource={iconMap[impact.en] || iconMap.default}
-                    selected={selectedItems.impacts.includes(impact.en)}
-                    onClick={() =>
-                      toggleSelection("impacts", impact.en, 1)
-                    }
-                  />
-                ))}
-              </div>
-            </section>
-            <section>
-              <h2 className="text-base font-semibold text-primary mb-4">
-                  เป้าหมายในการใช้งาน
-              </h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {page2Impacts.map(impact => (
+          <ChoiceCard
+            key={impact.en}
+            title={impact.th}
+            iconSource={iconMap[impact.en] || iconMap.default}
+            selected={selectedItems.impacts.includes(impact.en)}
+            onClick={() =>
+              toggleSelection("impacts", impact.en, 1)
+            }
+          />
+        ))}
+      </div>
+    </section>
+    
+    <section>
+      <h2 className="text-base font-semibold text-primary mb-4">
+        เป้าหมายในการใช้งาน
+      </h2>
 
-              <div className="space-y-3">
+      <div className="space-y-3">
+        {/* Get available goals based on selected categories */}
+        {(() => {
+          const availableGoals = new Map();
+          
+          // Collect all unique goals from selected categories
+          selectedCategories.forEach(cat => {
+            if (cat.goal && Array.isArray(cat.goal)) {
+              cat.goal.forEach(g => {
+                if (!availableGoals.has(g.th)) {
+                  availableGoals.set(g.th, g);
+                }
+              });
+            }
+          });
+          
+          const goalsArray = Array.from(availableGoals.values());
+          
+          // Find "ตอบกลับคอมเมนต์" option
+          const replyOption = goalsArray.find(g => g.th === "ตอบกลับคอมเมนต์");
+          const otherOptions = goalsArray.filter(g => g.th !== "ตอบกลับคอมเมนต์");
+          
+          return (
+            <>
+              {/* First row - "ตอบกลับคอมเมนต์" */}
+              {replyOption && (
                 <div className="grid grid-cols-1 gap-3">
                   <ChoiceCard
-                    title={communicationWays.options[0].th}
-                    iconSource={
-                      iconMap[communicationWays.options[0].id] || iconMap.default
-                    }
-                    selected={selectedItems.communication.includes(
-                      communicationWays.options[0].id
-                    )}
+                    title={replyOption.th}
+                    iconSource={iconMap["creative"] || iconMap.default}
+                    selected={selectedItems.communication.includes("creative")}
                     onClick={() =>
-                      toggleSelection(
-                        "communication",
-                        communicationWays.options[0].id,
-                        1,
-                      )
+                      toggleSelection("communication", "creative", 1)
                     }
                   />
                 </div>
+              )}
 
-                <div className="grid grid-cols-3 gap-3">
-                  {communicationWays.options.slice(1).map(option => (
-                    <ChoiceCard
-                      key={option.id}
-                      title={option.th}
-                      iconSource={iconMap[option.id] || iconMap.default}
-                      selected={selectedItems.communication.includes(option.id)}
-                      onClick={() =>
-                        toggleSelection(
-                          "communication",
-                          option.id,
-                          1
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
-            <div className="flex justify-center gap-2 items-center">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={isLoading}
-                className="btn-normal-inactive sm:min-w-[280px] disabled:opacity-50"
-              >
-                ย้อนกลับ
-              </button>
+{/* Second row - Other options */}
+{otherOptions.length > 0 && (
+  <div className={`grid gap-3 ${otherOptions.length === 2 ? 'grid-cols-2' : otherOptions.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
+    {otherOptions.map((goal, index) => {
+      // Map goal text to icon ID
+      let iconId = "friend"; // default
+      if (goal.th.includes("ลูก") || goal.th.includes("เด็ก")) {
+        iconId = "child";
+      } else if (goal.th.includes("เพื่อน")) {
+        iconId = "friend";
+      } else if (goal.th.includes("อายุมากกว่า")) {
+        iconId = "elder";
+      }
+      
+      return (
+        <ChoiceCard
+          key={`${goal.th}-${index}`}
+          title={goal.th}
+          iconSource={iconMap[iconId] || iconMap.default}
+          selected={selectedItems.communication.includes(iconId)}
+          onClick={() =>
+            toggleSelection("communication", iconId, 1)
+          }
+        />
+      );
+    })}
+  </div>
+)}
+            </>
+          );
+        })()}
+      </div>
+    </section>
+    
+    <div className="flex justify-center gap-2 items-center">
+      <button
+        onClick={() => setCurrentPage(1)}
+        disabled={isLoading}
+        className="btn-normal-inactive sm:min-w-[280px] disabled:opacity-50"
+      >
+        ย้อนกลับ
+      </button>
 
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading || selectedItems.communication.length === 0 || rateLimitReached}
-                className="btn-normal-active sm:min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                    กำลังวิเคราะห์...
-                  </span>
-                ) : rateLimitReached ? (
-                  "ถึงขีดจำกัดวันนี้แล้ว"
-                ) : (
-                  "วิเคราะห์เนื้อหา"
-                )}
-              </button>
-            </div>
-          </div>
+      <button
+        onClick={handleSubmit}
+        disabled={isLoading || selectedItems.communication.length === 0 || rateLimitReached}
+        className="btn-normal-active sm:min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isLoading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+            กำลังวิเคราะห์...
+          </span>
+        ) : rateLimitReached ? (
+          "ถึงขีดจำกัดวันนี้แล้ว"
+        ) : (
+          "วิเคราะห์เนื้อหา"
         )}
+      </button>
+    </div>
+  </div>
+)}
       </div>
 
       {isLoading && (

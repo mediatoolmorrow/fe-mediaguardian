@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import ChoiceCheck from "../components/Survey/ChoiceCheck";
 import Banner from "../components/Banner";
@@ -18,7 +18,11 @@ const RATING_OPTIONS = [
 function Surveypage() {
   const { formSet } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { backendUser, refreshBackendUser } = useAuth();
+
+  // Get the result ID from navigation state (passed from ResultViewpage)
+  const resultId = location.state?.resultId;
 
   const currentFormSet = parseInt(formSet) || 1;
   const [answers, setAnswers] = useState({});
@@ -75,13 +79,20 @@ function Surveypage() {
 
     try {
       await api.submitSurvey(token, currentFormSet, answers);
-
       await refreshBackendUser();
 
-      if (currentFormSet === 1) {
-        navigate("/tutorial");
+      // If we came from a result page, return to it with survey completed flag
+      if (resultId) {
+        navigate(`/result/${resultId}`, { 
+          state: { surveyCompleted: true } 
+        });
       } else {
-        navigate("/nextstep");
+        // Original flow for first-time survey
+        if (currentFormSet === 1) {
+          navigate("/tutorial");
+        } else {
+          navigate("/nextstep");
+        }
       }
     } catch (err) {
       console.error("Survey submission error:", err);
@@ -191,7 +202,6 @@ function Surveypage() {
         </div>
       </div>
 
-      {/* Loading Overlay */}
       {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">

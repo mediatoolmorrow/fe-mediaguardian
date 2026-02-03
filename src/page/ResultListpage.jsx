@@ -95,6 +95,27 @@ function ResultListpage() {
         return null;
     };
 
+    // Extract description for preview - handles both structured and raw output
+    const getDescriptionPreview = (result) => {
+        const output = result.output;
+
+        // If output is structured JSON with factChecking
+        if (output && typeof output === 'object' && output.factChecking) {
+            // Return summary if available, otherwise combine key parts
+            if (output.summary) return output.summary;
+            if (output.factChecking?.facts) return output.factChecking.facts;
+            return "ผลการวิเคราะห์";
+        }
+
+        // If output has raw fallback
+        if (output && typeof output === 'object' && output.raw) {
+            return output.raw;
+        }
+
+        // Fallback to old format
+        return result.llmResponse || result.output?.text || (typeof output === 'string' ? output : "") || "";
+    };
+
     if (loading || authLoading) {
         return (
             <div className="w-full h-full flex items-center justify-center p-4">
@@ -161,7 +182,7 @@ function ResultListpage() {
                                     <ResultSummary
                                         key={result._id || result.id}
                                         id={result._id || result.id}
-                                        description={result.llmResponse || result.output?.text || result.output || ""}
+                                        description={getDescriptionPreview(result)}
                                         mode={result.mode}
                                         createdAt={result.createdAt}
                                         inputPreview={getInputPreview(result)}
