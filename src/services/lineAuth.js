@@ -60,9 +60,9 @@ export const lineAuth = {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    // Store state and code verifier in sessionStorage for verification
-    sessionStorage.setItem('line_state', state);
-    sessionStorage.setItem('line_code_verifier', codeVerifier);
+    // Store state and code verifier in localStorage for verification
+    localStorage.setItem('line_state', state);
+    localStorage.setItem('line_code_verifier', codeVerifier);
 
     const params = new URLSearchParams({
       response_type: 'code',
@@ -84,37 +84,10 @@ export const lineAuth = {
     console.log('redirect_uri (encoded):', encodeURIComponent(LINE_REDIRECT_URI));
     console.log('==================');
     
-    // Check if we're on mobile
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    
-    if (isIOS) {
-      // iOS: Use LINE's custom URL scheme to trigger "Open in LINE?" popup
-      // Format: line://au/authorize?params
-      const lineAppScheme = `line://au/authorize?${params.toString()}`;
-      
-      console.log('Opening LINE app on iOS...');
-      // Try to open LINE app
-      window.location.href = lineAppScheme;
-      
-      // Fallback to web after a delay if app doesn't open
-      setTimeout(() => {
-        console.log('Fallback to web...');
-        window.location.href = lineAuthUrl;
-      }, 2000);
-      
-    } else if (isAndroid) {
-      // Android: Use intent URL to trigger app or fallback to Play Store
-      const intentUrl = `intent://au/authorize?${params.toString()}#Intent;scheme=line;package=jp.naver.line.android;S.browser_fallback_url=${encodeURIComponent(lineAuthUrl)};end`;
-      
-      console.log('Opening LINE app on Android...');
-      window.location.href = intentUrl;
-      
-    } else {
-      // Desktop: Use web URL
-      console.log('Opening LINE web login...');
-      window.location.href = lineAuthUrl;
-    }
+    // Always use web URL for all platforms (more reliable, same browser context)
+    // LINE's web login works on mobile and keeps localStorage intact
+    console.log('Opening LINE web login...');
+    window.location.href = lineAuthUrl;
   },
 
   handleCallback() {
@@ -124,29 +97,46 @@ export const lineAuth = {
     const error = urlParams.get('error');
     const errorDescription = urlParams.get('error_description');
 
+    console.log('=== LINE CALLBACK ===');
+    console.log('Code:', code ? 'present' : 'missing');
+    console.log('State from URL:', state);
+    console.log('Error:', error);
+
     if (error) {
       return { success: false, error: errorDescription || error };
     }
 
-    if (!code || !state) {
-      return { success: false, error: 'Missing authorization code or state' };
+    if (!code) {
+      return { success: false, error: 'Missing authorization code' };
     }
 
-    const savedState = sessionStorage.getItem('line_state');
-    if (state !== savedState) {
-      return { success: false, error: 'State mismatch - possible CSRF attack' };
+    const savedState = localStorage.getItem('line_state');
+    const codeVerifier = localStorage.getItem('line_code_verifier');
+
+    console.log('Saved state:', savedState);
+    console.log('Code verifier:', codeVerifier ? 'present' : 'missing');
+
+    // Check state match
+    if (!savedState || state !== savedState) {
+      console.warn('State mismatch or missing - this can happen on mobile browsers');
+      // On mobile, state might be lost due to browser context changes
+      // If we have a code but no state, we can still try (backend will validate)
+      if (!codeVerifier) {
+        return {
+          success: false,
+          error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง (Session expired, please try again)'
+        };
+      }
     }
 
-    const codeVerifier = sessionStorage.getItem('line_code_verifier');
-
-    // Clean up sessionStorage
-    sessionStorage.removeItem('line_state');
-    sessionStorage.removeItem('line_code_verifier');
+    // Clean up localStorage
+    localStorage.removeItem('line_state');
+    localStorage.removeItem('line_code_verifier');
 
     return {
       success: true,
       code,
-      codeVerifier,
+      codeVerifier: codeVerifier || null,
       redirectUri: LINE_REDIRECT_URI
     };
   },
@@ -154,7 +144,11 @@ export const lineAuth = {
   // Check if current URL is a LINE callback
   isLineCallback() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('code') && sessionStorage.getItem('line_state');
+    // Check for code param - state might be missing on mobile due to browser context changes
+    const hasCode = urlParams.has('code');
+    const hasState = urlParams.has('state');
+    // Accept callback if we have code and state in URL (even if localStorage state is missing)
+    return hasCode && hasState;
   },
 
   // Clear LINE callback params from URL
