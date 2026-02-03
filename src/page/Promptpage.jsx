@@ -318,7 +318,7 @@ function PromptPage() {
                     iconSource={iconMap[impact.en] || iconMap.default}
                     selected={selectedItems.impacts.includes(impact.en)}
                     onClick={() =>
-                      toggleSelection("impacts", impact.en, 3)
+                      toggleSelection("impacts", impact.en, 1)
                     }
                   />
                 ))}
@@ -398,7 +398,6 @@ function PromptPage() {
         )}
       </div>
 
-      {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
