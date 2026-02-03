@@ -150,6 +150,7 @@ function ResultViewpage() {
                 description={fallbackText} 
                 structuredOutput={structuredOutput}
                 onCopy={handleCopyAction}
+                allowNavigation={!isSurveySubmitted}
             />
 
             <div className="w-full max-w-[500px] mt-6 px-4">

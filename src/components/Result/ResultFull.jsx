@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete }) {
+function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, allowNavigation = true }) {
     const [showToast, setShowToast] = useState(false);
     const [activeOptionTab, setActiveOptionTab] = useState(0);
-
+    
     const handleCopy = (text) => {
         // Use the text parameter that's passed when button is clicked
         navigator.clipboard.writeText(text);
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
         
-        // Navigate to survey after copying
-        if (onCopy) {
+        // Only navigate to survey if allowed (before survey completion)
+        if (allowNavigation && onCopy) {
             onCopy();
         }
     };
