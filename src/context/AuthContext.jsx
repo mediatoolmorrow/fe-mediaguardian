@@ -207,7 +207,7 @@ export const AuthProvider = ({ children }) => {
   const handleLineCallback = async () => {
     setLoading(true);
     try {
-      const callbackResult = lineAuth.handleCallback();
+      const callbackResult = await lineAuth.handleCallback();
 
       if (!callbackResult.success) {
         setError(callbackResult.error);
@@ -215,7 +215,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: callbackResult.error };
       }
 
-      // Send the auth code to backend for token exchange and user creation
+      // Send the access token to backend for user verification
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/auth/line/callback`,
         {
@@ -224,9 +224,7 @@ export const AuthProvider = ({ children }) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            code: callbackResult.code,
-            codeVerifier: callbackResult.codeVerifier,
-            redirectUri: callbackResult.redirectUri
+            accessToken: callbackResult.accessToken
           })
         }
       );

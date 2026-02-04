@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { lineAuth } from "../services/lineAuth";
 
 export default function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -10,6 +11,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+    const [isLineLoading, setIsLineLoading] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -28,9 +30,17 @@ export default function Login() {
         loading
     } = useAuth();
 
+    // Check if returning from LINE login
+    useEffect(() => {
+        if (lineAuth.isLineCallback()) {
+            setIsLineLoading(true);
+        }
+    }, []);
+
     // Navigate when user is authenticated
     useEffect(() => {
         if (backendUser && !loading) {
+            setIsLineLoading(false);
             // Check if user needs to complete first-time survey
             if (backendUser.isFirstTime) {
                 navigate("/survey/1");
@@ -39,6 +49,13 @@ export default function Login() {
             }
         }
     }, [backendUser, loading, navigate]);
+
+    // Hide LINE loading on error
+    useEffect(() => {
+        if (error) {
+            setIsLineLoading(false);
+        }
+    }, [error]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -89,7 +106,8 @@ export default function Login() {
 
     const handleLineLogin = () => {
         // LINE login redirects to LINE's OAuth page
-        // Set loading to prevent multiple clicks while redirecting
+        // Show loading popup while redirecting
+        setIsLineLoading(true);
         setIsLoading(true);
         signInWithLine();
     };
@@ -337,6 +355,16 @@ export default function Login() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* LINE Loading Popup */}
+            {isLineLoading && (
+                <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-8 flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+                        <p className="text-lg font-medium text-gray-700">กำลังโหลด...</p>
                     </div>
                 </div>
             )}
