@@ -22,13 +22,11 @@ export default function PromptBox({
       displayName: "Text Content",
       icon: "/icon/message.svg",
     },
-    /*
     {
       id: "link",
       displayName: "Link Content",
       icon: "/icon/link.svg",
     },
-    */
     {
       id: "image",
       displayName: "Image Content",
