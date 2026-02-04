@@ -32,21 +32,21 @@ function Tutorialpage() {
     const isFirstSlide = currentSlide === 0;
     
     return (
-        <div className="flex flex-col items-center justify-center w-full max-h-screen p-4 sm:p-4">
+        <div className="flex flex-col items-center sm:justify-center w-full max-h-screen p-4 pt-6 sm:pt-4">
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
-                <div className="flex-1 w-full flex flex-col items-center overflow-y-auto justify-center relative">
-                    
-                    <div className="relative max-w-3xl">
-                        <img 
-                            src={slides[currentSlide].imageDesktop} 
+                <div className="w-full flex flex-col items-center justify-start sm:justify-center relative">
+
+                    <div className="relative max-w-3xl w-full">
+                        <img
+                            src={slides[currentSlide].imageDesktop}
                             alt={slides[currentSlide].title}
                             className="hidden sm:block w-full h-auto rounded-2xl shadow-2xl"
                         />
-                        
-                        <img 
-                            src={slides[currentSlide].imageMobile} 
+
+                        <img
+                            src={slides[currentSlide].imageMobile}
                             alt={slides[currentSlide].title}
-                            className="block sm:hidden w-full h-auto rounded-2xl shadow-2xl"
+                            className="block sm:hidden w-full object-contain rounded-2xl shadow-2xl"
                         />
                         
                         <a 
