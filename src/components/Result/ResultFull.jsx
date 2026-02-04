@@ -150,6 +150,21 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
                                     </div>
                                 </div>
                             )}
+
+                            {/* Action Guide */}
+                            {currentOption.action_guide && currentOption.action_guide.length > 0 && (
+                                <div>
+                                    <p className="text-xs sm:text-sm text-gray-600 mb-2">แนวทางปฏิบัติ</p>
+                                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-4 space-y-2">
+                                        {currentOption.action_guide.map((guide, i) => (
+                                            <p key={i} className="text-xs sm:text-sm text-gray-700 flex items-start gap-2">
+                                                <span className="text-orange-400 flex-shrink-0">•</span>
+                                                <span className="break-words">{guide}</span>
+                                            </p>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
