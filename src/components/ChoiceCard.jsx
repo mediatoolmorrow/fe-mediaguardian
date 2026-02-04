@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 export default function ChoiceCard({
   title,
@@ -7,11 +7,28 @@ export default function ChoiceCard({
   onClick,
   disabled,
 }) {
+  const isProcessing = useRef(false);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+
+    // Prevent double-tap on mobile
+    if (isProcessing.current || disabled) return;
+
+    isProcessing.current = true;
+    onClick?.();
+
+    // Reset after a short delay
+    setTimeout(() => {
+      isProcessing.current = false;
+    }, 300);
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled}
-      className={`group p-4 rounded-lg shadow-md transition-all ${
+      className={`group p-4 rounded-lg shadow-md transition-all touch-manipulation select-none ${
         selected
           ? "bg-accent"
           : disabled
