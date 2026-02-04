@@ -361,7 +361,7 @@ export default function Login() {
 
             {/* LINE Loading Popup */}
             {isLineLoading && (
-                <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-gray bg-opacity-30 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-8 flex flex-col items-center gap-4">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
                         <p className="text-lg font-medium text-gray-700">กำลังโหลด...</p>
