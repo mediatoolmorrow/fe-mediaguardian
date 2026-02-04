@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
 
-export default function Modal({ url = "https://mediaguardians.com", title = "Media Guardians", onClose }) {
+export default function Modal({ url = "https://mediaguardians-development.vercel.app/", title = "Media Guardians", onClose }) {
   const [copied, setCopied] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [canShare, setCanShare] = useState(false);
 
   useEffect(() => {
-    // Check if device is mobile and supports Web Share API
     const checkMobile = () => {
       const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       setIsMobile(mobile);
@@ -27,7 +26,7 @@ export default function Modal({ url = "https://mediaguardians.com", title = "Med
         setShowToast(false);
       }, 2000);
     } catch (err) {
-      // Fallback for older browsers
+
       const textArea = document.createElement('textarea');
       textArea.value = url;
       document.body.appendChild(textArea);
@@ -52,7 +51,6 @@ export default function Modal({ url = "https://mediaguardians.com", title = "Med
           url: url,
         });
       } catch (err) {
-        // User cancelled or share failed
         console.log('Share cancelled or failed:', err);
       }
     }
@@ -118,8 +116,6 @@ export default function Modal({ url = "https://mediaguardians.com", title = "Med
 
       <div className="flex flex-col items-center justify-center p-8">
         <p className="text-xl font-bold mb-4">แชร์ลิงก์</p>
-
-        {/* Mobile Share Button - Only shown on mobile devices */}
         {canShare && (
           <Button
             text="แชร์ผ่านเมนูมือถือ"
