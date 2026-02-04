@@ -107,40 +107,81 @@ function ResultViewpage() {
     }
 
     // Extract the LLM response - check for structured output first
-    let output = result.output;
-    const rawOutput = result.rawOutput || result.llmResponse || "";
+    // Try multiple possible locations for the output data
+    let output = result.output || result.result || result.data || result.response;
+    const rawOutput = result.rawOutput || result.llmResponse || result.raw || "";
 
     // Debug: Log the result structure
-    console.log("Result data:", result);
+    console.log("=== ResultViewpage Debug ===");
+    console.log("Full result object:", JSON.stringify(result, null, 2));
+    console.log("result.output:", result.output);
+    console.log("result.result:", result.result);
+    console.log("result.mode:", result.mode);
     console.log("Output type:", typeof output);
     console.log("Output value:", output);
+    console.log("============================");
 
     // Determine if we have structured output or raw text
     let structuredOutput = null;
     let fallbackText = rawOutput;
 
+    // Helper function to safely parse JSON
+    const safeParseJSON = (str) => {
+        if (typeof str !== 'string') return str;
+        try {
+            return JSON.parse(str);
+        } catch (e) {
+            return null;
+        }
+    };
+
     // Try to parse output if it's a string
     if (typeof output === 'string') {
-        try {
-            output = JSON.parse(output);
-        } catch (e) {
+        const parsed = safeParseJSON(output);
+        if (parsed) {
+            output = parsed;
+        } else {
             // Not valid JSON, use as fallback text
             fallbackText = output;
             output = null;
         }
     }
 
+    // Check if output is nested (e.g., output.output or output.result)
+    if (output && typeof output === 'object') {
+        // Handle nested structure
+        if (output.output && typeof output.output === 'object') {
+            output = output.output;
+        } else if (output.result && typeof output.result === 'object') {
+            output = output.result;
+        } else if (typeof output.output === 'string') {
+            const parsed = safeParseJSON(output.output);
+            if (parsed) {
+                output = parsed;
+            }
+        }
+    }
+
     if (output && typeof output === 'object') {
         // Check if it's structured JSON (has factChecking or decisionMaking) or raw fallback (has raw property)
-        if (output.raw) {
+        if (output.raw && !output.decisionMaking) {
             // JSON parsing failed on backend, use raw text
             fallbackText = output.raw;
-        } else if (output.factChecking || output.decisionMaking || output.impact) {
+        } else if (output.factChecking || output.decisionMaking || output.impact || output.options) {
             // Structured output available
             structuredOutput = output;
+            console.log("Found structured output:", structuredOutput);
         } else {
             // Unknown format, try to use as text
-            fallbackText = JSON.stringify(output);
+            fallbackText = JSON.stringify(output, null, 2);
+        }
+    }
+
+    // Final fallback - if still no structured output, check result directly
+    if (!structuredOutput && result) {
+        if (result.decisionMaking || result.factChecking || result.options) {
+            structuredOutput = result;
+            console.log("Using result directly as structured output");
         }
     }
 

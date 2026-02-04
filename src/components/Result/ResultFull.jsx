@@ -3,20 +3,47 @@ import React, { useState } from "react";
 function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, allowNavigation = true }) {
     const [showToast, setShowToast] = useState(false);
     const [activeOptionTab, setActiveOptionTab] = useState(0);
-    
+
+    // Debug logging
+    console.log('=== ResultFull Debug ===');
+    console.log('structuredOutput:', structuredOutput);
+    console.log('decisionMaking:', structuredOutput?.decisionMaking);
+    console.log('options:', structuredOutput?.decisionMaking?.options);
+    console.log('description:', description?.substring?.(0, 100) || description);
+    console.log('========================');
+
     const handleCopy = (text) => {
         // Use the text parameter that's passed when button is clicked
-        navigator.clipboard.writeText(text);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+        } else {
+            // Fallback for mobile browsers without clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+            document.body.removeChild(textArea);
+        }
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
-        
+
         // Only navigate to survey if allowed (before survey completion)
         if (allowNavigation && onCopy) {
             onCopy();
         }
     };
 
-    const options = structuredOutput?.decisionMaking?.options || [];
+    // Try to get options from different possible data structures
+    const options = structuredOutput?.decisionMaking?.options
+        || structuredOutput?.options
+        || [];
 
     if (!structuredOutput || !options.length) {
         return (
