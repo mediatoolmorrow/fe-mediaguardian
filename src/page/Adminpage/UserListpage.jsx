@@ -256,11 +256,11 @@ export default function UserListpage() {
                     <td className="py-3 px-4">{getStatusBadge(user.isActive)}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        (user.dailyUsage || 0) >= 3
+                        (user.dailyUsage || 0) >= 100
                           ? 'bg-red-100 text-red-800'
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {user.dailyUsage || 0} / 3
+                        {user.dailyUsage || 0} / 100
                       </span>
                     </td>
                     <td className="py-3 px-4 text-gray-500 text-sm">
