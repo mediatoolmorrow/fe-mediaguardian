@@ -32,7 +32,7 @@ function Tutorialpage() {
     const isFirstSlide = currentSlide === 0;
     
     return (
-        <div className="flex flex-col items-center sm:justify-center w-full max-h-screen p-4 pt-10 sm:pt-4">
+        <div className="flex flex-col items-center sm:justify-center w-full max-h-screen p-4 pt-10 sm:pt-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [-webkit-overflow-scrolling:touch]">
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
                 <div className="w-full flex flex-col items-center justify-start sm:justify-center relative">
 
