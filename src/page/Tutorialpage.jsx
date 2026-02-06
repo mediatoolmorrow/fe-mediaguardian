@@ -53,7 +53,7 @@ function Tutorialpage() {
                             href="" 
                             target="" 
                             rel="noopener noreferrer"
-                            className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all underline"
+                            className="absolute bottom-4 right-4 bg-primary hover:bg-primary text-white hover:text-blue-600 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all underline"
                         >
                             ดูวิดีโอแทน
                         </a>
