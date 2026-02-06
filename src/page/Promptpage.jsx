@@ -277,11 +277,24 @@ function PromptPage() {
         )}
 
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-cyan-500">
-            {currentPage === 1
-              ? "ปัญหาที่พบ"
-              : "ความกังวลที่พบ"}
+          
+          <h1 className="text-xl font-bold text-primary">
+            {currentPage === 1 ? (
+              <>
+                ปัญหาที่พบ
+                <span className="ml-2 text-xs font-medium text-gray-400">
+                  (กดเลือกเพียง 1 เป้าหมายที่ท่านต้องการ)
+                </span>
+              </>
+            ) : (
+              <>
+                ความกังวลที่พบ
+                <span className="ml-2 text-xs text-gray-400">
+                </span>
+              </>
+            )}
           </h1>
+
           <p className="text-sm text-gray-500">
             ขั้นตอนที่ {currentPage} จาก 2
           </p>
@@ -319,9 +332,14 @@ function PromptPage() {
 {currentPage === 2 && (
   <div className="space-y-8 animate-fadeIn">
     <section>
-      <h2 className="text-base font-semibold text-primary mb-4">
-        ผลกระทบที่อาจเกิดขึ้น
-      </h2>
+      <div className="flex gap-2 items-center">
+        <h2 className="text-base font-semibold text-primary mb-4">
+          ผลกระทบที่อาจเกิดขึ้น
+        </h2>
+        <p className="text-xs text-gray-400 mb-4">
+          (กดเลือกเพียง 1 ความกังวลที่ท่านเจอ)
+        </p>
+       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {page2Impacts.map(impact => (
@@ -339,9 +357,14 @@ function PromptPage() {
     </section>
     
     <section>
-      <h2 className="text-base font-semibold text-primary mb-4">
-        เป้าหมายในการใช้งาน
-      </h2>
+      <div className="flex gap-2 items-center">
+        <h2 className="text-base font-semibold text-primary mb-4">
+          เป้าหมายการใช้งาน
+        </h2>
+        <p className="text-xs text-gray-400 mb-4">
+          (กดเลือกเพียง 1 เป้าหมายที่ท่านต้องการ)
+        </p>
+       </div>
 
       <div className="space-y-3">
         {/* Get available goals based on selected categories */}

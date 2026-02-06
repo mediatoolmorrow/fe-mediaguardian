@@ -194,7 +194,7 @@ function ResultViewpage() {
                 allowNavigation={!isSurveySubmitted}
             />
 
-            <div className="w-full max-w-[500px] mt-6 px-4">
+            <div className="w-full max-w-[500px] mt-6 px-4 space-y-4">
                 <button
                     className={`w-full py-3 rounded-full font-medium transition-colors ${
                         isSurveySubmitted 
@@ -206,7 +206,12 @@ function ResultViewpage() {
                 >
                     {isSurveySubmitted ? 'ไปต่อ' : 'ไปต่อ'}
                 </button>
-                
+                <button
+                    className="text-primary w-full py-3 underline font-medium transition-colors"
+                    onClick={() => navigate("/agentic")}
+                >
+                    วิเคราะห์เนื้อหาใหม่
+                </button>
                 
             </div>
         </div>

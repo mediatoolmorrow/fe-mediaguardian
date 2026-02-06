@@ -104,8 +104,10 @@ export default function ContactCard({
           )}
           
           {email && (
-            <a 
-              href={`mailto:${email}`}
+            <a
+              href={`https://mail.google.com/mail/?view=cm&to=${email.replace('mailto:', '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1 text-text/70 hover:text-primary transition"
               onClick={(e) => e.stopPropagation()}
             >
