@@ -21,7 +21,6 @@ function Surveypage() {
   const location = useLocation();
   const { backendUser, refreshBackendUser } = useAuth();
 
-  // Get the result ID from navigation state (passed from ResultViewpage)
   const resultId = location.state?.resultId;
 
   const currentFormSet = parseInt(formSet) || 1;
@@ -81,13 +80,11 @@ function Surveypage() {
       await api.submitSurvey(token, currentFormSet, answers);
       await refreshBackendUser();
 
-      // If we came from a result page, return to it with survey completed flag
       if (resultId) {
         navigate(`/result/${resultId}`, { 
           state: { surveyCompleted: true } 
         });
       } else {
-        // Original flow for first-time survey
         if (currentFormSet === 1) {
           navigate("/tutorial");
         } else {

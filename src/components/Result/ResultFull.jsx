@@ -34,13 +34,11 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
 
-        // Only navigate to survey if allowed (before survey completion)
         if (allowNavigation && onCopy) {
             onCopy();
         }
     };
 
-    // Try to get options from different possible data structures
     const options = structuredOutput?.decisionMaking?.options
         || structuredOutput?.options
         || [];
@@ -116,24 +114,40 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
                                 </div>
                             </div>
 
-                            {/* ข้อความที่แนะนำ - Recommendation */}
                             {currentOption.recommendation && (
-                                <div>
-                                    <p className="text-xs sm:text-sm text-gray-600 mb-2">ข้อความที่แนะนำ</p>
-                                    <div className="bg-gray-100 rounded-lg p-3 sm:p-4 relative">
-                                        <p className="text-xs sm:text-sm text-gray-800 text-center italic pr-6 sm:pr-8 break-words whitespace-pre-line">
-                                            "{currentOption.recommendation}"
-                                        </p>
-                                        <button
-                                            onClick={() => handleCopy(currentOption.recommendation)}
-                                            className="absolute bottom-2 right-2 p-1 sm:p-1.5 bg-white hover:bg-gray-200 rounded text-xs gap-1 justify-center items-center flex transition-colors"
-                                            title="คัดลอก"
-                                        >
-                                            <img src="/icon/copy.svg" alt="Copy" className="w-3 h-3 sm:w-4 sm:h-4" />
-                                            <span className="hidden sm:inline">คัดลอก</span>
-                                        </button>
-                                    </div>
+                            <div>
+                                <p className="text-xs sm:text-sm text-gray-600 mb-2">ข้อความที่แนะนำ</p>
+
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4 relative">
+
+                                {/* Render HTML from JSON */}
+                                <p
+                                    className="text-xs sm:text-sm text-gray-800 [&_b]:font-bold text-start pr-6 sm:pr-8 break-words leading-relaxed"
+                                    dangerouslySetInnerHTML={{
+                                    __html: currentOption.recommendation
+                                    .replace(/\r\n|\r|\n/g, "<br/>")    
+                                    .replace(/\\n/g, "<br/>")      
+                                    }}
+                                />
+
+                                {/* Copy clean text */}
+                                <button
+                                    onClick={() =>
+                                    handleCopy(
+                                        currentOption.recommendation
+                                        .replace(/<[^>]*>/g, "")    
+                                        .replace(/\\n/g, "\n")     
+                                    )
+                                    }
+                                    className="absolute bottom-2 right-2 p-1 sm:p-1.5 bg-white hover:bg-gray-200 rounded text-xs gap-1 justify-center items-center flex transition-colors"
+                                    title="คัดลอก"
+                                >
+                                    <img src="/icon/copy.svg" alt="Copy" className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    <span className="hidden sm:inline">คัดลอก</span>
+                                </button>
+
                                 </div>
+                            </div>
                             )}
 
                             {/* ข้อแนะนำในการใช้ - Examples */}
