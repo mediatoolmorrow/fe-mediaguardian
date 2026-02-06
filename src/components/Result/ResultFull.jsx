@@ -121,7 +121,7 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
                                 <div>
                                     <p className="text-xs sm:text-sm text-gray-600 mb-2">ข้อความที่แนะนำ</p>
                                     <div className="bg-gray-100 rounded-lg p-3 sm:p-4 relative">
-                                        <p className="text-xs sm:text-sm text-gray-800 text-center italic pr-6 sm:pr-8 break-words">
+                                        <p className="text-xs sm:text-sm text-gray-800 text-center italic pr-6 sm:pr-8 break-words whitespace-pre-line">
                                             "{currentOption.recommendation}"
                                         </p>
                                         <button
