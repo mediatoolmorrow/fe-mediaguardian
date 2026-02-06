@@ -120,7 +120,6 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
 
                                 <div className="bg-gray-100 rounded-lg p-3 sm:p-4 relative">
 
-                                {/* Render HTML from JSON */}
                                 <p
                                     className="text-xs sm:text-sm text-gray-800 [&_b]:font-bold text-start pr-6 sm:pr-8 break-words leading-relaxed"
                                     dangerouslySetInnerHTML={{
@@ -130,8 +129,7 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
                                     }}
                                 />
 
-                                {/* Copy clean text */}
-                                <button
+                                 <button
                                     onClick={() =>
                                     handleCopy(
                                         currentOption.recommendation
