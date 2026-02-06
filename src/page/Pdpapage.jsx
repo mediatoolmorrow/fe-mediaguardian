@@ -13,7 +13,7 @@ function Pdpapage() {
           PDPA
         </h1>
 
-        <div className="w-full flex-1 min-h-0 overflow-y-auto text-sm sm:text-base mb-3 sm:mb-6 px-1 text-gray-700 leading-relaxed">
+<div className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 text-sm sm:text-base mb-3 sm:mb-6 px-1 text-gray-700 leading-relaxed">
 
           <p className="mb-4 text-xl">
             {pdpaData.description}
