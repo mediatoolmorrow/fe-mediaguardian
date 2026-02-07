@@ -28,6 +28,12 @@ export default function Navbar(){
             <div className="flex items-center gap-2">
                 {backendUser ? (
                     <>
+                    <button
+                            className=" group flex items-center gap-2"
+                            onClick={() => navigate("/history")}
+                        >
+                            <img src="./icon/history.svg" className="w-5" />                         
+                        </button>
                         {isAdmin && (
                             <button
                                 className="p-2 rounded-lg hover:bg-white/20 transition-colors"

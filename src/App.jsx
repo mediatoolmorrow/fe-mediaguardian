@@ -15,6 +15,7 @@ import Surveypage from "./page/Surveypage";
 import Promptpage from "./page/Promptpage";
 import AdminDashboard from "./page/Adminpage/AdminDashboardpage";
 import NextSteppage from "./page/NextSteppage";
+import Historypage from "./page/Historypage";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/contact" element={<ProtectedRoute><Contactpage /></ProtectedRoute>} />
           <Route path="/agentic" element={<ProtectedRoute><Promptpage /></ProtectedRoute>} />
           <Route path="/nextstep" element={<ProtectedRoute><NextSteppage /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><Historypage /></ProtectedRoute>} />
         </Route>
         {/* Admin Dashboard - protected by AuthContext inside the component */}
         <Route path="/admin" element={<AdminDashboard />} />
