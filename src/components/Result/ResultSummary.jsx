@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber }) {
+export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber, isLatest }) {
   const navigate = useNavigate();
 
   // Truncate description for preview (shorter for list view)
@@ -73,7 +73,12 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
         <div className="flex flex-col flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="font-medium"> แนวทางการสื่อสาร {resultNumber}</span>
+              <span className="font-medium">แนวทางการสื่อสาร {resultNumber}</span>
+              {isLatest && (
+                <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
+                  ใหม่
+                </span>
+              )}
             </div>
             {formattedDate && (
               <span className="text-xs text-gray-400">{formattedDate}</span>
