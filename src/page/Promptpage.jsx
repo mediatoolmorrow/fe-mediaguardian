@@ -36,6 +36,7 @@ function PromptPage() {
   const [promptMode, setPromptMode] = useState("text");
   const [promptContent, setPromptContent] = useState(null);
   const [isContentValid, setIsContentValid] = useState(false);
+  const [promptDescription, setPromptDescription] = useState("");
 
   const [selectedItems, setSelectedItems] = useState({
     page1: [],
@@ -48,8 +49,9 @@ function PromptPage() {
     setPromptMode(mode);
   }, []);
 
-  const handleContentChange = useCallback((content) => {
+  const handleContentChange = useCallback((content, description) => {
     setPromptContent(content);
+    setPromptDescription(description || "");
   }, []);
 
   const handleValidationChange = useCallback((isValid) => {
@@ -135,91 +137,102 @@ function PromptPage() {
     return data.url;
   };
 
-  const handleSubmit = async () => {
-    const token = localStorage.getItem('backend_token');
+const handleSubmit = async () => {
+  const token = localStorage.getItem('backend_token');
 
-    if (!token) {
-      setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
-      return;
+  if (!token) {
+    setError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+    return;
+  }
+
+  if (promptMode === "text" && (!promptContent || promptContent.trim() === "")) {
+    setError("กรุณากรอกเนื้อหาที่ต้องการวิเคราะห์");
+    return;
+  }
+  if (promptMode === "link" && (!promptContent || promptContent.trim() === "")) {
+    setError("กรุณากรอกลิงก์วิดีโอ");
+    return;
+  }
+  if (promptMode === "image" && (!promptContent?.file)) {
+    setError("กรุณาอัปโหลดรูปภาพ");
+    return;
+  }
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
+    
+    // Map frontend communication labels to backend goal format
+    const GOAL_MAPPING = {
+      'ตอบกลับคอมเมนต์': 'ตอบกลับคอมเมนต์',
+      'ชวนคิด ชวนคุยกับลูก / เด็กๆ': 'ตั้งคำถามชวนคุยกับลูก',
+      'ชวนคิด ชวนคุยกับเพื่อน': 'ตั้งคำถามชวนคุยกับเพื่อน',
+      'ชวนคิด ชวนคุยกับคนอายุมากกว่า': 'ตั้งคำถามชวนคุยกับคนที่อายุมากกว่า'
+    };
+    
+    const goalForBackend = GOAL_MAPPING[communicationLabel] || communicationLabel;
+    
+    let result;
+
+    if (promptMode === "text") {
+      result = await api.generateAdviceText(token, {
+        content: promptContent,
+        contentDescription: promptDescription, // ← ADD THIS
+        problem: problemLabels,
+        concerning: impactLabels,
+        approach: communicationLabel,
+        goal: goalForBackend
+      });
+    } else if (promptMode === "image") {
+      // Upload image first, then send URL to API
+      const imageUrl = await uploadImage(promptContent.file);
+      result = await api.generateAdviceImage(token, imageUrl, promptDescription); // ← ADD THIS
+    } else if (promptMode === "link") {
+      result = await api.generateAdviceLink(token, promptContent, promptDescription); // ← ADD THIS
     }
 
-    // Validate content
-    if (promptMode === "text" && (!promptContent || promptContent.trim() === "")) {
-      setError("กรุณากรอกเนื้อหาที่ต้องการวิเคราะห์");
-      return;
+    // Store result and navigate directly to result view page
+    localStorage.setItem("promptData", JSON.stringify({
+      mode: promptMode,
+      problems: selectedItems.page1,
+      impacts: selectedItems.impacts,
+      communication: selectedItems.communication,
+    }));
+
+    // Navigate directly to the result view page with the result ID
+    const resultId = result._id || result.id || result.promptId;
+    if (resultId) {
+      navigate(`/result/${resultId}`);
+    } else {
+      // Fallback: navigate to agentic page if no ID
+      console.error("No result ID returned from API");
+      navigate("/agentic");
     }
-    if (promptMode === "link" && (!promptContent || promptContent.trim() === "")) {
-      setError("กรุณากรอกลิงก์วิดีโอ");
-      return;
+  } catch (err) {
+    console.error("LLM API Error:", err);
+
+    // Check for rate limit error (429 status or specific messages)
+    const errorMessage = err.message?.toLowerCase() || '';
+    const isRateLimit =
+      err.status === 429 ||
+      errorMessage.includes('rate limit') ||
+      errorMessage.includes('limit reached') ||
+      errorMessage.includes('daily limit') ||
+      errorMessage.includes('too many requests') ||
+      errorMessage.includes('exceeded');
+
+    if (isRateLimit) {
+      setRateLimitReached(true);
+      setError(null);
+    } else {
+      setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
     }
-    if (promptMode === "image" && (!promptContent?.file)) {
-      setError("กรุณาอัปโหลดรูปภาพ");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
-      let result;
-
-      if (promptMode === "text") {
-        result = await api.generateAdviceText(token, {
-          content: promptContent,
-          problem: problemLabels,
-          concerning: impactLabels,
-          approach: communicationLabel,
-          goal: communicationLabel
-        });
-      } else if (promptMode === "image") {
-        // Upload image first, then send URL to API
-        const imageUrl = await uploadImage(promptContent.file);
-        result = await api.generateAdviceImage(token, imageUrl);
-      } else if (promptMode === "link") {
-        result = await api.generateAdviceLink(token, promptContent);
-      }
-
-      // Store result and navigate directly to result view page
-      localStorage.setItem("promptData", JSON.stringify({
-        mode: promptMode,
-        problems: selectedItems.page1,
-        impacts: selectedItems.impacts,
-        communication: selectedItems.communication,
-      }));
-
-      // Navigate directly to the result view page with the result ID
-      const resultId = result._id || result.id || result.promptId;
-      if (resultId) {
-        navigate(`/result/${resultId}`);
-      } else {
-        // Fallback: navigate to agentic page if no ID
-        console.error("No result ID returned from API");
-        navigate("/agentic");
-      }
-    } catch (err) {
-      console.error("LLM API Error:", err);
-
-      // Check for rate limit error (429 status or specific messages)
-      const errorMessage = err.message?.toLowerCase() || '';
-      const isRateLimit =
-        err.status === 429 ||
-        errorMessage.includes('rate limit') ||
-        errorMessage.includes('limit reached') ||
-        errorMessage.includes('daily limit') ||
-        errorMessage.includes('too many requests') ||
-        errorMessage.includes('exceeded');
-
-      if (isRateLimit) {
-        setRateLimitReached(true);
-        setError(null);
-      } else {
-        setError(err.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
