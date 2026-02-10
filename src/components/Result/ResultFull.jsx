@@ -1,8 +1,23 @@
 import React, { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
-function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, allowNavigation = true }) {
+function ResultFull({ 
+    description, 
+    structuredOutput, 
+    onCopy, 
+    onSurveyComplete, 
+    allowNavigation = true,
+    onFeedbackChange // New prop to send feedback data to parent
+}) {
+    const { backendUser, isAdmin } = useAuth();
     const [showToast, setShowToast] = useState(false);
     const [activeOptionTab, setActiveOptionTab] = useState(0);
+    
+    // Feedback state for each option
+    const [ratings, setRatings] = useState({});
+    const [explanations, setExplanations] = useState({});
+
+    const isAdminOrResearcher = isAdmin || backendUser?.role === "researcher";
 
     // Debug logging
     console.log('=== ResultFull Debug ===');
@@ -13,11 +28,9 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
     console.log('========================');
 
     const handleCopy = (text) => {
-        // Use the text parameter that's passed when button is clicked
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text);
         } else {
-            // Fallback for mobile browsers without clipboard API
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.position = 'fixed';
@@ -36,6 +49,41 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
 
         if (allowNavigation && onCopy) {
             onCopy();
+        }
+    };
+
+    const handleRatingChange = (optionIndex, value) => {
+        const newRatings = {
+            ...ratings,
+            [optionIndex]: ratings[optionIndex] === value ? null : value
+        };
+        setRatings(newRatings);
+        
+        // Notify parent component
+        if (onFeedbackChange) {
+            onFeedbackChange({
+                ratings: newRatings,
+                explanations: isAdminOrResearcher ? explanations : null
+            });
+        }
+    };
+
+    const handleExplanationChange = (optionIndex, fieldIndex, value) => {
+        const newExplanations = {
+            ...explanations,
+            [optionIndex]: {
+                ...(explanations[optionIndex] || {}),
+                [fieldIndex]: value
+            }
+        };
+        setExplanations(newExplanations);
+        
+        // Notify parent component
+        if (onFeedbackChange) {
+            onFeedbackChange({
+                ratings: ratings,
+                explanations: isAdminOrResearcher ? newExplanations : null
+            });
         }
     };
 
@@ -179,6 +227,63 @@ function ResultFull({ description, structuredOutput, onCopy, onSurveyComplete, a
                             )}
                         </div>
                     )}
+
+                    {/* Like/Dislike Feedback Section */}
+                    <div className="w-full border-t pt-4 space-y-3">
+                        <p className="text-xs sm:text-sm text-gray-600 text-center font-medium">
+                            คุณคิดอย่างไรกับข้อแนะนำที่ {activeOptionTab + 1}?
+                        </p>
+                        
+                        {/* Rating buttons */}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => handleRatingChange(activeOptionTab, "like")}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border-2 transition-all text-sm ${
+                                    ratings[activeOptionTab] === "like"
+                                        ? "border-primary bg-primary/10"
+                                        : "border-gray-200 hover:border-primary/50 bg-white"
+                                }`}
+                            >
+                                <span>👍</span>
+                                <span>ชอบ</span>
+                            </button>
+
+                            <button
+                                onClick={() => handleRatingChange(activeOptionTab, "improve")}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border-2 transition-all text-sm ${
+                                    ratings[activeOptionTab] === "improve"
+                                        ? "border-yellow-500 bg-yellow-50"
+                                        : "border-gray-200 hover:border-yellow-300 bg-white"
+                                }`}
+                            >
+                                <span>💡</span>
+                                <span>อยากให้ปรับปรุง</span>
+                            </button>
+                        </div>
+
+                        {/* Admin/Researcher text boxes */}
+                        {isAdminOrResearcher && (
+                            <div className="space-y-2 pt-2">
+                                <p className="text-xs text-gray-600 font-medium">
+                                    บันทึกสำหรับผู้วิจัย
+                                </p>
+                                {[1, 2, 3].map((fieldNum) => (
+                                    <div key={fieldNum}>
+                                        <label className="text-xs text-gray-500 mb-1 block">
+                                            หมายเหตุ {fieldNum}
+                                        </label>
+                                        <textarea
+                                            value={explanations[activeOptionTab]?.[fieldNum] || ''}
+                                            onChange={(e) => handleExplanationChange(activeOptionTab, fieldNum, e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
+                                            rows="2"
+                                            placeholder={`บันทึกหมายเหตุที่ ${fieldNum}...`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </>

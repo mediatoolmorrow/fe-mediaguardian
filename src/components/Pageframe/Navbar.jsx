@@ -25,11 +25,11 @@ export default function Navbar(){
                     <p className="font-light text-base">  Media Guardians </p>
                 </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 space-x-4">
                 {backendUser ? (
                     <>
                     <button
-                            className=" group flex items-center space-x-4"
+                            className=" group flex items-center "
                             onClick={() => navigate("/history")}
                         >
                             <img src="./icon/history.svg" className="w-5" />                         
