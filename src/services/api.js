@@ -106,21 +106,21 @@ export const api = {
     return response.json();
   },
 
-async getCurrentUser(token) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  async getCurrentUser(token) {
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    await handleResponse(response);  // ← This catches 401
+
+    if (!response.ok) {
+      throw new Error('Failed to get user');
     }
-  });
 
-  await handleResponse(response);  // ← This catches 401
-
-  if (!response.ok) {
-    throw new Error('Failed to get user');
-  }
-
-  return response.json();
-}
+    return response.json();
+  },
 
   async logout(token) {
     const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
