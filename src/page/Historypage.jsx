@@ -186,7 +186,7 @@ function Historypage() {
                     </div>
 
                     {results.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg border border-gray-100">
+                        <div className="text-center py-12 bg-white items-center flex flex-col rounded-lg border border-gray-100">
                             <img
                                 src="/icon/result.svg"
                                 alt="No results"
