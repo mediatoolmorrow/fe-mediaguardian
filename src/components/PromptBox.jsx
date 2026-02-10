@@ -44,7 +44,7 @@ export default function PromptBox({
     }
   }, [selected, onModeChange]);
 
- useEffect(() => {
+  useEffect(() => {
     if (onContentChange) {
       let content = null;
       if (selected === "text") {
@@ -54,7 +54,7 @@ export default function PromptBox({
       } else if (selected === "image") {
         content = { preview: uploadedImage, file: imageFile };
       }
-      onContentChange(content, contentDescription); // ← PASS DESCRIPTION
+      onContentChange(content, contentDescription);
     }
   }, [selected, textContent, linkContent, uploadedImage, imageFile, contentDescription, onContentChange]);
 
@@ -117,79 +117,81 @@ export default function PromptBox({
   };
 
   return (
-<div className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col"
-style={{ height: '300px' }}> 
-      <p className="font-bold text-primary"> ข้อมูลประกอบ </p>
+    <div className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col gap-3"
+      style={{ minHeight: '300px' }}> 
+      <p className="font-bold text-primary">ข้อมูลประกอบ</p>
 
-  <div className="flex-1 mb-3 overflow-hidden flex flex-col gap-3">
-    <div className="flex-1">
-      {selected === "text" && (
-        <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
-          <textarea
-            placeholder="วางคอนเทนต์ที่เป็นตัวหนังสือของคุณที่นี่..."
-            className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
-            readOnly={readOnly}
-            value={textContent}
-            onChange={(e) => setTextContent(e.target.value)}
-          />
-        </div>
-      )}
+      {/* Main content area with proper flex sizing */}
+      <div className="flex-shrink-0" style={{ height: '140px' }}>
+        {selected === "text" && (
+          <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
+            <textarea
+              placeholder="วางคอนเทนต์ที่เป็นตัวหนังสือของคุณที่นี่..."
+              className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
+              readOnly={readOnly}
+              value={textContent}
+              onChange={(e) => setTextContent(e.target.value)}
+            />
+          </div>
+        )}
 
-      {selected === "link" && (
-        <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary flex items-center">
-          <input
-            type="url"
-            placeholder="โปรดใส่ลิงก์วิดีโอ ที่มีเนื้อหาคำพูดที่ไม่เหมาะสม ความยาวไม่เกิน 3 นาที "
-            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
-            readOnly={readOnly}
-            value={linkContent}
-            onChange={(e) => setLinkContent(e.target.value)}
-          />
-        </div>
-      )}
+        {selected === "link" && (
+          <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary flex items-center">
+            <input
+              type="url"
+              placeholder="โปรดใส่ลิงก์วิดีโอ ที่มีเนื้อหาคำพูดที่ไม่เหมาะสม ความยาวไม่เกิน 3 นาที"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+              readOnly={readOnly}
+              value={linkContent}
+              onChange={(e) => setLinkContent(e.target.value)}
+            />
+          </div>
+        )}
 
-      {selected === "image" && (
-        <div
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          className={`w-full h-full border-2 border-dashed rounded-lg flex items-center justify-center transition-colors ${
-            dragActive ? 'border-primary bg-blue-50' : 'border-gray-300'
-          }`}
-        >
-          {uploadedImage ? (
-            <div className="relative w-full h-full">
-              <img src={uploadedImage} alt="Uploaded" className="w-full h-full object-cover rounded-lg" />
-              {!readOnly && (
-                <button
-                  onClick={clearImage}
-                  className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ) : (
-            <label className="cursor-pointer text-center p-4">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileInput}
-                className="hidden"
-                disabled={readOnly}
-              />
-              <div className="text-sm text-gray-400">
-                <span className="text-primary">อัปโหลดรูปภาพ</span> หรือลากไฟล์มาวางที่นี่
+        {selected === "image" && (
+          <div
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            className={`w-full h-full border-2 border-dashed rounded-lg flex items-center justify-center transition-colors ${
+              dragActive ? 'border-primary bg-blue-50' : 'border-gray-300'
+            }`}
+          >
+            {uploadedImage ? (
+              <div className="relative w-full h-full p-2">
+                <img src={uploadedImage} alt="Uploaded" className="w-full h-full object-contain rounded-lg" />
+                {!readOnly && (
+                  <button
+                    onClick={clearImage}
+                    className="absolute top-3 right-3 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-            </label>
-          )}
-        </div>
-      )}
-    </div>
-    <div> 
-        <p className="font-bold text-primary"> สถานการณ์ </p>
-        <div className="h-16 border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
+            ) : (
+              <label className="cursor-pointer text-center p-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInput}
+                  className="hidden"
+                  disabled={readOnly}
+                />
+                <div className="text-sm text-gray-400">
+                  <span className="text-primary">อัปโหลดรูปภาพ</span> หรือลากไฟล์มาวางที่นี่
+                </div>
+              </label>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* สถานการณ์ section - always visible */}
+      <div className="flex-shrink-0">
+        <p className="font-bold text-primary mb-2">สถานการณ์</p>
+        <div className="border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary" style={{ height: '64px' }}>
           <textarea
             placeholder="บอกเราว่าคุณเป็นใคร กำลังคุยกับใคร ไปเจอสื่ออะไรมา..."
             className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
@@ -198,10 +200,10 @@ style={{ height: '300px' }}>
             onChange={(e) => setcontentDescription(e.target.value)}
           />
         </div>
-    </div>
-  </div>
+      </div>
 
-      <div>
+      {/* Dropdown section */}
+      <div className="relative">
         <div className="relative w-[133px]">
           <button
             disabled={readOnly}
@@ -240,8 +242,8 @@ style={{ height: '300px' }}>
             </div>
           )}
         </div>
-         {readOnly && (
-          <span className="absolute bottom-1/10 right-4 text-xs underline text-gray-400">
+        {readOnly && (
+          <span className="absolute top-0 right-0 text-xs underline text-gray-400">
             *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
           </span>
         )}
