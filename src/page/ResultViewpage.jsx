@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ResultFull from "../components/Result/ResultFull";
+import FeedbackPopUp from "../components/FeedbackPopUp";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -17,6 +18,7 @@ function ResultViewpage() {
     const [isSurveySubmitted, setIsSurveySubmitted] = useState(
         location.state?.surveyCompleted || false
     );
+    const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
 
     // Refresh user data on mount to get latest flags
     useEffect(() => {
@@ -62,6 +64,14 @@ function ResultViewpage() {
     // Handle continue button - only works after survey is submitted
     const handleContinue = () => {
         if (!isSurveySubmitted) return;
+        setShowFeedbackPopup(true);
+    };
+
+    // Handle feedback popup continue
+    const handleFeedbackContinue = (feedbackData) => {
+        console.log("Feedback received:", feedbackData);
+        // TODO: Send feedback to backend when ready
+        setShowFeedbackPopup(false);
         navigate("/nextstep");
     };
 
@@ -163,21 +173,16 @@ function ResultViewpage() {
     }
 
     if (output && typeof output === 'object') {
-        // Check if it's structured JSON (has factChecking or decisionMaking) or raw fallback (has raw property)
         if (output.raw && !output.decisionMaking) {
-            // JSON parsing failed on backend, use raw text
             fallbackText = output.raw;
         } else if (output.factChecking || output.decisionMaking || output.impact || output.options) {
-            // Structured output available
             structuredOutput = output;
             console.log("Found structured output:", structuredOutput);
         } else {
-            // Unknown format, try to use as text
             fallbackText = JSON.stringify(output, null, 2);
         }
     }
 
-    // Final fallback - if still no structured output, check result directly
     if (!structuredOutput && result) {
         if (result.decisionMaking || result.factChecking || result.options) {
             structuredOutput = result;
@@ -212,8 +217,13 @@ function ResultViewpage() {
                 >
                     วิเคราะห์เนื้อหาใหม่
                 </button>
-                
             </div>
+
+            <FeedbackPopUp
+                isOpen={showFeedbackPopup}
+                onClose={() => setShowFeedbackPopup(false)}
+                onContinue={handleFeedbackContinue}
+            />
         </div>
     );
 }

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Banner from "../components/Banner";
 import ResultSummary from "../components/Result/ResultSummary";
+import FeedbackPopUp from "../components/FeedbackPopUp";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 function ResultListpage() {
     const navigate = useNavigate();
-    const { loading: authLoading } = useAuth();
+    const { loading: authLoading, backendUser, isAdmin } = useAuth();
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,6 +16,7 @@ function ResultListpage() {
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
+    const [showFeedbackTest, setShowFeedbackTest] = useState(false);
 
     useEffect(() => {
          if (authLoading) {
@@ -49,10 +51,8 @@ function ResultListpage() {
                     total = data.total || data.totalCount || data.data.length;
                 }
 
-                // Helper to parse Firestore Timestamp or regular date
                 const getTimestamp = (dateValue) => {
                     if (!dateValue) return 0;
-                    // Firestore Timestamp with _seconds
                     if (dateValue._seconds !== undefined) {
                         return dateValue._seconds * 1000;
                     }
@@ -160,7 +160,7 @@ function ResultListpage() {
                     </div>
 
                     {results.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg border border-gray-100">
+                        <div className="text-center py-12 bg-white rounded-lg flex flex-cols items-center border border-gray-100">
                             <img
                                 src="/icon/result.svg"
                                 alt="No results"
@@ -169,7 +169,7 @@ function ResultListpage() {
                             <p className="text-gray-500 mb-2">ยังไม่มีประวัติการวิเคราะห์</p>
                             <p className="text-xs text-gray-400 mb-4">เริ่มวิเคราะห์เนื้อหาเพื่อรับคำแนะนำ</p>
                             <button
-                                className="btn-normal-active"
+                                className="btn-normal-active w-auto mx-auto"
                                 onClick={() => navigate("/agentic")}
                             >
                                 เริ่มวิเคราะห์เนื้อหา
@@ -217,6 +217,32 @@ function ResultListpage() {
                         </>
                     )}
                 </div>
+
+                {/* TEST SECTION - Remove after testing */}
+                <div className="w-full max-w-[648px] px-4 mt-6 p-4 border-2 border-dashed border-red-300 rounded-lg bg-red-50">
+                    <p className="text-red-600 font-bold mb-2">Test Feedback Popup</p>
+                    <p className="text-sm text-gray-600 mb-3">
+                        Current Role: <span className="font-medium">
+                            {isAdmin ? "Admin" : backendUser?.role === "researcher" ? "Researcher" : "User"}
+                        </span>
+                    </p>
+                    <button
+                        onClick={() => setShowFeedbackTest(true)}
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                        Open Feedback Popup
+                    </button>
+                </div>
+
+                <FeedbackPopUp
+                    isOpen={showFeedbackTest}
+                    onClose={() => setShowFeedbackTest(false)}
+                    onContinue={(data) => {
+                        console.log("Feedback data:", data);
+                        alert("Feedback submitted! Check console for data.");
+                        setShowFeedbackTest(false);
+                    }}
+                />
             </div>
         </div>
     );

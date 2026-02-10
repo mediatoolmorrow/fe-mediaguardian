@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart3, Video, ClipboardList, MessageSquare, Users, Shield } from "lucide-react";
+import { BarChart3, Video, ClipboardList, MessageSquare, MessageSquareHeart, Users, Shield } from "lucide-react";
 
 export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, isSuperAdmin }) {
   return (
@@ -24,6 +24,15 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
           >
             <MessageSquare size={20} />
             <span> สถิติการใช้งาน </span>
+          </button>
+          <button
+            onClick={() => onPageChange('feedback')}
+            className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+              currentPage === 'feedback' ? 'bg-blue-600' : 'hover:bg-gray-800'
+            }`}
+          >
+            <MessageSquareHeart size={20} />
+            <span> Feedback Analytics </span>
           </button>
 
           {isSuperAdmin && (

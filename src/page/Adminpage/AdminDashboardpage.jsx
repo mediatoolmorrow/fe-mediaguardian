@@ -7,6 +7,7 @@ import LoadingScreen from '../../components/Admin/LoadingScreen';
 import Statisticspage from './Statisticpage';
 import SurveyAnalyticspage from './SurveyAnalyticspage';
 import PromptAnalyticspage from './PromptAnalyticspage';
+import FeedbackAnalyticspage from './FeedbackAnalyticspage';
 import AdminManagementpage from './AdminManagementpage';
 import UserListpage from './UserListpage';
 import { api } from '../../services/api';
@@ -47,12 +48,19 @@ export default function AdminDashboard() {
   const [promptError, setPromptError] = useState('');
   const [promptCsvDownloading, setPromptCsvDownloading] = useState(false);
 
+  // Feedback Analytics State
+  const [feedbackData, setFeedbackData] = useState(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
+  const [feedbackCsvDownloading, setFeedbackCsvDownloading] = useState(false);
+
   useEffect(() => {
     if (!authLoading && backendUser && isAdmin) {
       loadVideoUrl();
       loadStats();
       loadSurveyChartData();
       loadPromptChartData();
+      loadFeedbackData();
     }
   }, [authLoading, backendUser, isAdmin]);
 
@@ -183,6 +191,104 @@ export default function AdminDashboard() {
     }
   };
 
+  // Mock feedback data - replace with actual API call when backend is ready
+  const loadFeedbackData = async () => {
+    setFeedbackLoading(true);
+    setFeedbackError('');
+    try {
+      // TODO: Replace with actual API call: await api.getFeedbackData(token);
+      // For now, using mock data
+      const mockData = {
+        summary: {
+          totalFeedback: 156,
+          totalLikes: 312,
+          totalImproves: 156,
+          likeRatio: "66.7%",
+          withExplanations: 45
+        },
+        optionStats: {
+          option1: { likes: 98, improves: 58 },
+          option2: { likes: 112, improves: 44 },
+          option3: { likes: 102, improves: 54 }
+        },
+        recentFeedback: [
+          {
+            id: 1,
+            date: "2024-01-15 14:30",
+            role: "admin",
+            ratings: { option1: "like", option2: "improve", option3: "like" },
+            hasExplanations: true,
+            explanations: {
+              option1: "ข้อมูลถูกต้องและเป็นประโยชน์มาก",
+              option2: "ควรเพิ่มรายละเอียดเกี่ยวกับแหล่งอ้างอิง",
+              option3: "ตอบตรงประเด็นดี"
+            }
+          },
+          {
+            id: 2,
+            date: "2024-01-15 12:15",
+            role: "researcher",
+            ratings: { option1: "like", option2: "like", option3: "improve" },
+            hasExplanations: true,
+            explanations: {
+              option1: "วิเคราะห์ได้ครอบคลุม",
+              option2: "ชอบวิธีการนำเสนอ",
+              option3: "ควรเพิ่มมุมมองที่หลากหลายขึ้น"
+            }
+          },
+          {
+            id: 3,
+            date: "2024-01-15 10:45",
+            role: "user",
+            ratings: { option1: "like", option2: "like", option3: "like" },
+            hasExplanations: false,
+            explanations: null
+          },
+          {
+            id: 4,
+            date: "2024-01-14 16:20",
+            role: "user",
+            ratings: { option1: "improve", option2: "like", option3: "like" },
+            hasExplanations: false,
+            explanations: null
+          },
+          {
+            id: 5,
+            date: "2024-01-14 09:30",
+            role: "admin",
+            ratings: { option1: "improve", option2: "improve", option3: "like" },
+            hasExplanations: true,
+            explanations: {
+              option1: "ข้อมูลยังไม่ครบถ้วน ควรเพิ่มบริบท",
+              option2: "ภาษาที่ใช้ยังไม่เหมาะสมกับกลุ่มเป้าหมาย",
+              option3: "ดีแล้ว"
+            }
+          }
+        ]
+      };
+
+      setFeedbackData(mockData);
+    } catch (error) {
+      console.error('Failed to load feedback data:', error);
+      setFeedbackError(error.message || 'Failed to load feedback data');
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
+  const handleDownloadFeedbackCSV = async () => {
+    setFeedbackCsvDownloading(true);
+    try {
+      // TODO: Replace with actual API call when backend is ready
+      // await api.downloadFeedbackCSV(token);
+      alert('Feedback CSV download will be available when backend API is implemented');
+    } catch (error) {
+      console.error('Failed to download Feedback CSV:', error);
+      alert('Failed to download CSV: ' + error.message);
+    } finally {
+      setFeedbackCsvDownloading(false);
+    }
+  };
 
   const loadVideoUrl = async () => {
     try {
@@ -321,6 +427,8 @@ export default function AdminDashboard() {
         return 'Survey Analytics';
       case 'prompts':
         return 'Prompt Analytics';
+      case 'feedback':
+        return 'Feedback Analytics';
       case 'stats':
         return 'Website Statistics';
       case 'tutorial':
@@ -356,6 +464,17 @@ export default function AdminDashboard() {
             onRefresh={loadPromptChartData}
             onDownloadCSV={handleDownloadPromptCSV}
             downloading={promptCsvDownloading}
+          />
+        );
+      case 'feedback':
+        return (
+          <FeedbackAnalyticspage
+            feedbackData={feedbackData}
+            loading={feedbackLoading}
+            error={feedbackError}
+            onRefresh={loadFeedbackData}
+            onDownloadCSV={handleDownloadFeedbackCSV}
+            downloading={feedbackCsvDownloading}
           />
         );
       case 'stats':

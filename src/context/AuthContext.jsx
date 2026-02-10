@@ -16,6 +16,42 @@ import { lineAuth } from '../services/lineAuth';
 
 const AuthContext = createContext(null);
 
+// Helper function to translate Firebase error codes to Thai
+const getFirebaseErrorMessage = (error) => {
+  const errorCode = error.code || '';
+  const errorMessages = {
+    // Sign in errors
+    'auth/invalid-credential': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+    'auth/invalid-email': 'รูปแบบอีเมลไม่ถูกต้อง',
+    'auth/user-disabled': 'บัญชีนี้ถูกระงับการใช้งาน',
+    'auth/user-not-found': 'ไม่พบบัญชีผู้ใช้ที่ใช้อีเมลนี้',
+    'auth/wrong-password': 'รหัสผ่านไม่ถูกต้อง',
+
+    // Sign up errors
+    'auth/email-already-in-use': 'อีเมลนี้ถูกใช้งานแล้ว',
+    'auth/weak-password': 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+    'auth/operation-not-allowed': 'การลงทะเบียนถูกปิดใช้งานชั่วคราว',
+
+    // General errors
+    'auth/too-many-requests': 'มีการพยายามเข้าสู่ระบบมากเกินไป กรุณาลองใหม่ภายหลัง',
+    'auth/network-request-failed': 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาตรวจสอบอินเทอร์เน็ต',
+    'auth/internal-error': 'เกิดข้อผิดพลาดภายในระบบ กรุณาลองใหม่อีกครั้ง',
+
+    // Social login errors
+    'auth/popup-closed-by-user': 'คุณปิดหน้าต่างเข้าสู่ระบบ กรุณาลองใหม่',
+    'auth/cancelled-popup-request': 'การเข้าสู่ระบบถูกยกเลิก',
+    'auth/popup-blocked': 'หน้าต่างป๊อปอัพถูกบล็อก กรุณาอนุญาตป๊อปอัพ',
+    'auth/account-exists-with-different-credential': 'บัญชีนี้เชื่อมต่อกับผู้ให้บริการอื่นแล้ว',
+    'auth/credential-already-in-use': 'ข้อมูลรับรองนี้ถูกใช้งานกับบัญชีอื่นแล้ว',
+
+    // Provider errors
+    'auth/invalid-verification-code': 'รหัสยืนยันไม่ถูกต้อง',
+    'auth/invalid-verification-id': 'รหัสยืนยันหมดอายุ กรุณาขอรหัสใหม่',
+  };
+
+  return errorMessages[errorCode] || error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -110,8 +146,9 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user, backendUser: backendResponse.user };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const errorMessage = getFirebaseErrorMessage(err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -130,8 +167,9 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user, backendUser: backendResponse.user };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const errorMessage = getFirebaseErrorMessage(err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -150,8 +188,9 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user, backendUser: backendResponse.user };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const errorMessage = getFirebaseErrorMessage(err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -170,8 +209,9 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user, backendUser: backendResponse.user };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const errorMessage = getFirebaseErrorMessage(err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -190,8 +230,9 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user, backendUser: backendResponse.user };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const errorMessage = getFirebaseErrorMessage(err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -280,12 +321,7 @@ export const AuthProvider = ({ children }) => {
       setSuccessMessage('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว');
       return { success: true };
     } catch (err) {
-      let errorMessage = err.message;
-      if (err.code === 'auth/user-not-found') {
-        errorMessage = 'ไม่พบบัญชีผู้ใช้ที่ใช้อีเมลนี้';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
-      }
+      const errorMessage = getFirebaseErrorMessage(err);
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
