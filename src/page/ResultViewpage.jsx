@@ -64,7 +64,7 @@ function ResultViewpage() {
     // Handle continue button - only works after survey is submitted
     const handleContinue = () => {
         if (!isSurveySubmitted) return;
-        setShowFeedbackPopup(true);
+        navigate("/nextstep");
     };
 
     // Handle feedback popup continue
@@ -218,12 +218,6 @@ function ResultViewpage() {
                     วิเคราะห์เนื้อหาใหม่
                 </button>
             </div>
-
-            <FeedbackPopUp
-                isOpen={showFeedbackPopup}
-                onClose={() => setShowFeedbackPopup(false)}
-                onContinue={handleFeedbackContinue}
-            />
         </div>
     );
 }
