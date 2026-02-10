@@ -29,7 +29,7 @@ export default function Navbar(){
                 {backendUser ? (
                     <>
                     <button
-                            className=" group flex items-center gap-2"
+                            className=" group flex items-center gap-8"
                             onClick={() => navigate("/history")}
                         >
                             <img src="./icon/history.svg" className="w-5" />                         
