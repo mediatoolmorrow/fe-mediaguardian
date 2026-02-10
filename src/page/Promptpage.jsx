@@ -188,9 +188,23 @@ const handleSubmit = async () => {
     } else if (promptMode === "image") {
       // Upload image first, then send URL to API
       const imageUrl = await uploadImage(promptContent.file);
-      result = await api.generateAdviceImage(token, imageUrl, promptDescription); // ← ADD THIS
+      result = await api.generateAdviceImage(token, {
+        imageUrl,
+        contentDescription: promptDescription,
+        problem: problemLabels,
+        concerning: impactLabels,
+        approach: communicationLabel,
+        goal: goalForBackend
+      });
     } else if (promptMode === "link") {
-      result = await api.generateAdviceLink(token, promptContent, promptDescription); // ← ADD THIS
+      result = await api.generateAdviceLink(token, {
+        videoUrl: promptContent,
+        contentDescription: promptDescription,
+        problem: problemLabels,
+        concerning: impactLabels,
+        approach: communicationLabel,
+        goal: goalForBackend
+      });
     }
 
     // Store result and navigate directly to result view page

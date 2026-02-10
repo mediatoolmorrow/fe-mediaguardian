@@ -294,7 +294,7 @@ export const api = {
     return response.json();
   },
 
-  async generateAdviceImage(token, imageUrl, contentDescription ) {
+  async generateAdviceImage(token, { imageUrl, contentDescription, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
       method: 'POST',
       headers: {
@@ -304,7 +304,11 @@ export const api = {
       body: JSON.stringify({
         mode: 'image',
         imageUrl,
-        contentDescription 
+        contentDescription,
+        problem,
+        concerning,
+        approach,
+        goal
       })
     });
 
@@ -318,7 +322,7 @@ export const api = {
     return response.json();
   },
 
-  async generateAdviceLink(token, videoUrl, contentDescription ) {
+  async generateAdviceLink(token, { videoUrl, contentDescription, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
       method: 'POST',
       headers: {
@@ -328,7 +332,11 @@ export const api = {
       body: JSON.stringify({
         mode: 'link',
         videoUrl,
-        contentDescription 
+        contentDescription,
+        problem,
+        concerning,
+        approach,
+        goal
       })
     });
 
