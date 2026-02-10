@@ -267,17 +267,17 @@ function ResultFull({
                                 <p className="text-xs text-gray-600 font-medium">
                                     บันทึกสำหรับผู้วิจัย
                                 </p>
-                                {[1, 2, 3].map((fieldNum) => (
+                                {["สาเหตุที่ชอบ หรืออยากให้ปรับปรุง", "ตัวอย่างการปรับปรุง", "เหตุผลอธิบายตัวอย่าง"].map((fieldNum) => (
                                     <div key={fieldNum}>
                                         <label className="text-xs text-gray-500 mb-1 block">
-                                            หมายเหตุ {fieldNum}
+                                            {fieldNum}
                                         </label>
                                         <textarea
                                             value={explanations[activeOptionTab]?.[fieldNum] || ''}
                                             onChange={(e) => handleExplanationChange(activeOptionTab, fieldNum, e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
                                             rows="2"
-                                            placeholder={`บันทึกหมายเหตุที่ ${fieldNum}...`}
+                                            placeholder={`เขียนคำอธิบาย`}
                                         />
                                     </div>
                                 ))}
