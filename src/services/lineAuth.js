@@ -151,7 +151,7 @@ export const lineAuth = {
         storage.remove('line_auth_timestamp');
         return {
           success: false,
-          error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง (Session expired, please try again)'
+          error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง หรือลองเข้าโดยตรงการผ่านกดลิงก์บนแอพไลน์บนมือถือ (Session expired, please try again)'
         };
       }
     }
@@ -160,7 +160,7 @@ export const lineAuth = {
     if (!savedState || !codeVerifier) {
       return {
         success: false,
-        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง (Auth data missing, please try again)'
+        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง หรือลองเข้าโดยตรงการผ่านกดลิงก์บนแอพไลน์บนมือถือ (Please try again)'
       };
     }
 
