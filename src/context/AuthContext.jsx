@@ -67,6 +67,24 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  useEffect(() => {
+    // Check token on app focus/resume
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      const token = localStorage.getItem('backend_token');
+      if (token && backendUser) {
+          // Verify token is still valid when app comes back to foreground
+        refreshBackendUser().catch(() => {
+            // Token expired while app was in background
+          logout();
+        });
+      }
+    }
+  };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [backendUser]);
   // Listen to Firebase auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
