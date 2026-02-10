@@ -200,16 +200,16 @@ export default function AdminDashboard() {
       // For now, using mock data
       const mockData = {
         summary: {
-          totalFeedback: 156,
-          totalLikes: 312,
-          totalImproves: 156,
-          likeRatio: "66.7%",
-          withExplanations: 45
+          totalFeedback: 43,
+          totalLikes: 34,
+          totalImproves: 9,
+          likeRatio: "79.1%",
+          withExplanations: 6
         },
         optionStats: {
-          option1: { likes: 98, improves: 58 },
-          option2: { likes: 112, improves: 44 },
-          option3: { likes: 102, improves: 54 }
+          option1: { likes: 34, improves: 9 },
+          option2: { likes: 35, improves: 8 },
+          option3: { likes: 33, improves: 10 }
         },
         recentFeedback: [
           {
