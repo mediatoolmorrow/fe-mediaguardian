@@ -7,6 +7,7 @@ export const surveyTemplate = {
         {
           id: "q1",
           type: "select",
+          maxAnswer: "1",
           label: "เพศของท่าน",
           options: [
             "ชาย",

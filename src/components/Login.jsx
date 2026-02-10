@@ -11,7 +11,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-    const [isLineLoading, setIsLineLoading] = useState(false);
+    const [socialLoading, setSocialLoading] = useState(null); // 'google', 'facebook', 'apple', 'line'
     const navigate = useNavigate();
 
     const {
@@ -33,14 +33,14 @@ export default function Login() {
     // Check if returning from LINE login
     useEffect(() => {
         if (lineAuth.isLineCallback()) {
-            setIsLineLoading(true);
+            setSocialLoading('line');
         }
     }, []);
 
     // Navigate when user is authenticated
     useEffect(() => {
         if (backendUser && !loading) {
-            setIsLineLoading(false);
+            setSocialLoading(null);
             // Check if user needs to complete first-time survey
             if (backendUser.isFirstTime) {
                 navigate("/survey/1");
@@ -50,10 +50,11 @@ export default function Login() {
         }
     }, [backendUser, loading, navigate]);
 
-    // Hide LINE loading on error
+    // Hide social loading on error
     useEffect(() => {
         if (error) {
-            setIsLineLoading(false);
+            setSocialLoading(null);
+            setIsLoading(false);
         }
     }, [error]);
 
@@ -78,37 +79,36 @@ export default function Login() {
     };
 
     const handleGoogleLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('google');
         try {
             await signInWithGoogle();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleFacebookLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('facebook');
         try {
             await signInWithFacebook();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleAppleLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('apple');
         try {
             await signInWithApple();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleLineLogin = () => {
         // LINE login redirects to LINE's OAuth page
         // Show loading popup while redirecting
-        setIsLineLoading(true);
-        setIsLoading(true);
+        setSocialLoading('line');
         signInWithLine();
     };
 
@@ -265,15 +265,20 @@ export default function Login() {
                 {socialLogins.map((social) => (
                     <button
                         key={social.name}
+                        type="button"
                         onClick={social.onClick}
-                        disabled={isLoading}
-                        className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading || socialLoading !== null}
+                        className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
                     >
-                        <img
-                            src={social.icon}
-                            alt={social.name}
-                            className="w-10 h-10"
-                        />
+                        {socialLoading === social.name.toLowerCase() ? (
+                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                        ) : (
+                            <img
+                                src={social.icon}
+                                alt={social.name}
+                                className="w-10 h-10"
+                            />
+                        )}
                     </button>
                 ))}
             </div>
@@ -359,12 +364,18 @@ export default function Login() {
                 </div>
             )}
 
-            {/* LINE Loading Popup */}
-            {isLineLoading && (
-                <div className="fixed inset-0 bg-gray bg-opacity-30 flex items-center justify-center z-50">
+            {/* Social Login Loading Popup */}
+            {socialLoading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-8 flex flex-col items-center gap-4">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                        <p className="text-lg font-medium text-gray-700">กำลังโหลด...</p>
+                        <p className="text-lg font-medium text-gray-700">
+                            {socialLoading === 'line' ? 'กำลังเข้าสู่ระบบด้วย LINE...' :
+                             socialLoading === 'google' ? 'กำลังเข้าสู่ระบบด้วย Google...' :
+                             socialLoading === 'facebook' ? 'กำลังเข้าสู่ระบบด้วย Facebook...' :
+                             socialLoading === 'apple' ? 'กำลังเข้าสู่ระบบด้วย Apple...' :
+                             'กำลังโหลด...'}
+                        </p>
                     </div>
                 </div>
             )}
