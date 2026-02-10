@@ -131,14 +131,6 @@ export default function FeedbackAnalyticspage({
             <RefreshCw size={18} />
             Refresh
           </button>
-          <button
-            onClick={onDownloadCSV}
-            disabled={downloading}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-          >
-            <Download size={18} />
-            {downloading ? "Downloading..." : "Download CSV"}
-          </button>
         </div>
       </div>
 

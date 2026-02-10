@@ -180,9 +180,13 @@ function Historypage() {
                                 <p className="text-xs text-gray-500">รายการประวัติการวิเคราะห์ของคุณ</p>
                             </div>
                         </div>
-                        <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                            {results.length} / {totalCount} รายการ
-                        </span>
+                        <div className="flex-col flex text-center">                        
+                            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                {results.length} / {totalCount} รายการ
+                            </span>
+                            <button onClick={() => navigate("/agentic")} className="underline text-primary text-sm"> กลับหน้าหลัก </button>
+                        </div>
+
                     </div>
 
                     {results.length === 0 ? (
