@@ -118,20 +118,30 @@ export const AuthProvider = ({ children }) => {
   }, [successMessage]);
 
   // Set up token expiration callback
-  useEffect(() => {
-    setTokenExpiredCallback(() => {
+useEffect(() => {
+  setTokenExpiredCallback(() => {
+    try {
+      console.log('Session expired - cleaning up');
       // Clear auth state
       setUser(null);
       setBackendUser(null);
       localStorage.removeItem('backend_token');
-      // Redirect to login page
-      window.location.href = '/login';
-    });
+      
+      // Prevent redirect loop - only redirect if not already on login page
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('Error in token expiration callback:', error);
+    }
+  });
 
-    return () => {
-      setTokenExpiredCallback(null);
-    };
-  }, []);
+  return () => {
+    setTokenExpiredCallback(null);
+  };
+}, []);
+
+  
 
   // Email/Password Sign In
   const signInWithEmail = async (email, password) => {
