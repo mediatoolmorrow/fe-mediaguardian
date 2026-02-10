@@ -13,7 +13,7 @@ function ResultViewpage() {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Check if survey was completed (from navigation state)
     const [isSurveySubmitted, setIsSurveySubmitted] = useState(
         location.state?.surveyCompleted || false
