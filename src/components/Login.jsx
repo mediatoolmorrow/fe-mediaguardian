@@ -343,7 +343,7 @@ export default function Login() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="flex-1 btn-normal-active disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
