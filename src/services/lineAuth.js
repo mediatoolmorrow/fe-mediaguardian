@@ -26,6 +26,39 @@ const generateCodeChallenge = async (verifier) => {
   return base64UrlEncode(hash);
 };
 
+// Storage helpers that use both localStorage and sessionStorage for reliability on mobile
+const storage = {
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+      sessionStorage.setItem(key, value);
+    } catch (e) {
+      console.error('Storage error:', e);
+      // Fallback to sessionStorage only
+      sessionStorage.setItem(key, value);
+    }
+  },
+  
+  get: (key) => {
+    try {
+      return localStorage.getItem(key) || sessionStorage.getItem(key);
+    } catch (e) {
+      console.error('Storage error:', e);
+      return sessionStorage.getItem(key);
+    }
+  },
+  
+  remove: (key) => {
+    try {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    } catch (e) {
+      console.error('Storage error:', e);
+      sessionStorage.removeItem(key);
+    }
+  }
+};
+
 // Exchange authorization code for access token
 const exchangeCodeForToken = async (code, codeVerifier) => {
   const params = new URLSearchParams({
@@ -69,8 +102,12 @@ export const lineAuth = {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    localStorage.setItem('line_state', state);
-    localStorage.setItem('line_code_verifier', codeVerifier);
+    // Use hybrid storage for mobile reliability
+    storage.set('line_state', state);
+    storage.set('line_code_verifier', codeVerifier);
+    
+    // Also store timestamp to detect expired sessions
+    storage.set('line_auth_timestamp', Date.now().toString());
 
     const params = new URLSearchParams({
       response_type: 'code',
@@ -101,11 +138,17 @@ export const lineAuth = {
       return { success: false, error: 'Missing authorization code' };
     }
 
-    const savedState = localStorage.getItem('line_state');
-    const codeVerifier = localStorage.getItem('line_code_verifier');
+    const savedState = storage.get('line_state');
+    const codeVerifier = storage.get('line_code_verifier');
+    const timestamp = storage.get('line_auth_timestamp');
 
-    if (!savedState || state !== savedState) {
-      if (!codeVerifier) {
+    // Check if session expired (5 minutes timeout)
+    if (timestamp) {
+      const elapsed = Date.now() - parseInt(timestamp);
+      if (elapsed > 5 * 60 * 1000) { // 5 minutes
+        storage.remove('line_state');
+        storage.remove('line_code_verifier');
+        storage.remove('line_auth_timestamp');
         return {
           success: false,
           error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง (Session expired, please try again)'
@@ -113,20 +156,42 @@ export const lineAuth = {
       }
     }
 
+    // Validate state - FIXED LOGIC
+    if (!savedState || !codeVerifier) {
+      return {
+        success: false,
+        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง (Auth data missing, please try again)'
+      };
+    }
+
+    if (state !== savedState) {
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
+      return {
+        success: false,
+        error: 'State mismatch - possible CSRF attack'
+      };
+    }
+
     // Exchange code for access token
     try {
       const accessToken = await exchangeCodeForToken(code, codeVerifier);
 
-      localStorage.removeItem('line_state');
-      localStorage.removeItem('line_code_verifier');
+      // Clean up storage
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
 
       return {
         success: true,
         accessToken
       };
     } catch (err) {
-      localStorage.removeItem('line_state');
-      localStorage.removeItem('line_code_verifier');
+      // Clean up storage on error
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
 
       return {
         success: false,
@@ -146,6 +211,8 @@ export const lineAuth = {
     const url = new URL(window.location.href);
     url.searchParams.delete('code');
     url.searchParams.delete('state');
+    url.searchParams.delete('error');
+    url.searchParams.delete('error_description');
     window.history.replaceState({}, document.title, url.pathname);
   }
 };
