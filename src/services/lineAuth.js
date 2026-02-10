@@ -26,39 +26,6 @@ const generateCodeChallenge = async (verifier) => {
   return base64UrlEncode(hash);
 };
 
-// Storage helpers that use both localStorage and sessionStorage for reliability on mobile
-const storage = {
-  set: (key, value) => {
-    try {
-      localStorage.setItem(key, value);
-      sessionStorage.setItem(key, value);
-    } catch (e) {
-      console.error('Storage error:', e);
-      // Fallback to sessionStorage only
-      sessionStorage.setItem(key, value);
-    }
-  },
-  
-  get: (key) => {
-    try {
-      return localStorage.getItem(key) || sessionStorage.getItem(key);
-    } catch (e) {
-      console.error('Storage error:', e);
-      return sessionStorage.getItem(key);
-    }
-  },
-  
-  remove: (key) => {
-    try {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    } catch (e) {
-      console.error('Storage error:', e);
-      sessionStorage.removeItem(key);
-    }
-  }
-};
-
 // Exchange authorization code for access token
 const exchangeCodeForToken = async (code, codeVerifier) => {
   const params = new URLSearchParams({
@@ -102,18 +69,29 @@ export const lineAuth = {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    // Use hybrid storage for mobile reliability
-    storage.set('line_state', state);
-    storage.set('line_code_verifier', codeVerifier);
+    // Encode verifier in the state parameter itself
+    // Format: state_timestamp_verifier
+    const combinedState = `${state}_${Date.now()}_${codeVerifier}`;
     
-    // Also store timestamp to detect expired sessions
-    storage.set('line_auth_timestamp', Date.now().toString());
+    // Store in multiple places as backup
+    try {
+      localStorage.setItem('line_state', state);
+      localStorage.setItem('line_code_verifier', codeVerifier);
+      sessionStorage.setItem('line_state', state);
+      sessionStorage.setItem('line_code_verifier', codeVerifier);
+      
+      // Also store in cookie as final fallback
+      document.cookie = `line_state=${state}; path=/; max-age=600; SameSite=Lax`;
+      document.cookie = `line_verifier=${codeVerifier}; path=/; max-age=600; SameSite=Lax`;
+    } catch (e) {
+      console.warn('Storage not available:', e);
+    }
 
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: LINE_CLIENT_ID,
       redirect_uri: LINE_REDIRECT_URI,
-      state: state,
+      state: combinedState, // Send combined state
       scope: 'profile openid email',
       code_challenge: codeChallenge,
       code_challenge_method: 'S256'
@@ -126,7 +104,7 @@ export const lineAuth = {
   async handleCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    const state = urlParams.get('state');
+    const stateParam = urlParams.get('state');
     const error = urlParams.get('error');
     const errorDescription = urlParams.get('error_description');
 
@@ -138,17 +116,53 @@ export const lineAuth = {
       return { success: false, error: 'Missing authorization code' };
     }
 
-    const savedState = storage.get('line_state');
-    const codeVerifier = storage.get('line_code_verifier');
-    const timestamp = storage.get('line_auth_timestamp');
+    let state, codeVerifier, timestamp;
 
-    // Check if session expired (5 minutes timeout)
+    // Try to extract from state parameter first (most reliable)
+    if (stateParam && stateParam.includes('_')) {
+      const parts = stateParam.split('_');
+      if (parts.length === 3) {
+        state = parts[0];
+        timestamp = parseInt(parts[1]);
+        codeVerifier = parts[2];
+        
+        console.log('Retrieved from state parameter');
+      }
+    }
+
+    // Fallback: Try to get from storage
+    if (!state || !codeVerifier) {
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      };
+
+      state = localStorage.getItem('line_state') || 
+              sessionStorage.getItem('line_state') || 
+              getCookie('line_state');
+              
+      codeVerifier = localStorage.getItem('line_code_verifier') || 
+                     sessionStorage.getItem('line_code_verifier') || 
+                     getCookie('line_verifier');
+      
+      console.log('Retrieved from storage/cookies');
+    }
+
+    // Check if we have the required data
+    if (!state || !codeVerifier) {
+      return {
+        success: false,
+        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง (Auth data missing, please try again)'
+      };
+    }
+
+    // Check timeout (10 minutes)
     if (timestamp) {
-      const elapsed = Date.now() - parseInt(timestamp);
-      if (elapsed > 5 * 60 * 1000) { // 5 minutes
-        storage.remove('line_state');
-        storage.remove('line_code_verifier');
-        storage.remove('line_auth_timestamp');
+      const elapsed = Date.now() - timestamp;
+      if (elapsed > 10 * 60 * 1000) {
+        this.cleanup();
         return {
           success: false,
           error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง (Session expired, please try again)'
@@ -156,47 +170,48 @@ export const lineAuth = {
       }
     }
 
-    // Validate state - FIXED LOGIC
-    if (!savedState || !codeVerifier) {
+    // Validate state (extract just the state part if it came from parameter)
+    const receivedState = stateParam ? stateParam.split('_')[0] : stateParam;
+    if (receivedState !== state) {
+      this.cleanup();
       return {
         success: false,
-        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง (Auth data missing, please try again)'
-      };
-    }
-
-    if (state !== savedState) {
-      storage.remove('line_state');
-      storage.remove('line_code_verifier');
-      storage.remove('line_auth_timestamp');
-      return {
-        success: false,
-        error: 'State mismatch - possible CSRF attack'
+        error: 'State mismatch - please try again'
       };
     }
 
     // Exchange code for access token
     try {
       const accessToken = await exchangeCodeForToken(code, codeVerifier);
-
-      // Clean up storage
-      storage.remove('line_state');
-      storage.remove('line_code_verifier');
-      storage.remove('line_auth_timestamp');
+      this.cleanup();
 
       return {
         success: true,
         accessToken
       };
     } catch (err) {
-      // Clean up storage on error
-      storage.remove('line_state');
-      storage.remove('line_code_verifier');
-      storage.remove('line_auth_timestamp');
+      this.cleanup();
 
       return {
         success: false,
         error: err.message || 'Failed to get access token'
       };
+    }
+  },
+
+  cleanup() {
+    // Clean up all storage
+    try {
+      localStorage.removeItem('line_state');
+      localStorage.removeItem('line_code_verifier');
+      sessionStorage.removeItem('line_state');
+      sessionStorage.removeItem('line_code_verifier');
+      
+      // Clear cookies
+      document.cookie = 'line_state=; path=/; max-age=0';
+      document.cookie = 'line_verifier=; path=/; max-age=0';
+    } catch (e) {
+      console.warn('Cleanup error:', e);
     }
   },
 
