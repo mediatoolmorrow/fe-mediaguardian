@@ -4,6 +4,9 @@ import ResultFull from "../components/Result/ResultFull";
 import FeedbackPopUp from "../components/FeedbackPopUp";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { RefreshCw } from "lucide-react";
+
+const MAX_REGENERATE_PER_RESULT = 3;
 
 function ResultViewpage() {
     const { id } = useParams();
@@ -13,6 +16,8 @@ function ResultViewpage() {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [regenerating, setRegenerating] = useState(false);
+    const [regenerateError, setRegenerateError] = useState(null);
 
     // Check if survey was completed (from navigation state)
     const [isSurveySubmitted, setIsSurveySubmitted] = useState(
@@ -73,6 +78,49 @@ function ResultViewpage() {
         // TODO: Send feedback to backend when ready
         setShowFeedbackPopup(false);
         navigate("/nextstep");
+    };
+
+    // Get regenerate count from result
+    const regenerateCount = result?.regenerateCount || 0;
+    const canRegenerate = regenerateCount < MAX_REGENERATE_PER_RESULT;
+
+    // Handle regenerate
+    const handleRegenerate = async () => {
+        if (!canRegenerate || regenerating) return;
+
+        const token = localStorage.getItem('backend_token');
+        if (!token) {
+            setRegenerateError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+            return;
+        }
+
+        setRegenerating(true);
+        setRegenerateError(null);
+
+        try {
+            const newResult = await api.regenerateAdvice(token, id);
+            setResult(newResult);
+        } catch (err) {
+            console.error("Error regenerating:", err);
+            // Check for rate limit error
+            const errorMsg = err.message?.toLowerCase() || '';
+            if (
+                err.status === 429 ||
+                errorMsg.includes('rate limit') ||
+                errorMsg.includes('limit reached') ||
+                errorMsg.includes('daily limit') ||
+                errorMsg.includes('too many requests') ||
+                errorMsg.includes('exceeded')
+            ) {
+                setRegenerateError("ถึงขีดจำกัดการสร้างใหม่วันนี้แล้ว");
+            } else if (errorMsg.includes('regenerate limit')) {
+                setRegenerateError("ถึงขีดจำกัดการสร้างใหม่สำหรับคำตอบนี้แล้ว (3 ครั้ง)");
+            } else {
+                setRegenerateError(err.message || "ไม่สามารถสร้างคำตอบใหม่ได้");
+            }
+        } finally {
+            setRegenerating(false);
+        }
     };
 
     if (loading) {
@@ -192,8 +240,38 @@ function ResultViewpage() {
 
     return (
         <div className="w-full min-h-full flex flex-col items-center py-6 px-4">
-            <ResultFull 
-                description={fallbackText} 
+            <div className="w-full max-w-[500px] px-4 mb-4">
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={handleRegenerate}
+                        disabled={!canRegenerate || regenerating}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            canRegenerate && !regenerating
+                                ? 'bg-primary text-white hover:bg-primary/90'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    >
+                        <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
+                        {regenerating ? 'กำลังสร้างใหม่...' : 'สร้างคำตอบอีกครั้ง'}
+                    </button>
+                    <span className="text-sm text-gray-500">
+                        สร้างใหม่แล้ว {regenerateCount}/{MAX_REGENERATE_PER_RESULT} ครั้ง
+                    </span>
+                </div>
+                {regenerateError && (
+                    <div className="mt-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                        {regenerateError}
+                    </div>
+                )}
+                {!canRegenerate && !regenerateError && (
+                    <p className="mt-2 text-xs text-gray-500">
+                        ถึงขีดจำกัดการสร้างใหม่สำหรับคำตอบนี้แล้ว
+                    </p>
+                )}
+            </div>
+
+            <ResultFull
+                description={fallbackText}
                 structuredOutput={structuredOutput}
                 onCopy={handleCopyAction}
                 allowNavigation={!isSurveySubmitted}

@@ -349,6 +349,26 @@ export const api = {
 
     return response.json();
   },
+  /* Regenerate */
+  async regenerateAdvice(token, promptId) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/regenerate/${promptId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to regenerate advice');
+    }
+
+    return response.json();
+  },
+
   /* Results */
   async getResultById(token, resultId) {
     const response = await fetch(`${API_BASE_URL}/api/prompts/${resultId}`, {
