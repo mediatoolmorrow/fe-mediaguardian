@@ -51,8 +51,10 @@ function ResultListpage() {
                     total = data.total || data.totalCount || data.data.length;
                 }
 
+                // Helper to parse Firestore Timestamp or regular date
                 const getTimestamp = (dateValue) => {
                     if (!dateValue) return 0;
+                    // Firestore Timestamp with _seconds
                     if (dateValue._seconds !== undefined) {
                         return dateValue._seconds * 1000;
                     }
@@ -160,7 +162,7 @@ function ResultListpage() {
                     </div>
 
                     {results.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg flex flex-cols items-center border border-gray-100">
+                        <div className="text-center py-12 bg-white rounded-lg border border-gray-100">
                             <img
                                 src="/icon/result.svg"
                                 alt="No results"

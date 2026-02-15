@@ -62,7 +62,7 @@ export default function Navbar(){
                         </button>
                     </>
                 ) : (
-                    <button className="btn-login" onClick={()=>navigate("/login")} > เข้าสู่ระบบ </button>
+                    <button className="btn-login" onClick={()=>navigate("/")} >  </button>
                 )}
             </div>
         </div>
