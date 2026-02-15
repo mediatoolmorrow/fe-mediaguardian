@@ -16,6 +16,7 @@ export default function PromptBox({
   const [uploadedImage, setUploadedImage] = useState(null);
   const [contentDescription, setcontentDescription] = useState(""); 
   const [imageFile, setImageFile] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   const mode = [
     {
@@ -43,6 +44,17 @@ export default function PromptBox({
       onModeChange(selected);
     }
   }, [selected, onModeChange]);
+
+  // Auto-detect URL and switch to link mode
+  useEffect(() => {
+    if (selected === "text" && textContent.trim().startsWith("https://")) {
+      setSelected("link");
+      setLinkContent(textContent.trim());
+      setTextContent("");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }
+  }, [textContent, selected]);
 
   useEffect(() => {
     if (onContentChange) {
@@ -247,6 +259,20 @@ export default function PromptBox({
             *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
           </span>
         )}
+      </div>
+
+      {/* Toast Notification */}
+      <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-300 ease-in-out ${
+        showToast ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+      }`}>
+        <div className="bg-primary text-white px-6 py-3 rounded-xl shadow-2xl text-sm flex items-center gap-3">
+          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+            <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="font-medium">เปลี่ยนเป็นโหมดลิงก์แล้ว</span>
+        </div>
       </div>
     </div>
   );
