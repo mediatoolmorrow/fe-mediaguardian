@@ -47,8 +47,11 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
       try {
         await navigator.share({
           title: title,
-          text: 'ลองใช้ Media Guardians กันเถอะ!',
-          url: url,
+          text: `อยากชวนทุกคนมาลองใช้ดู
+ตัวช่วยที่จะทำให้การสื่อสารของเราสร้างสรรค์ขึ้น
+#MediaGuardians #ชุมชนเฝ้าระวังสื่อ
+
+${url}`,
         });
       } catch (err) {
         console.log('Share cancelled or failed:', err);
@@ -60,18 +63,22 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
     {
       name: "Facebook",
       icon: "/social-media/facebook.svg",
-      onClick: () =>
+      onClick: () => {
+        // Note: Facebook pulls text from Open Graph meta tags on the shared URL
+        // The 'quote' parameter is deprecated and unreliable
+        // For custom text to appear, add og:description meta tag to your website
         window.open(
           `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
           "_blank"
-        ),
+        );
+      },
     },
     {
       name: "Twitter",
       icon: "/social-media/twitter.svg",
       onClick: () =>
         window.open(
-          `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`,
+          `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent('อยากชวนทุกคนมาลองใช้ดู\nตัวช่วยที่จะทำให้การสื่อสารของเราสร้างสรรค์ขึ้น\n#MediaGuardians #ชุมชนเฝ้าระวังสื่อ')}`,
           "_blank"
         ),
     },
@@ -80,7 +87,7 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
       icon: "/social-media/line.svg",
       onClick: () =>
         window.open(
-          `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`,
+          `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent('อยากชวนทุกคนมาลองใช้ดู\nตัวช่วยที่จะทำให้การสื่อสารของเราสร้างสรรค์ขึ้น\n#MediaGuardians #ชุมชนเฝ้าระวังสื่อ')}`,
           "_blank"
         ),
     },
@@ -88,7 +95,6 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
 
   return (
     <>
-      {/* Toast Notification */}
       {showToast && (
         <div
           className="fixed bottom-1/2 left-1/2 traslate-x-1/2 translate-y-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-[60] animate-fade-in-out"
@@ -155,7 +161,7 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Copied!
+                  คัดลอกแล้ว!
                 </>
               ) : (
                 <>
@@ -164,7 +170,7 @@ export default function Modal({ url = "https://mediaguardians-development.vercel
                     alt="Copy"
                     className="w-3.5 h-3.5"
                   />
-                  Copy
+                  คัดลอก
                 </>
               )}
             </button>

@@ -307,18 +307,19 @@ const handleSubmit = async () => {
           
           <h1 className="text-xl font-bold text-primary">
             {currentPage === 1 ? (
-              <>
+              <div>
                 ปัญหาที่พบ
                 <span className="ml-2 text-xs font-medium text-gray-400">
-                  (กดเลือกเพียง 1 เป้าหมายที่ท่านต้องการ)
+                  (กดเลือกเพียง 1 ปัญหาที่ท่านเจอ)
                 </span>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex items-center justify-center  text-end">
                 ความกังวลที่พบ
-                <span className="ml-2 text-xs text-gray-400">
+                <span className="ml-2 text-xs font-medium text-gray-400">
+                  (กดเลือกเพียง 1 ความกังวลที่ท่านเจอ)
                 </span>
-              </>
+              </div>
             )}
           </h1>
 
@@ -359,15 +360,6 @@ const handleSubmit = async () => {
 {currentPage === 2 && (
   <div className="space-y-8 animate-fadeIn">
     <section>
-      <div className="flex gap-2 items-center">
-        <h2 className="text-base font-semibold text-primary mb-4">
-          ผลกระทบที่อาจเกิดขึ้น
-        </h2>
-        <p className="text-xs text-gray-400 mb-4">
-          (กดเลือกเพียง 1 ความกังวลที่ท่านเจอ)
-        </p>
-       </div>
-
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {page2Impacts.map(impact => (
           <ChoiceCard
@@ -385,7 +377,7 @@ const handleSubmit = async () => {
     
     <section>
       <div className="flex gap-2 items-center">
-        <h2 className="text-base font-semibold text-primary mb-4">
+        <h2 className="text-xl font-bold text-primary mb-4">
           เป้าหมายการใช้งาน
         </h2>
         <p className="text-xs text-gray-400 mb-4">
