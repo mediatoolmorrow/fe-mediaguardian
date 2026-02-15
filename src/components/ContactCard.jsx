@@ -53,7 +53,7 @@ export default function ContactCard({
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
           {tel && (
             <a 
-              href={`tel:${tel}`}
+              href={`${tel}`}
               className="flex items-center gap-1 text-text/70 hover:text-primary transition"
               onClick={(e) => e.stopPropagation()}
             >
