@@ -1,31 +1,28 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import FeedbackModal from "./FeedbackModal";
 
-function ResultFull({ 
-    description, 
-    structuredOutput, 
-    onCopy, 
-    onSurveyComplete, 
+function ResultFull({
+    description,
+    structuredOutput,
+    onCopy,
+    onSurveyComplete,
     allowNavigation = true,
-    onFeedbackChange // New prop to send feedback data to parent
+    onFeedbackChange
 }) {
     const { backendUser, isAdmin } = useAuth();
     const [showToast, setShowToast] = useState(false);
     const [activeOptionTab, setActiveOptionTab] = useState(0);
-    
+
     // Feedback state for each option
     const [ratings, setRatings] = useState({});
     const [explanations, setExplanations] = useState({});
 
-    const isAdminOrResearcher = isAdmin || backendUser?.role === "researcher";
+    // Modal state for admin feedback
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [pendingFeedback, setPendingFeedback] = useState({ feedbackKey: "0-0", ratingType: null });
 
-    // Debug logging
-    console.log('=== ResultFull Debug ===');
-    console.log('structuredOutput:', structuredOutput);
-    console.log('decisionMaking:', structuredOutput?.decisionMaking);
-    console.log('options:', structuredOutput?.decisionMaking?.options);
-    console.log('description:', description?.substring?.(0, 100) || description);
-    console.log('========================');
+    const isAdminOrResearcher = isAdmin || backendUser?.role === "researcher";
 
     const handleCopy = (text) => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -52,39 +49,158 @@ function ResultFull({
         }
     };
 
-    const handleRatingChange = (optionIndex, value) => {
-        const newRatings = {
-            ...ratings,
-            [optionIndex]: ratings[optionIndex] === value ? null : value
-        };
-        setRatings(newRatings);
-        
-        // Notify parent component
+    // Calculate total questions across all options
+    const getTotalQuestionKeys = () => {
+        const keys = [];
+        options.forEach((option, optionIndex) => {
+            const questions = parseQuestions(option.recommendation);
+            questions.forEach((_, qIndex) => {
+                keys.push(`${optionIndex}-${qIndex}`);
+            });
+        });
+        return keys;
+    };
+
+    // Get question text by key
+    const getQuestionText = (feedbackKey) => {
+        const [optionIdx, questionIdx] = feedbackKey.split('-').map(Number);
+        const option = options[optionIdx];
+        if (!option) return "";
+        const questions = parseQuestions(option.recommendation);
+        return questions[questionIdx]?.text || "";
+    };
+
+    // Get option title by index
+    const getOptionTitle = (optionIdx) => {
+        const option = options[optionIdx];
+        return option?.title || `ข้อแนะนำที่ ${optionIdx + 1}`;
+    };
+
+    // Notify parent with feedback data and completion status
+    const notifyFeedbackChange = (newRatings, newExplanations) => {
         if (onFeedbackChange) {
+            const allKeys = getTotalQuestionKeys();
+            const completedCount = allKeys.filter(key => newRatings[key]).length;
+            const totalCount = allKeys.length;
+            const isAllComplete = completedCount === totalCount && totalCount > 0;
+
+            // Build questionTexts map for each rated question
+            const questionTexts = {};
+            const optionTitles = {};
+            Object.keys(newRatings).forEach(key => {
+                if (newRatings[key]) {
+                    questionTexts[key] = getQuestionText(key);
+                    const [optionIdx] = key.split('-').map(Number);
+                    optionTitles[key] = getOptionTitle(optionIdx);
+                }
+            });
+
             onFeedbackChange({
                 ratings: newRatings,
-                explanations: isAdminOrResearcher ? explanations : null
+                explanations: newExplanations,
+                questionTexts,
+                optionTitles,
+                completedCount,
+                totalCount,
+                isAllComplete
             });
         }
     };
 
-    const handleExplanationChange = (optionIndex, fieldIndex, value) => {
+    // feedbackKey format: "optionIndex-questionIndex" e.g. "0-0", "0-1", "1-2"
+    const handleRatingChange = (feedbackKey, value) => {
+        if (isAdminOrResearcher) {
+            // For admin/researcher: open modal to collect detailed feedback
+            setPendingFeedback({ feedbackKey, ratingType: value });
+            setShowFeedbackModal(true);
+        } else {
+            // For regular user: just toggle the selection (no modal)
+            const newRatings = {
+                ...ratings,
+                [feedbackKey]: ratings[feedbackKey] === value ? null : value
+            };
+            setRatings(newRatings);
+            notifyFeedbackChange(newRatings, explanations);
+        }
+    };
+
+    // Handle feedback submission from modal (admin/researcher only)
+    const handleFeedbackSubmit = (feedbackKey, ratingType, answers) => {
+        const newRatings = {
+            ...ratings,
+            [feedbackKey]: ratingType
+        };
+        setRatings(newRatings);
+
         const newExplanations = {
             ...explanations,
-            [optionIndex]: {
-                ...(explanations[optionIndex] || {}),
-                [fieldIndex]: value
+            [feedbackKey]: {
+                reason: answers.reason,
+                example: answers.example,
+                explanation: answers.explanation
             }
         };
         setExplanations(newExplanations);
-        
-        // Notify parent component
-        if (onFeedbackChange) {
-            onFeedbackChange({
-                ratings: ratings,
-                explanations: isAdminOrResearcher ? newExplanations : null
+        notifyFeedbackChange(newRatings, newExplanations);
+    };
+
+    const getModalInitialValues = (feedbackKey) => {
+        const existing = explanations[feedbackKey] || {};
+        return {
+            reason: existing.reason || "",
+            example: existing.example || "",
+            explanation: existing.explanation || ""
+        };
+    };
+
+    // Parse recommendation text to extract individual questions
+    const parseQuestions = (recommendationText) => {
+        if (!recommendationText) return [];
+
+        // Split by คำถามที่ pattern (supports both <b> tags and plain text)
+        const pattern = /(<b>)?คำถามที่\s*(\d+)\s*:?\s*(<\/b>)?/gi;
+        const parts = recommendationText.split(pattern).filter(Boolean);
+
+        // If no คำถามที่ found, return the whole text as one question
+        if (!pattern.test(recommendationText)) {
+            return [{ label: "", text: recommendationText }];
+        }
+
+        // Rebuild questions from split parts
+        const questions = [];
+        let currentText = "";
+        let currentNum = null;
+
+        // Reset pattern for matching
+        const matchPattern = /(<b>)?คำถามที่\s*(\d+)\s*:?\s*(<\/b>)?/gi;
+        let match;
+        let lastIndex = 0;
+
+        while ((match = matchPattern.exec(recommendationText)) !== null) {
+            // Save previous question if exists
+            if (currentNum !== null) {
+                const endIndex = match.index;
+                const text = recommendationText.substring(lastIndex, endIndex).trim();
+                questions.push({
+                    label: `คำถามที่ ${currentNum}`,
+                    text: text
+                });
+            }
+
+            currentNum = match[2];
+            lastIndex = match.index + match[0].length;
+        }
+
+        // Add the last question
+        if (currentNum !== null) {
+            const text = recommendationText.substring(lastIndex).trim();
+            questions.push({
+                label: `คำถามที่ ${currentNum}`,
+                text: text
             });
         }
+
+        return questions.length > 0 ? questions : [{ label: "", text: recommendationText }];
     };
 
     const options = structuredOutput?.decisionMaking?.options
@@ -124,7 +240,7 @@ function ResultFull({
             )}
 
             <div className="w-full max-w-[500px] px-3 sm:px-4 space-y-3 sm:space-y-4">
-                <div className="px-2"> 
+                <div className="px-2">
                     <h2 className="font-bold text-primary text-center text-xl sm:text-lg md:text-xl lg:text-2xl leading-tight">
                         วิธีการสื่อสาร ตัดสินใจ และหาทางออก <br className="hidden sm:block" />
                         <span className="sm:hidden"> </span>
@@ -134,8 +250,9 @@ function ResultFull({
                         <span className="sm:hidden"> </span>
                     </h2>
                 </div>
-                
-                <div className="bg-white items-center flex flex-col justify-center p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 space-y-4"> 
+
+                <div className="bg-white items-center flex flex-col justify-center p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                    {/* Tab buttons */}
                     <div className="flex gap-2 flex-wrap justify-center w-full">
                         {options.map((_, index) => (
                             <button
@@ -162,38 +279,121 @@ function ResultFull({
                                 </div>
                             </div>
 
+                            {/* ข้อความที่แนะนำ - Each question in separate gray box */}
                             {currentOption.recommendation && (
-                            <div>
-                                <p className="text-xs sm:text-sm text-gray-600 mb-2">ข้อความที่แนะนำ</p>
+                                <div className="space-y-3">
+                                    <p className="text-xs sm:text-sm text-gray-600">ข้อความที่แนะนำ</p>
 
-                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4 relative">
+                                    {/* Render each question in its own gray box */}
+                                    {parseQuestions(currentOption.recommendation).map((question, qIndex) => {
+                                        const feedbackKey = `${activeOptionTab}-${qIndex}`;
+                                        return (
+                                            <div key={qIndex} className="bg-gray-100 rounded-lg p-3 sm:p-4 space-y-3">
+                                                {/* Question label */}
+                                                {question.label && (
+                                                    <p className="text-xs font-semibold text-primary">
+                                                        {question.label}
+                                                    </p>
+                                                )}
 
-                                <p
-                                    className="text-xs sm:text-sm text-gray-800 [&_b]:font-bold text-start pr-6 sm:pr-8 break-words leading-relaxed"
-                                    dangerouslySetInnerHTML={{
-                                    __html: currentOption.recommendation
-                                    .replace(/\r\n|\r|\n/g, "<br/>")    
-                                    .replace(/\\n/g, "<br/>")      
-                                    }}
-                                />
+                                                {/* Question text */}
+                                                <p
+                                                    className="text-xs sm:text-sm text-gray-800 [&_b]:font-bold text-start break-words leading-relaxed"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: question.text
+                                                            .replace(/\r\n|\r|\n/g, "<br/>")
+                                                            .replace(/\\n/g, "<br/>")
+                                                    }}
+                                                />
 
-                                 <button
-                                    onClick={() =>
-                                    handleCopy(
-                                        currentOption.recommendation
-                                        .replace(/<[^>]*>/g, "")    
-                                        .replace(/\\n/g, "\n")     
-                                    )
-                                    }
-                                    className="absolute bottom-2 right-2 p-1 sm:p-1.5 bg-white hover:bg-gray-200 rounded text-xs gap-1 justify-center items-center flex transition-colors"
-                                    title="คัดลอก"
-                                >
-                                    <img src="/icon/copy.svg" alt="Copy" className="w-3 h-3 sm:w-4 sm:h-4" />
-                                    <span className="hidden sm:inline">คัดลอก</span>
-                                </button>
+                                                {/* Action buttons row: Copy + Like + Improve */}
+                                                <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                                                    {/* Copy button */}
+                                                    <button
+                                                        onClick={() =>
+                                                            handleCopy(
+                                                                question.text
+                                                                    .replace(/<[^>]*>/g, "")
+                                                                    .replace(/\\n/g, "\n")
+                                                            )
+                                                        }
+                                                        className="flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-gray-200 rounded-lg text-xs transition-colors border border-gray-300"
+                                                        title="คัดลอก"
+                                                    >
+                                                        <img src="/icon/copy.svg" alt="Copy" className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                        <span>คัดลอก</span>
+                                                    </button>
 
+                                                    {/* Spacer */}
+                                                    <div className="flex-1" />
+
+                                                    {/* Like button */}
+                                                    <button
+                                                        onClick={() => handleRatingChange(feedbackKey, "like")}
+                                                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-all border ${
+                                                            ratings[feedbackKey] === "like"
+                                                                ? "border-primary bg-primary/10 text-primary"
+                                                                : "border-gray-300 bg-white hover:border-primary/50 text-gray-600"
+                                                        }`}
+                                                        title="ชอบ"
+                                                    >
+                                                        <span>👍</span>
+                                                        <span className="hidden sm:inline">ชอบ</span>
+                                                    </button>
+
+                                                    {/* Improve button */}
+                                                    <button
+                                                        onClick={() => handleRatingChange(feedbackKey, "improve")}
+                                                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-all border ${
+                                                            ratings[feedbackKey] === "improve"
+                                                                ? "border-yellow-500 bg-yellow-50 text-yellow-700"
+                                                                : "border-gray-300 bg-white hover:border-yellow-300 text-gray-600"
+                                                        }`}
+                                                        title="อยากให้ปรับปรุง"
+                                                    >
+                                                        <span>💡</span>
+                                                        <span className="hidden sm:inline">ปรับปรุง</span>
+                                                    </button>
+                                                </div>
+
+                                                {/* Show saved feedback summary for admin/researcher */}
+                                                {isAdminOrResearcher && ratings[feedbackKey] && explanations[feedbackKey] && (
+                                                    <div className="p-3 bg-white rounded-lg border border-gray-200">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <p className="text-xs text-gray-600 font-medium">
+                                                                บันทึกของคุณ
+                                                            </p>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setPendingFeedback({ feedbackKey, ratingType: ratings[feedbackKey] });
+                                                                    setShowFeedbackModal(true);
+                                                                }}
+                                                                className="text-xs text-primary hover:underline"
+                                                            >
+                                                                แก้ไข
+                                                            </button>
+                                                        </div>
+                                                        {explanations[feedbackKey].reason && (
+                                                            <p className="text-xs text-gray-700 mb-1">
+                                                                <span className="font-medium">สาเหตุ:</span> {explanations[feedbackKey].reason}
+                                                            </p>
+                                                        )}
+                                                        {explanations[feedbackKey].example && (
+                                                            <p className="text-xs text-gray-700 mb-1">
+                                                                <span className="font-medium">ตัวอย่าง:</span> {explanations[feedbackKey].example}
+                                                            </p>
+                                                        )}
+                                                        {explanations[feedbackKey].explanation && (
+                                                            <p className="text-xs text-gray-700">
+                                                                <span className="font-medium">เหตุผล:</span> {explanations[feedbackKey].explanation}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                            </div>
                             )}
 
                             {/* ข้อแนะนำในการใช้ - Examples */}
@@ -227,65 +427,18 @@ function ResultFull({
                             )}
                         </div>
                     )}
-
-                    {/* Like/Dislike Feedback Section */}
-                    <div className="w-full border-t pt-4 space-y-3">
-                        <p className="text-xs sm:text-sm text-gray-600 text-center font-medium">
-                            คุณคิดอย่างไรกับข้อแนะนำที่ {activeOptionTab + 1}?
-                        </p>
-                        
-                        {/* Rating buttons */}
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => handleRatingChange(activeOptionTab, "like")}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border-2 transition-all text-sm ${
-                                    ratings[activeOptionTab] === "like"
-                                        ? "border-primary bg-primary/10"
-                                        : "border-gray-200 hover:border-primary/50 bg-white"
-                                }`}
-                            >
-                                <span>👍</span>
-                                <span>ชอบ</span>
-                            </button>
-
-                            <button
-                                onClick={() => handleRatingChange(activeOptionTab, "improve")}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border-2 transition-all text-sm ${
-                                    ratings[activeOptionTab] === "improve"
-                                        ? "border-yellow-500 bg-yellow-50"
-                                        : "border-gray-200 hover:border-yellow-300 bg-white"
-                                }`}
-                            >
-                                <span>💡</span>
-                                <span>อยากให้ปรับปรุง</span>
-                            </button>
-                        </div>
-
-                        {/* Admin/Researcher text boxes */}
-                        {isAdminOrResearcher && (
-                            <div className="space-y-2 pt-2">
-                                <p className="text-xs text-gray-600 font-medium">
-                                    บันทึกสำหรับผู้วิจัย
-                                </p>
-                                {["สาเหตุที่ชอบ หรืออยากให้ปรับปรุง", "ตัวอย่างการปรับปรุง", "เหตุผลอธิบายตัวอย่าง"].map((fieldNum) => (
-                                    <div key={fieldNum}>
-                                        <label className="text-xs text-gray-500 mb-1 block">
-                                            {fieldNum}
-                                        </label>
-                                        <textarea
-                                            value={explanations[activeOptionTab]?.[fieldNum] || ''}
-                                            onChange={(e) => handleExplanationChange(activeOptionTab, fieldNum, e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
-                                            rows="2"
-                                            placeholder={`เขียนคำอธิบาย`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
                 </div>
             </div>
+
+            {/* Feedback Modal for Admin/Researcher */}
+            <FeedbackModal
+                isOpen={showFeedbackModal}
+                onClose={() => setShowFeedbackModal(false)}
+                onSubmit={handleFeedbackSubmit}
+                feedbackKey={pendingFeedback.feedbackKey}
+                ratingType={pendingFeedback.ratingType}
+                initialValues={getModalInitialValues(pendingFeedback.feedbackKey)}
+            />
         </>
     );
 }

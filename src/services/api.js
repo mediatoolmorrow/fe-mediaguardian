@@ -369,6 +369,28 @@ export const api = {
     return response.json();
   },
 
+  /* Feedback */
+  async submitFeedback(token, promptId, feedbackData) {
+    // feedbackData: { feedbacks: [{ optionIndex, questionIndex, rating, optionTitle, example, explanations }] }
+    const response = await fetch(`${API_BASE_URL}/api/prompts/${promptId}/feedback`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(feedbackData)
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to submit feedback');
+    }
+
+    return response.json();
+  },
+
   /* Results */
   async getResultById(token, resultId) {
     const response = await fetch(`${API_BASE_URL}/api/prompts/${resultId}`, {

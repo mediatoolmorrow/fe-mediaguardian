@@ -25,6 +25,18 @@ function ResultViewpage() {
     );
     const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
 
+    // Store feedback data from ResultFull
+    const [feedbackData, setFeedbackData] = useState({
+        ratings: {},
+        explanations: {},
+        questionTexts: {},
+        optionTitles: {},
+        completedCount: 0,
+        totalCount: 0,
+        isAllComplete: false
+    });
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
+
     // Refresh user data on mount to get latest flags
     useEffect(() => {
         refreshBackendUser();
@@ -56,9 +68,55 @@ function ResultViewpage() {
         }
     }, [id]);
 
-    // Handle copy action - navigate to survey with result ID
+    // Handle copy action - just show notification (navigation handled by "ไปต่อ" button)
     const handleCopyAction = () => {
-        // Navigate to correct survey based on isSubmitFirstForm flag
+        // Copy action completed - no navigation needed
+        // Survey navigation is now handled by handleContinue
+        console.log("Text copied");
+    };
+
+    // Handle continue button - only works when at least 1 feedback is given
+    const handleContinue = async () => {
+        if (feedbackData.completedCount < 1) return;
+
+        const token = localStorage.getItem('backend_token');
+
+        // Send feedback to API - structured by recommendation
+        const hasRatings = Object.keys(feedbackData.ratings || {}).length > 0;
+        if (hasRatings && token) {
+            setSubmittingFeedback(true);
+            try {
+                // Transform feedback data to be structured by recommendation
+                const feedbacks = [];
+                Object.entries(feedbackData.ratings || {}).forEach(([key, rating]) => {
+                    if (rating) {
+                        const [optionIndex, questionIndex] = key.split('-').map(Number);
+                        // Clean HTML tags from question text
+                        const rawText = feedbackData.questionTexts?.[key] || "";
+                        const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\\n/g, "\n").trim();
+
+                        feedbacks.push({
+                            optionIndex,
+                            questionIndex,
+                            rating,
+                            optionTitle: feedbackData.optionTitles?.[key] || `ข้อแนะนำที่ ${optionIndex + 1}`,
+                            example: cleanText,  // The actual question text that was rated
+                            explanations: feedbackData.explanations?.[key] || null
+                        });
+                    }
+                });
+
+                await api.submitFeedback(token, id, { feedbacks });
+                console.log("Feedback submitted successfully:", feedbacks);
+            } catch (err) {
+                console.error("Error submitting feedback:", err);
+                // Continue navigation even if feedback fails
+            } finally {
+                setSubmittingFeedback(false);
+            }
+        }
+
+        // Navigate to survey page
         if (backendUser?.isSubmitFirstForm) {
             navigate("/survey/3", { state: { resultId: id } });
         } else {
@@ -66,10 +124,9 @@ function ResultViewpage() {
         }
     };
 
-    // Handle continue button - only works after survey is submitted
-    const handleContinue = () => {
-        if (!isSurveySubmitted) return;
-        navigate("/nextstep");
+    // Handle feedback change from ResultFull
+    const handleFeedbackChange = (data) => {
+        setFeedbackData(data);
     };
 
     // Handle feedback popup continue
@@ -271,23 +328,40 @@ function ResultViewpage() {
             </div>
 
             <ResultFull
+                resultId={id}
                 description={fallbackText}
                 structuredOutput={structuredOutput}
                 onCopy={handleCopyAction}
                 allowNavigation={!isSurveySubmitted}
+                onFeedbackChange={handleFeedbackChange}
             />
 
             <div className="w-full max-w-[500px] mt-6 px-4 space-y-4">
+                {/* Progress indicator
+                {feedbackData.totalCount > 0 && (
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600">
+                            ให้คะแนนคำแนะนำแล้ว {feedbackData.completedCount}/{feedbackData.totalCount} ข้อ
+                        </p>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div
+                                className="bg-primary h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${(feedbackData.completedCount / feedbackData.totalCount) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                )}
+                */}
                 <button
                     className={`w-full py-3 rounded-full font-medium transition-colors ${
-                        isSurveySubmitted 
-                            ? 'bg-primary text-white hover:bg-primary/90' 
+                        feedbackData.completedCount >= 1 && !submittingFeedback
+                            ? 'bg-primary text-white hover:bg-primary/90'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                     onClick={handleContinue}
-                    disabled={!isSurveySubmitted}
+                    disabled={feedbackData.completedCount < 1 || submittingFeedback}
                 >
-                    {isSurveySubmitted ? 'ไปต่อ' : 'ไปต่อ'}
+                    {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 1 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
                 </button>
                 <button
                     className="text-primary w-full py-3 underline font-medium transition-colors"

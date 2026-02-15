@@ -81,7 +81,7 @@ function Surveypage() {
       await refreshBackendUser();
 
       if (resultId) {
-        navigate(`/result/${resultId}`, { 
+        navigate(`/nextstep`, { 
           state: { surveyCompleted: true } 
         });
       } else {
