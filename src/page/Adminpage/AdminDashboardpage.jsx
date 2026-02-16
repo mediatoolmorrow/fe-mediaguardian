@@ -191,83 +191,22 @@ export default function AdminDashboard() {
     }
   };
 
-  // Mock feedback data - replace with actual API call when backend is ready
+  // Load feedback data from API
   const loadFeedbackData = async () => {
     setFeedbackLoading(true);
     setFeedbackError('');
     try {
-      // TODO: Replace with actual API call: await api.getFeedbackData(token);
-      // For now, using mock data
-      const mockData = {
-        summary: {
-          totalFeedback: 43,
-          totalLikes: 34,
-          totalImproves: 9,
-          likeRatio: "79.1%",
-          withExplanations: 6
-        },
-        optionStats: {
-          option1: { likes: 34, improves: 9 },
-          option2: { likes: 35, improves: 8 },
-          option3: { likes: 33, improves: 10 }
-        },
-        recentFeedback: [
-          {
-            id: 1,
-            date: "2024-01-15 14:30",
-            role: "admin",
-            ratings: { option1: "like", option2: "improve", option3: "like" },
-            hasExplanations: true,
-            explanations: {
-              option1: "ข้อมูลถูกต้องและเป็นประโยชน์มาก",
-              option2: "ควรเพิ่มรายละเอียดเกี่ยวกับแหล่งอ้างอิง",
-              option3: "ตอบตรงประเด็นดี"
-            }
-          },
-          {
-            id: 2,
-            date: "2024-01-15 12:15",
-            role: "researcher",
-            ratings: { option1: "like", option2: "like", option3: "improve" },
-            hasExplanations: true,
-            explanations: {
-              option1: "วิเคราะห์ได้ครอบคลุม",
-              option2: "ชอบวิธีการนำเสนอ",
-              option3: "ควรเพิ่มมุมมองที่หลากหลายขึ้น"
-            }
-          },
-          {
-            id: 3,
-            date: "2024-01-15 10:45",
-            role: "user",
-            ratings: { option1: "like", option2: "like", option3: "like" },
-            hasExplanations: false,
-            explanations: null
-          },
-          {
-            id: 4,
-            date: "2024-01-14 16:20",
-            role: "user",
-            ratings: { option1: "improve", option2: "like", option3: "like" },
-            hasExplanations: false,
-            explanations: null
-          },
-          {
-            id: 5,
-            date: "2024-01-14 09:30",
-            role: "admin",
-            ratings: { option1: "improve", option2: "improve", option3: "like" },
-            hasExplanations: true,
-            explanations: {
-              option1: "ข้อมูลยังไม่ครบถ้วน ควรเพิ่มบริบท",
-              option2: "ภาษาที่ใช้ยังไม่เหมาะสมกับกลุ่มเป้าหมาย",
-              option3: "ดีแล้ว"
-            }
-          }
-        ]
-      };
-
-      setFeedbackData(mockData);
+      const token = getToken();
+      if (!token) {
+        setFeedbackError('No authentication token found');
+        return;
+      }
+      const response = await api.getFeedbackChartData(token);
+      if (response.success) {
+        setFeedbackData(response.data);
+      } else {
+        setFeedbackError(response.message || 'Failed to load feedback data');
+      }
     } catch (error) {
       console.error('Failed to load feedback data:', error);
       setFeedbackError(error.message || 'Failed to load feedback data');
@@ -279,9 +218,12 @@ export default function AdminDashboard() {
   const handleDownloadFeedbackCSV = async () => {
     setFeedbackCsvDownloading(true);
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // await api.downloadFeedbackCSV(token);
-      alert('Feedback CSV download will be available when backend API is implemented');
+      const token = getToken();
+      if (!token) {
+        alert('No authentication token found');
+        return;
+      }
+      await api.downloadFeedbackCSV(token);
     } catch (error) {
       console.error('Failed to download Feedback CSV:', error);
       alert('Failed to download CSV: ' + error.message);

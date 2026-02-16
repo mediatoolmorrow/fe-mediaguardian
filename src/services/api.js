@@ -540,6 +540,45 @@ export const api = {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  },
+
+  /* Feedback Admin */
+  async getFeedbackChartData(token) {
+    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/charts`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch feedback data');
+    }
+
+    return response.json();
+  },
+
+  async downloadFeedbackCSV(token) {
+    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/download/csv`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to download CSV');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `feedback-data-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 };
 
