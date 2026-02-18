@@ -425,6 +425,21 @@ function ResultFull({
                                     </div>
                                 </div>
                             )}
+
+                            {/* Legal Reference Box - แสดงเฉพาะเมื่อ field มีอยู่และไม่ว่าง */}
+                            {'legal_reference' in currentOption && currentOption.legal_reference && (
+                                <div>
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-lg">⚖️</span>
+                                            <p className="text-xs sm:text-sm font-medium text-blue-800">อ้างอิงกฎหมาย</p>
+                                        </div>
+                                        <p className="text-xs sm:text-sm text-blue-700 break-words leading-relaxed">
+                                            {currentOption.legal_reference}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
