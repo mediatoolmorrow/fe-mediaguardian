@@ -1,5 +1,13 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.getElementById("main-scroll")?.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 import Pageframe from "./components/Pageframe/Pageframe";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -20,6 +28,7 @@ import Historypage from "./page/Historypage";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route element={<Pageframe />}>
           {/* Public Routes */}

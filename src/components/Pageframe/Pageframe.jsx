@@ -20,7 +20,7 @@ export default function Pageframe() {
 
             <Navbar />
 
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main id="main-scroll" className="flex-1 overflow-y-auto bg-background">
             <Outlet />     
         </main>
 
