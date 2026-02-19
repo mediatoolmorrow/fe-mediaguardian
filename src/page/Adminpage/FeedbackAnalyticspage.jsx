@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { Download, MessageSquareHeart, RefreshCw, ThumbsUp, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import MonthYearFilter from "../../components/Admin/MonthYearFilter";
 
 ChartJS.register(
   CategoryScale,
@@ -31,6 +32,12 @@ export default function FeedbackAnalyticspage({
   downloading,
 }) {
   const [expandedRows, setExpandedRows] = useState({});
+  const [filter, setFilter] = useState({ month: null, year: null });
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    onRefresh(newFilter);
+  };
 
   const toggleRow = (id) => {
     setExpandedRows(prev => ({
@@ -123,9 +130,14 @@ export default function FeedbackAnalyticspage({
             <p className="text-3xl font-bold text-gray-900">{summary?.totalFeedback || 0}</p>
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <MonthYearFilter
+            month={filter.month}
+            year={filter.year}
+            onChange={handleFilterChange}
+          />
           <button
-            onClick={onRefresh}
+            onClick={() => onRefresh(filter)}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <RefreshCw size={18} />
@@ -180,7 +192,7 @@ export default function FeedbackAnalyticspage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Overall Rating Distribution */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Overall Rating Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">Overall Rating Distribution</h2>
           <div className="h-64">
             <Doughnut data={overallRatingData} options={doughnutOptions} />
           </div>
@@ -188,7 +200,7 @@ export default function FeedbackAnalyticspage({
 
         {/* Ratings by Option */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Ratings by Option</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">Ratings by Option</h2>
           <div className="h-64">
             <Bar
               data={{
@@ -222,7 +234,7 @@ export default function FeedbackAnalyticspage({
 
       {/* Recent Feedback Table */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Feedback</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">Recent Feedback</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

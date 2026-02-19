@@ -121,6 +121,16 @@
   }
 }
 
+/* Hide native scrollbar on mobile (replaced by custom MobileScrollbar) */
+@media (max-width: 639px) {
+  #main-scroll {
+    scrollbar-width: none;
+  }
+  #main-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @keyframes fadeInOut {
   0% {
     opacity: 0;

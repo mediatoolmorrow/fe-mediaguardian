@@ -482,8 +482,12 @@ export const api = {
   },
 
   /* Survey Admin */
-  async getSurveyChartData(token) {
-    const response = await fetch(`${API_BASE_URL}/api/survey/admin/charts`, {
+  async getSurveyChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/survey/admin/charts${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -521,8 +525,12 @@ export const api = {
   },
 
   /* Prompt Admin */
-  async getPromptChartData(token) {
-    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/charts`, {
+  async getPromptChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/charts${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -560,8 +568,12 @@ export const api = {
   },
 
   /* Feedback Admin */
-  async getFeedbackChartData(token) {
-    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/charts`, {
+  async getFeedbackChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/charts${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

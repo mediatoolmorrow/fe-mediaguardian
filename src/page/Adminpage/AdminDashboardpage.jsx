@@ -110,7 +110,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadSurveyChartData = async () => {
+  const loadSurveyChartData = async ({ month, year } = {}) => {
     setSurveyLoading(true);
     setSurveyError('');
     try {
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
         setSurveyError('No authentication token found');
         return;
       }
-      const response = await api.getSurveyChartData(token);
+      const response = await api.getSurveyChartData(token, { month, year });
       if (response.success) {
         setSurveyChartData(response.data);
       } else {
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadPromptChartData = async () => {
+  const loadPromptChartData = async ({ month, year } = {}) => {
     setPromptLoading(true);
     setPromptError('');
     try {
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
         setPromptError('No authentication token found');
         return;
       }
-      const response = await api.getPromptChartData(token);
+      const response = await api.getPromptChartData(token, { month, year });
       if (response.success) {
         setPromptChartData(response.data);
       } else {
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
   };
 
   // Load feedback data from API
-  const loadFeedbackData = async () => {
+  const loadFeedbackData = async ({ month, year } = {}) => {
     setFeedbackLoading(true);
     setFeedbackError('');
     try {
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
         setFeedbackError('No authentication token found');
         return;
       }
-      const response = await api.getFeedbackChartData(token);
+      const response = await api.getFeedbackChartData(token, { month, year });
       if (response.success) {
         setFeedbackData(response.data);
       } else {
