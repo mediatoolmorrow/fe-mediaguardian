@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PromptBox from "../components/PromptBox";
 import ChoiceCard from "../components/ChoiceCard";
@@ -31,6 +31,15 @@ function PromptPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [rateLimitReached, setRateLimitReached] = useState(false);
+  const [rateLimit, setRateLimit] = useState({ remaining: null, limit: 100 });
+
+  useEffect(() => {
+    const token = localStorage.getItem('backend_token');
+    if (!token) return;
+    api.getUserRateLimit(token)
+      .then(data => setRateLimit(data))
+      .catch(() => {}); // keep loading state on error until backend is ready
+  }, []);
 
   // Content from PromptBox
   const [promptMode, setPromptMode] = useState("text");
@@ -256,6 +265,7 @@ const handleSubmit = async () => {
           readOnly={currentPage === 2}
           onModeChange={handleModeChange}
           onContentChange={handleContentChange}
+          rateLimit={rateLimit}
           onValidationChange={handleValidationChange}
         />
 

@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 
+function hoursUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  return Math.ceil((midnight - now) / (1000 * 60 * 60));
+}
+
 export default function PromptBox({
   readOnly = false,
   onModeChange,
   onContentChange,
   onValidationChange,
   initialMode = "text",
-  initialContent = ""
+  initialContent = "",
+  rateLimit = null,
 }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(initialMode);
@@ -237,11 +245,6 @@ export default function PromptBox({
         </div>
       )}
     </div>
-      {readOnly && (
-            <span className="text-xs underline text-gray-400">
-              *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
-            </span>
-          )}
       </div>
     </div>
 
@@ -257,6 +260,28 @@ export default function PromptBox({
             onChange={(e) => setcontentDescription(e.target.value)}
           />
         </div>
+      </div>
+
+      {/* Bottom bar: rate limit left, read-only notice right */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+        <div className={`shrink-0 text-xs leading-tight px-2 py-1 rounded-lg ${
+          rateLimit?.remaining <= 0
+            ? 'text-red-700'
+            : rateLimit?.remaining <= 3 && rateLimit?.remaining != null
+            ? 'text-amber-700'
+            : 'text-green-700'
+        }`}>
+          <p className="whitespace-nowrap">
+            วันนี้ใช้ได้อีก{' '}
+            <span className="font-bold text-sm">{rateLimit?.remaining ?? '...'}</span>{' '}
+            ครั้ง จะรีเซ็ตในอีก {hoursUntilMidnight()} ชั่วโมง
+          </p>
+        </div>
+        {readOnly && (
+          <span className="text-xs underline text-gray-400 shrink-0">
+            *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
+          </span>
+        )}
       </div>
 
       {/* Toast Notification */}

@@ -424,6 +424,17 @@ export const api = {
     return response.json();
   },
 
+  async getUserRateLimit(token) {
+    const response = await fetch(`${API_BASE_URL}/api/user/rate-limit`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to fetch rate limit');
+    }
+    return response.json();
+  },
+
   async incrementDailyLimit(token) {
     const response = await fetch(`${API_BASE_URL}/api/user/reward-limit`, {
       method: 'POST',
