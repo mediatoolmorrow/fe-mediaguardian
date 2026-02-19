@@ -251,8 +251,7 @@ function ResultFull({
                     </h2>
                 </div>
 
-                <div className="bg-white items-center flex flex-col justify-center p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                    {/* Tab buttons */}
+                <div className="bg-white items-center flex flex-col justify-center p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 space-y-1">
                     <div className="flex gap-2 flex-wrap justify-center w-full">
                         {options.map((_, index) => (
                             <button
@@ -267,6 +266,7 @@ function ResultFull({
                                 ข้อแนะนำที่ {index + 1}
                             </button>
                         ))}
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1 italic"> สามารถเลือกดูได้ 3 ข้อแนะนำ </p>
                     </div>
 
                     {currentOption && (

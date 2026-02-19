@@ -308,14 +308,14 @@ const handleSubmit = async () => {
           <h1 className="text-xl font-bold text-primary">
             {currentPage === 1 ? (
               <div>
-                ปัญหาที่พบ
+                3. ปัญหาที่พบ
                 <span className="ml-2 text-xs font-medium text-gray-400">
                   (กดเลือกเพียง 1 ปัญหาที่ท่านเจอ)
                 </span>
               </div>
             ) : (
               <div className="flex items-center justify-center  text-end">
-                ความกังวลที่พบ
+                4. ความกังวลที่พบ
                 <span className="ml-2 text-xs font-medium text-gray-400">
                   (กดเลือกเพียง 1 ความกังวลที่ท่านเจอ)
                 </span>
@@ -378,7 +378,7 @@ const handleSubmit = async () => {
     <section>
       <div className="flex gap-2 items-center">
         <h2 className="text-xl font-bold text-primary mb-4">
-          เป้าหมายการใช้งาน
+          5. เป้าหมายการใช้งาน
         </h2>
         <p className="text-xs text-gray-400 mb-4">
           (กดเลือกเพียง 1 เป้าหมายที่ท่านต้องการ)

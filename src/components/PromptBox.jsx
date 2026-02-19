@@ -45,7 +45,6 @@ export default function PromptBox({
     }
   }, [selected, onModeChange]);
 
-  // Auto-detect URL and switch to link mode
   useEffect(() => {
     if (selected === "text" && textContent.trim().startsWith("https://")) {
       setSelected("link");
@@ -131,9 +130,7 @@ export default function PromptBox({
   return (
     <div className="relative max-w-[647px] bg-white border border-primary rounded-2xl p-4 flex flex-col gap-3"
       style={{ minHeight: '300px' }}> 
-      <p className="font-bold text-primary">ข้อมูลประกอบ</p>
-
-      {/* Main content area with proper flex sizing */}
+      <p className="font-bold text-primary">1. ข้อมูลประกอบ</p>
       <div className="flex-shrink-0" style={{ height: '140px' }}>
         {selected === "text" && (
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
@@ -197,24 +194,9 @@ export default function PromptBox({
               </label>
             )}
           </div>
+          
         )}
       </div>
-
-      {/* สถานการณ์ section - always visible */}
-      <div className="flex-shrink-0">
-        <p className="font-bold text-primary mb-2">สถานการณ์</p>
-        <div className="border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary" style={{ height: '64px' }}>
-          <textarea
-            placeholder="บอกเราว่าคุณเป็นใคร กำลังคุยกับใคร ไปเจอสื่ออะไรมา..."
-            className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
-            readOnly={readOnly}
-            value={contentDescription}
-            onChange={(e) => setcontentDescription(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Dropdown section */}
       <div className="relative">
         <div className="relative w-[133px]">
           <button
@@ -254,6 +236,22 @@ export default function PromptBox({
             </div>
           )}
         </div>
+      </div>
+      {/* สถานการณ์ section - always visible */}
+      <div className="flex-shrink-0">
+        <p className="font-bold text-primary mb-2">2. สถานการณ์</p>
+        <div className="border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary" style={{ height: '64px' }}>
+          <textarea
+            placeholder="บอกเราว่าคุณเป็นใคร กำลังคุยกับใคร ไปเจอสื่ออะไรมา..."
+            className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
+            readOnly={readOnly}
+            value={contentDescription}
+            onChange={(e) => setcontentDescription(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="relative mb-4">
         {readOnly && (
           <span className="absolute top-0 right-0 text-xs underline text-gray-400">
             *ไม่สามารถแก้ไขได้ในขั้นตอนนี้

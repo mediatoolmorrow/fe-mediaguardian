@@ -424,6 +424,23 @@ export const api = {
     return response.json();
   },
 
+  async incrementDailyLimit(token) {
+    const response = await fetch(`${API_BASE_URL}/api/user/reward-limit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to increment daily limit');
+    }
+
+    return response.json();
+  },
+
   /* Survey */
   async submitSurvey(token, formSet, answers) {
     const response = await fetch(`${API_BASE_URL}/api/survey/submit`, {

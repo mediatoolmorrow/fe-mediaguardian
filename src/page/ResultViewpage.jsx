@@ -116,12 +116,8 @@ function ResultViewpage() {
             }
         }
 
-        // Navigate to survey page
-        if (backendUser?.isSubmitFirstForm) {
-            navigate("/survey/3", { state: { resultId: id } });
-        } else {
-            navigate("/survey/2", { state: { resultId: id } });
-        }
+        // Navigate to next step
+        navigate("/nextstep", { state: { resultId: id } });
     };
 
     // Handle feedback change from ResultFull
