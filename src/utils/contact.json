@@ -59,7 +59,7 @@
       "name_th": "มูลนิธิอินเทอร์เน็ตร่วมพัฒนาไทย",
       "description": "รับแจ้งเบาะแสเนื้อหาที่ผิดกฎหมายและเป็นอันตรายบนโลกออนไลน์ เช่น สื่อลามกอนาจารเด็ก การล่วงละเมิดทางเพศเด็กออนไลน์ เว็บพนัน ข่าวปลอม และความรุนแรง โดยประสานงานกับผู้ให้บริการอินเทอร์เน็ตเพื่อนำเนื้อหาออกและส่งต่อให้ตำรวจดำเนินคดี",
       "channels": {
-        "call": "mailto:028601358",
+        "call": "028601358",
         "facebook": "https://www.facebook.com/thaihotline.org?locale=th_TH",
         "website": "https://www.thaihotline.org/report/",
         "email": "mailto:admin@thaihotline.org"
