@@ -1,8 +1,11 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 
 export default function Pageframe() {
+  const { pathname } = useLocation();
+  const hideNavbar = ["/login", "/"].includes(pathname);
+
   return (
     <div className="font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center sm:p-6"
       style={{
@@ -18,7 +21,7 @@ export default function Pageframe() {
             overflow-hidden
             ">
 
-            <Navbar />
+            {!hideNavbar && <Navbar />}
 
         <main id="main-scroll" className="flex-1 overflow-y-auto bg-background">
             <Outlet />     

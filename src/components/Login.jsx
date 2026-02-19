@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { lineAuth } from "../services/lineAuth";
@@ -219,11 +220,7 @@ export default function Login() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                        <img
-                            src="/icon/hide.svg"
-                            alt="toggle password"
-                            className="w-5 h-5"
-                        />
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                 </div>
 
