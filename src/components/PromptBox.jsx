@@ -198,45 +198,53 @@ export default function PromptBox({
         )}
       </div>
       <div className="relative">
-        <div className="relative w-[133px]">
-          <button
-            disabled={readOnly}
-            type="button"
-            onClick={() => setOpen(!open)}
-            className="w-full h-[27px] text-white bg-primary rounded-lg px-2 flex items-center justify-between text-xs"
-          >
-            <div className="flex items-center gap-2">
-              <img src={current.icon} className="w-3 h-3" alt="" />
-              <span>{current.displayName}</span>
-            </div>
-            <img src="/icon/dropdown.svg" alt="" />
-          </button>
-
-          {open && (
-            <div className="absolute top-full mt-1 z-10 w-full bg-white border border-[#F0F0F0] rounded-lg shadow p-1">
-              {mode
-                .filter((item) => item.id !== selected)
-                .map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setSelected(item.id);
-                      setOpen(false);
-                    }}
-                    className="group w-full px-2 py-1.5 flex items-center gap-2 text-xs text-text hover:bg-primary hover:text-white rounded-lg transition-colors"
-                  >
-                    <img
-                      src={item.icon}
-                      className="w-3 h-3 brightness-50 group-hover:brightness-0 group-hover:invert transition-all"
-                      alt=""
-                    />
-                    <span>{item.displayName}</span>
-                  </button>
-                ))}
-            </div>
-          )}
+  <div className="flex items-center justify-between">
+    <div className="relative w-[133px]">
+      <button
+        disabled={readOnly}
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full h-[27px] text-white bg-primary rounded-lg px-2 flex items-center justify-between text-xs"
+      >
+        <div className="flex items-center gap-2">
+          <img src={current.icon} className="w-3 h-3" alt="" />
+          <span>{current.displayName}</span>
         </div>
+        <img src="/icon/dropdown.svg" alt="" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1 z-10 w-full bg-white border border-[#F0F0F0] rounded-lg shadow p-1">
+          {mode
+            .filter((item) => item.id !== selected)
+            .map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setSelected(item.id);
+                  setOpen(false);
+                }}
+                className="group w-full px-2 py-1.5 flex items-center gap-2 text-xs text-text hover:bg-primary hover:text-white rounded-lg transition-colors"
+              >
+                <img
+                  src={item.icon}
+                  className="w-3 h-3 brightness-50 group-hover:brightness-0 group-hover:invert transition-all"
+                  alt=""
+                />
+                <span>{item.displayName}</span>
+              </button>
+            ))}
+        </div>
+      )}
+    </div>
+      {readOnly && (
+            <span className="text-xs underline text-gray-400">
+              *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
+            </span>
+          )}
       </div>
+    </div>
+
       {/* สถานการณ์ section - always visible */}
       <div className="flex-shrink-0">
         <p className="font-bold text-primary mb-2">2. สถานการณ์</p>
@@ -249,14 +257,6 @@ export default function PromptBox({
             onChange={(e) => setcontentDescription(e.target.value)}
           />
         </div>
-      </div>
-
-      <div className="relative mb-4">
-        {readOnly && (
-          <span className="absolute top-0 right-0 text-xs underline text-gray-400">
-            *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
-          </span>
-        )}
       </div>
 
       {/* Toast Notification */}
