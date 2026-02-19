@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import ChoiceCheck from "../components/Survey/ChoiceCheck";
+import DropdownSelect from "../components/Survey/DropdownSelect";
+import SearchableDropdown from "../components/Survey/SearchableDropdown";
 import Banner from "../components/Banner";
 import { surveyTemplate } from "../utils/surveyTemplate";
 import { useAuth } from "../context/AuthContext";
@@ -179,6 +181,30 @@ function Surveypage() {
                         />
                       ))}
                     </div>
+                  ) : question.type === "dropdown" ? (
+                    <DropdownSelect
+                      options={question.options}
+                      value={currentAnswer.length > 0 ? currentAnswer[0] : null}
+                      onChange={(index) => {
+                        if (index === null) {
+                          setAnswers({ ...answers, [question.id]: [] });
+                        } else {
+                          handleSelectAnswer(question.id, index, 1);
+                        }
+                      }}
+                    />
+                  ) : question.type === "dropdown-search" ? (
+                    <SearchableDropdown
+                      options={question.options}
+                      value={currentAnswer.length > 0 ? currentAnswer[0] : null}
+                      onChange={(index) => {
+                        if (index === null) {
+                          setAnswers({ ...answers, [question.id]: [] });
+                        } else {
+                          handleSelectAnswer(question.id, index, 1);
+                        }
+                      }}
+                    />
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {question.options?.map((option, index) => (
