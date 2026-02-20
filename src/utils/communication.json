@@ -7,6 +7,11 @@
       "th": "ตอบกลับคอมเมนต์"
     },
     {
+      "id": "post",
+      "en": "communicate with creativity",
+      "th": "ตอบกลับเจ้าของโพสต์"
+    },
+    {
       "id": "child",
       "en": "communicate with child",
       "th": "ตั้งคำถามชวนคุยกับลูก"

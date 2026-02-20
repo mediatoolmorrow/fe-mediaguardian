@@ -23,6 +23,7 @@ const iconMap = {
   "friend" : "/choice-icon/talk/talk-friend.svg",
   "child" : "/choice-icon/talk/talk-child.svg",
   "creative" : "/choice-icon/talk/talk-creative.svg",
+  "post" : "/choice-icon/talk/talk-post.svg"
 };
 
 function PromptPage() {
@@ -176,6 +177,7 @@ const handleSubmit = async () => {
     // Map frontend communication labels to backend goal format
     const GOAL_MAPPING = {
       'ตอบกลับคอมเมนต์': 'ตอบกลับคอมเมนต์',
+      'ตอบกลับเจ้าของโพสต์': 'ตอบกลับเจ้าของโพสต์',
       'ชวนคิด ชวนคุยกับลูก / เด็กๆ': 'ตั้งคำถามชวนคุยกับลูก',
       'ชวนคิด ชวนคุยกับเพื่อน': 'ตั้งคำถามชวนคุยกับเพื่อน',
       'ชวนคิด ชวนคุยกับคนอายุมากกว่า': 'ตั้งคำถามชวนคุยกับคนที่อายุมากกว่า'
@@ -396,72 +398,58 @@ const handleSubmit = async () => {
        </div>
 
       <div className="space-y-3">
-        {/* Get available goals based on selected categories */}
+        {/* Always-visible reply row */}
+        <div className="grid grid-cols-2 gap-3">
+          <ChoiceCard
+            title="ตอบกลับคอมเมนต์"
+            iconSource={iconMap["creative"]}
+            selected={selectedItems.communication.includes("creative")}
+            onClick={() => toggleSelection("communication", "creative", 1)}
+          />
+          <ChoiceCard
+            title="ตอบกลับเจ้าของโพสต์"
+            iconSource={iconMap["post"]}
+            selected={selectedItems.communication.includes("post")}
+            onClick={() => toggleSelection("communication", "post", 1)}
+          />
+        </div>
+
+        {/* Dynamic options from selected categories */}
         {(() => {
           const availableGoals = new Map();
-          
-          // Collect all unique goals from selected categories
           selectedCategories.forEach(cat => {
             if (cat.goal && Array.isArray(cat.goal)) {
               cat.goal.forEach(g => {
-                if (!availableGoals.has(g.th)) {
-                  availableGoals.set(g.th, g);
-                }
+                if (!availableGoals.has(g.th)) availableGoals.set(g.th, g);
               });
             }
           });
-          
-          const goalsArray = Array.from(availableGoals.values());
-          
-          // Find "ตอบกลับคอมเมนต์" option
-          const replyOption = goalsArray.find(g => g.th === "ตอบกลับคอมเมนต์");
-          const otherOptions = goalsArray.filter(g => g.th !== "ตอบกลับคอมเมนต์");
-          
-          return (
-            <>
-              {/* First row - "ตอบกลับคอมเมนต์" */}
-              {replyOption && (
-                <div className="grid grid-cols-1 gap-3">
-                  <ChoiceCard
-                    title={replyOption.th}
-                    iconSource={iconMap["creative"] || iconMap.default}
-                    selected={selectedItems.communication.includes("creative")}
-                    onClick={() =>
-                      toggleSelection("communication", "creative", 1)
-                    }
-                  />
-                </div>
-              )}
 
-{/* Second row - Other options */}
-{otherOptions.length > 0 && (
-  <div className={`grid gap-3 ${otherOptions.length === 2 ? 'grid-cols-2' : otherOptions.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
-    {otherOptions.map((goal, index) => {
-      // Map goal text to icon ID
-      let iconId = "friend"; // default
-      if (goal.th.includes("ลูก") || goal.th.includes("เด็ก")) {
-        iconId = "child";
-      } else if (goal.th.includes("เพื่อน")) {
-        iconId = "friend";
-      } else if (goal.th.includes("อายุมากกว่า")) {
-        iconId = "elder";
-      }
-      
-      return (
-        <ChoiceCard
-          key={`${goal.th}-${index}`}
-          title={goal.th}
-          iconSource={iconMap[iconId] || iconMap.default}
-          selected={selectedItems.communication.includes(iconId)}
-          onClick={() =>
-            toggleSelection("communication", iconId, 1)
-          }
-        />
-      );
-    })}
-  </div>
-)}
-            </>
+          const otherOptions = Array.from(availableGoals.values()).filter(
+            g => g.th !== "ตอบกลับคอมเมนต์" && g.th !== "ตอบกลับเจ้าของโพสต์"
+          );
+
+          if (otherOptions.length === 0) return null;
+
+          return (
+            <div className={`grid gap-3 ${otherOptions.length === 1 ? 'grid-cols-1' : otherOptions.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {otherOptions.map((goal, index) => {
+                let iconId = "friend";
+                if (goal.th.includes("ลูก") || goal.th.includes("เด็ก")) iconId = "child";
+                else if (goal.th.includes("เพื่อน")) iconId = "friend";
+                else if (goal.th.includes("อายุมากกว่า")) iconId = "elder";
+
+                return (
+                  <ChoiceCard
+                    key={`${goal.th}-${index}`}
+                    title={goal.th}
+                    iconSource={iconMap[iconId] || iconMap.default}
+                    selected={selectedItems.communication.includes(iconId)}
+                    onClick={() => toggleSelection("communication", iconId, 1)}
+                  />
+                );
+              })}
+            </div>
           );
         })()}
       </div>
