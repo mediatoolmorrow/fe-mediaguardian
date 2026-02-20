@@ -427,7 +427,7 @@ function ResultFull({
                             )}
 
                             {/* Legal Reference Box - แสดงเฉพาะเมื่อ field มีอยู่และไม่ว่าง */}
-                            {'legal_reference' in currentOption && currentOption.legal_reference && (
+                            {'legal_reference' in currentOption && currentOption.legal_reference?.trim() && (
                                 <div>
                                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
                                         <div className="flex items-center gap-2 mb-2">
