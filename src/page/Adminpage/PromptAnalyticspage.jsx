@@ -24,6 +24,7 @@ import {
   Download,
   Repeat
 } from "lucide-react";
+import MonthYearFilter from "../../components/Admin/MonthYearFilter";
 
 ChartJS.register(
   CategoryScale,
@@ -47,6 +48,12 @@ export default function PromptAnalyticspage({
 }) {
   const [showAllLinks, setShowAllLinks] = useState(false);
   const INITIAL_LINKS_COUNT = 20;
+  const [filter, setFilter] = useState({ month: null, year: null });
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    onRefresh(newFilter);
+  };
 
   if (loading) {
     return (
@@ -141,9 +148,34 @@ export default function PromptAnalyticspage({
     return num.toString();
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("th-TH", {
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "-";
+
+    let date;
+
+    // Handle Firestore Timestamp object {_seconds, _nanoseconds}
+    if (dateValue._seconds !== undefined) {
+      date = new Date(dateValue._seconds * 1000);
+    }
+    // Handle Firestore Timestamp with seconds/nanoseconds
+    else if (dateValue.seconds !== undefined) {
+      date = new Date(dateValue.seconds * 1000);
+    }
+    // Handle Unix timestamp in seconds (10 digits)
+    else if (typeof dateValue === 'number' && dateValue < 10000000000) {
+      date = new Date(dateValue * 1000);
+    }
+    // Handle Unix timestamp in milliseconds or ISO string
+    else {
+      date = new Date(dateValue);
+    }
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return date.toLocaleDateString("th-TH", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -151,6 +183,48 @@ export default function PromptAnalyticspage({
       minute: "2-digit",
     });
   };
+
+  const detectPlatform = (url) => {
+    if (!url) return "อื่นๆ";
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, "").replace(/^m\./, "");
+      if (host.includes("facebook.com") || host.includes("fb.com") || host.includes("fb.watch")) return "Facebook";
+      if (host.includes("tiktok.com") || host.includes("vm.tiktok.com")) return "TikTok";
+      if (host.includes("youtube.com") || host.includes("youtu.be")) return "YouTube";
+      if (host.includes("instagram.com")) return "Instagram";
+      if (host.includes("twitter.com") || host.includes("x.com")) return "X (Twitter)";
+      if (host.includes("line.me") || host.includes("lin.ee")) return "LINE";
+      return "อื่นๆ";
+    } catch {
+      return "อื่นๆ";
+    }
+  };
+
+  const PLATFORM_COLORS = {
+    "Facebook":   "#1877F2",
+    "TikTok":     "#010101",
+    "YouTube":    "#FF0000",
+    "Instagram":  "#E1306C",
+    "X (Twitter)":"#1DA1F2",
+    "LINE":       "#06C755",
+    "อื่นๆ":      "#9CA3AF",
+  };
+
+  const platformCounts = (() => {
+    if (!linkList || linkList.length === 0) return null;
+    const counts = {};
+    linkList.forEach((link) => {
+      const p = detectPlatform(link.url);
+      counts[p] = (counts[p] || 0) + 1;
+    });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    return {
+      labels: sorted.map(([k]) => k),
+      data: sorted.map(([, v]) => v),
+      colors: sorted.map(([k]) => PLATFORM_COLORS[k] || "#9CA3AF"),
+      raw: counts,
+    };
+  })();
 
   const surveyCompletionRate = totalRegisteredUsers > 0
     ? Math.round((surveyCompletionStats?.completedAllSurveys / totalRegisteredUsers) * 100)
@@ -165,9 +239,14 @@ export default function PromptAnalyticspage({
       {/* Header with Refresh & Download */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-800">สถิติการใช้งาน</h2>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <MonthYearFilter
+            month={filter.month}
+            year={filter.year}
+            onChange={handleFilterChange}
+          />
           <button
-            onClick={onRefresh}
+            onClick={() => onRefresh(filter)}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <RefreshCw size={18} />
@@ -239,7 +318,7 @@ export default function PromptAnalyticspage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Survey Completion */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">สถานะการทำแบบสอบถาม</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">สถานะการทำแบบสอบถาม</h3>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3 mb-4">
@@ -286,7 +365,7 @@ export default function PromptAnalyticspage({
 
         {/* New vs Returning */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">ผู้ใช้ใหม่ vs ผู้ใช้ที่กลับมา</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">ผู้ใช้ใหม่ vs ผู้ใช้ที่กลับมา</h3>
 
           {/* Stats */}
           <div className="flex justify-center gap-8 mb-4">
@@ -330,7 +409,7 @@ export default function PromptAnalyticspage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Usage Frequency */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">ความถี่ในการใช้งาน</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">ความถี่ในการใช้งาน</h3>
           <div className="h-64">
             {userUsageDistribution?.data?.length > 0 ? (
               <Bar
@@ -355,7 +434,7 @@ export default function PromptAnalyticspage({
 
         {/* Mode Distribution */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">ประเภทการใช้งาน</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">ประเภทการใช้งาน</h3>
           <div className="h-64">
             {modeDistribution?.data?.length > 0 ? (
               <Doughnut
@@ -379,7 +458,7 @@ export default function PromptAnalyticspage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Problems */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">ประเภทปัญหา</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">ประเภทปัญหา</h3>
           <div className="h-64">
             {problems?.data?.length > 0 ? (
               <Bar
@@ -401,7 +480,7 @@ export default function PromptAnalyticspage({
 
         {/* Concerns */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">ความกังวล</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">ความกังวล</h3>
           <div className="h-64">
             {concerns?.data?.length > 0 ? (
               <Bar
@@ -426,7 +505,7 @@ export default function PromptAnalyticspage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Approaches */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">แนวทางการสื่อสาร</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">แนวทางการสื่อสาร</h3>
           <div className="h-64">
             {approaches?.data?.length > 0 ? (
               <Bar
@@ -448,7 +527,7 @@ export default function PromptAnalyticspage({
 
         {/* Goals */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">เป้าหมาย</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">เป้าหมาย</h3>
           <div className="h-64">
             {goals?.data?.length > 0 ? (
               <Bar
@@ -519,10 +598,50 @@ export default function PromptAnalyticspage({
         </div>
       </div>
 
-      {/* Row 8: Link List */}
+      {/* Row 8: Platform Distribution */}
+      {platformCounts && (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">
+            แพลตฟอร์มที่ส่งลิงก์มาวิเคราะห์
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+            {/* Stat cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {platformCounts.labels.map((label, i) => (
+                <div key={label} className="rounded-lg p-3 text-center" style={{ backgroundColor: PLATFORM_COLORS[label] + "18" }}>
+                  <p className="text-2xl font-bold" style={{ color: PLATFORM_COLORS[label] }}>
+                    {platformCounts.data[i]}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">{label}</p>
+                  <p className="text-xs text-gray-400">
+                    {Math.round((platformCounts.data[i] / linkList.length) * 100)}%
+                  </p>
+                </div>
+              ))}
+            </div>
+            {/* Doughnut chart */}
+            <div className="h-56">
+              <Doughnut
+                data={{
+                  labels: platformCounts.labels,
+                  datasets: [{
+                    data: platformCounts.data,
+                    backgroundColor: platformCounts.colors,
+                    borderWidth: 2,
+                    borderColor: "#fff",
+                  }],
+                }}
+                options={doughnutOptions}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Row 9: Link List */}
       {linkList && linkList.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">
             ลิงก์ที่วิเคราะห์ ({linkList.length})
           </h3>
           <div className="overflow-x-auto">

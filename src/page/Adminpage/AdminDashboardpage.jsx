@@ -7,6 +7,7 @@ import LoadingScreen from '../../components/Admin/LoadingScreen';
 import Statisticspage from './Statisticpage';
 import SurveyAnalyticspage from './SurveyAnalyticspage';
 import PromptAnalyticspage from './PromptAnalyticspage';
+import FeedbackAnalyticspage from './FeedbackAnalyticspage';
 import AdminManagementpage from './AdminManagementpage';
 import UserListpage from './UserListpage';
 import { api } from '../../services/api';
@@ -47,19 +48,26 @@ export default function AdminDashboard() {
   const [promptError, setPromptError] = useState('');
   const [promptCsvDownloading, setPromptCsvDownloading] = useState(false);
 
+  // Feedback Analytics State
+  const [feedbackData, setFeedbackData] = useState(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
+  const [feedbackCsvDownloading, setFeedbackCsvDownloading] = useState(false);
+
   useEffect(() => {
     if (!authLoading && backendUser && isAdmin) {
       loadVideoUrl();
       loadStats();
       loadSurveyChartData();
       loadPromptChartData();
+      loadFeedbackData();
     }
   }, [authLoading, backendUser, isAdmin]);
 
   const getToken = () => localStorage.getItem('backend_token');
 
   const handleBackToApp = () => {
-    navigate('/tutorial');
+    navigate('/agentic');
   };
 
   const handleLogout = async () => {
@@ -102,7 +110,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadSurveyChartData = async () => {
+  const loadSurveyChartData = async ({ month, year } = {}) => {
     setSurveyLoading(true);
     setSurveyError('');
     try {
@@ -111,7 +119,7 @@ export default function AdminDashboard() {
         setSurveyError('No authentication token found');
         return;
       }
-      const response = await api.getSurveyChartData(token);
+      const response = await api.getSurveyChartData(token, { month, year });
       if (response.success) {
         setSurveyChartData(response.data);
       } else {
@@ -143,7 +151,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const loadPromptChartData = async () => {
+  const loadPromptChartData = async ({ month, year } = {}) => {
     setPromptLoading(true);
     setPromptError('');
     try {
@@ -152,7 +160,7 @@ export default function AdminDashboard() {
         setPromptError('No authentication token found');
         return;
       }
-      const response = await api.getPromptChartData(token);
+      const response = await api.getPromptChartData(token, { month, year });
       if (response.success) {
         setPromptChartData(response.data);
       } else {
@@ -183,6 +191,46 @@ export default function AdminDashboard() {
     }
   };
 
+  // Load feedback data from API
+  const loadFeedbackData = async ({ month, year } = {}) => {
+    setFeedbackLoading(true);
+    setFeedbackError('');
+    try {
+      const token = getToken();
+      if (!token) {
+        setFeedbackError('No authentication token found');
+        return;
+      }
+      const response = await api.getFeedbackChartData(token, { month, year });
+      if (response.success) {
+        setFeedbackData(response.data);
+      } else {
+        setFeedbackError(response.message || 'Failed to load feedback data');
+      }
+    } catch (error) {
+      console.error('Failed to load feedback data:', error);
+      setFeedbackError(error.message || 'Failed to load feedback data');
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
+  const handleDownloadFeedbackCSV = async () => {
+    setFeedbackCsvDownloading(true);
+    try {
+      const token = getToken();
+      if (!token) {
+        alert('No authentication token found');
+        return;
+      }
+      await api.downloadFeedbackCSV(token);
+    } catch (error) {
+      console.error('Failed to download Feedback CSV:', error);
+      alert('Failed to download CSV: ' + error.message);
+    } finally {
+      setFeedbackCsvDownloading(false);
+    }
+  };
 
   const loadVideoUrl = async () => {
     try {
@@ -321,6 +369,8 @@ export default function AdminDashboard() {
         return 'Survey Analytics';
       case 'prompts':
         return 'Prompt Analytics';
+      case 'feedback':
+        return 'Feedback Analytics';
       case 'stats':
         return 'Website Statistics';
       case 'tutorial':
@@ -356,6 +406,17 @@ export default function AdminDashboard() {
             onRefresh={loadPromptChartData}
             onDownloadCSV={handleDownloadPromptCSV}
             downloading={promptCsvDownloading}
+          />
+        );
+      case 'feedback':
+        return (
+          <FeedbackAnalyticspage
+            feedbackData={feedbackData}
+            loading={feedbackLoading}
+            error={feedbackError}
+            onRefresh={loadFeedbackData}
+            onDownloadCSV={handleDownloadFeedbackCSV}
+            downloading={feedbackCsvDownloading}
           />
         );
       case 'stats':

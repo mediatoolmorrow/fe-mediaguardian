@@ -1,16 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ResultFull from "../components/Result/ResultFull";
+import FeedbackPopUp from "../components/FeedbackPopUp";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { RefreshCw } from "lucide-react";
+
+const MAX_REGENERATE_PER_RESULT = 3;
 
 function ResultViewpage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { backendUser, refreshBackendUser } = useAuth();
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [regenerating, setRegenerating] = useState(false);
+    const [regenerateError, setRegenerateError] = useState(null);
+
+    // Check if survey was completed (from navigation state)
+    const [isSurveySubmitted, setIsSurveySubmitted] = useState(
+        location.state?.surveyCompleted || false
+    );
+    const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+
+    // Store feedback data from ResultFull
+    const [feedbackData, setFeedbackData] = useState({
+        ratings: {},
+        explanations: {},
+        questionTexts: {},
+        optionTitles: {},
+        completedCount: 0,
+        totalCount: 0,
+        isAllComplete: false
+    });
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
 
     // Refresh user data on mount to get latest flags
     useEffect(() => {
@@ -43,6 +68,114 @@ function ResultViewpage() {
         }
     }, [id]);
 
+    // Handle copy action - just show notification (navigation handled by "ไปต่อ" button)
+    const handleCopyAction = () => {
+        // Copy action completed - no navigation needed
+        // Survey navigation is now handled by handleContinue
+        console.log("Text copied");
+    };
+
+    // Handle continue button - only works when at least 1 feedback is given
+    const handleContinue = async () => {
+        if (feedbackData.completedCount < 1) return;
+
+        const token = localStorage.getItem('backend_token');
+
+        // Send feedback to API - structured by recommendation
+        const hasRatings = Object.keys(feedbackData.ratings || {}).length > 0;
+        if (hasRatings && token) {
+            setSubmittingFeedback(true);
+            try {
+                // Transform feedback data to be structured by recommendation
+                const feedbacks = [];
+                Object.entries(feedbackData.ratings || {}).forEach(([key, rating]) => {
+                    if (rating) {
+                        const [optionIndex, questionIndex] = key.split('-').map(Number);
+                        // Clean HTML tags from question text
+                        const rawText = feedbackData.questionTexts?.[key] || "";
+                        const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\\n/g, "\n").trim();
+
+                        feedbacks.push({
+                            optionIndex,
+                            questionIndex,
+                            rating,
+                            optionTitle: feedbackData.optionTitles?.[key] || `ข้อแนะนำที่ ${optionIndex + 1}`,
+                            example: cleanText,  // The actual question text that was rated
+                            explanations: feedbackData.explanations?.[key] || null
+                        });
+                    }
+                });
+
+                await api.submitFeedback(token, id, { feedbacks });
+                console.log("Feedback submitted successfully:", feedbacks);
+            } catch (err) {
+                console.error("Error submitting feedback:", err);
+                // Continue navigation even if feedback fails
+            } finally {
+                setSubmittingFeedback(false);
+            }
+        }
+
+        // Navigate to next step
+        navigate("/nextstep", { state: { resultId: id } });
+    };
+
+    // Handle feedback change from ResultFull
+    const handleFeedbackChange = (data) => {
+        setFeedbackData(data);
+    };
+
+    // Handle feedback popup continue
+    const handleFeedbackContinue = (feedbackData) => {
+        console.log("Feedback received:", feedbackData);
+        // TODO: Send feedback to backend when ready
+        setShowFeedbackPopup(false);
+        navigate("/nextstep");
+    };
+
+    // Get regenerate count from result
+    const regenerateCount = result?.regenerateCount || 0;
+    const canRegenerate = regenerateCount < MAX_REGENERATE_PER_RESULT;
+
+    // Handle regenerate
+    const handleRegenerate = async () => {
+        if (!canRegenerate || regenerating) return;
+
+        const token = localStorage.getItem('backend_token');
+        if (!token) {
+            setRegenerateError("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+            return;
+        }
+
+        setRegenerating(true);
+        setRegenerateError(null);
+
+        try {
+            const newResult = await api.regenerateAdvice(token, id);
+            setResult(newResult);
+        } catch (err) {
+            console.error("Error regenerating:", err);
+            // Check for rate limit error
+            const errorMsg = err.message?.toLowerCase() || '';
+            if (
+                err.status === 429 ||
+                errorMsg.includes('rate limit') ||
+                errorMsg.includes('limit reached') ||
+                errorMsg.includes('daily limit') ||
+                errorMsg.includes('too many requests') ||
+                errorMsg.includes('exceeded')
+            ) {
+                setRegenerateError("ถึงขีดจำกัดการสร้างใหม่วันนี้แล้ว");
+            } else if (errorMsg.includes('regenerate limit')) {
+                setRegenerateError("ถึงขีดจำกัดการสร้างใหม่สำหรับคำตอบนี้แล้ว (3 ครั้ง)");
+            } else {
+                setRegenerateError(err.message || "ไม่สามารถสร้างคำตอบใหม่ได้");
+            }
+        } finally {
+            setRegenerating(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="w-full h-full flex items-center justify-center p-4">
@@ -62,9 +195,9 @@ function ResultViewpage() {
                 </div>
                 <button
                     className="btn-normal-active"
-                    onClick={() => navigate("/result")}
+                    onClick={() => navigate("/agentic")}
                 >
-                    กลับไปหน้ารายการ
+                    วิเคราะห์เนื้อหาใหม่
                 </button>
             </div>
         );
@@ -76,69 +209,161 @@ function ResultViewpage() {
                 <p className="text-gray-500">ไม่พบผลลัพธ์</p>
                 <button
                     className="btn-normal-active"
-                    onClick={() => navigate("/result")}
+                    onClick={() => navigate("/agentic")}
                 >
-                    กลับไปหน้ารายการ
+                    วิเคราะห์เนื้อหาใหม่
                 </button>
             </div>
         );
     }
 
-    // Extract the LLM response text
-    const responseText = result.llmResponse || result.output?.text || result.output || "";
+    // Extract the LLM response - check for structured output first
+    // Try multiple possible locations for the output data
+    let output = result.output || result.result || result.data || result.response;
+    const rawOutput = result.rawOutput || result.llmResponse || result.raw || "";
+
+    // Debug: Log the result structure
+    console.log("=== ResultViewpage Debug ===");
+    console.log("Full result object:", JSON.stringify(result, null, 2));
+    console.log("result.output:", result.output);
+    console.log("result.result:", result.result);
+    console.log("result.mode:", result.mode);
+    console.log("Output type:", typeof output);
+    console.log("Output value:", output);
+    console.log("============================");
+
+    // Determine if we have structured output or raw text
+    let structuredOutput = null;
+    let fallbackText = rawOutput;
+
+    // Helper function to safely parse JSON
+    const safeParseJSON = (str) => {
+        if (typeof str !== 'string') return str;
+        try {
+            return JSON.parse(str);
+        } catch (e) {
+            return null;
+        }
+    };
+
+    // Try to parse output if it's a string
+    if (typeof output === 'string') {
+        const parsed = safeParseJSON(output);
+        if (parsed) {
+            output = parsed;
+        } else {
+            // Not valid JSON, use as fallback text
+            fallbackText = output;
+            output = null;
+        }
+    }
+
+    // Check if output is nested (e.g., output.output or output.result)
+    if (output && typeof output === 'object') {
+        // Handle nested structure
+        if (output.output && typeof output.output === 'object') {
+            output = output.output;
+        } else if (output.result && typeof output.result === 'object') {
+            output = output.result;
+        } else if (typeof output.output === 'string') {
+            const parsed = safeParseJSON(output.output);
+            if (parsed) {
+                output = parsed;
+            }
+        }
+    }
+
+    if (output && typeof output === 'object') {
+        if (output.raw && !output.decisionMaking) {
+            fallbackText = output.raw;
+        } else if (output.factChecking || output.decisionMaking || output.impact || output.options) {
+            structuredOutput = output;
+            console.log("Found structured output:", structuredOutput);
+        } else {
+            fallbackText = JSON.stringify(output, null, 2);
+        }
+    }
+
+    if (!structuredOutput && result) {
+        if (result.decisionMaking || result.factChecking || result.options) {
+            structuredOutput = result;
+            console.log("Using result directly as structured output");
+        }
+    }
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-6 p-4">
-            {/* Mode indicator */}
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>โหมด:</span>
-                <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                    {result.mode === 'text' ? 'ข้อความ' : result.mode === 'image' ? 'รูปภาพ' : 'ลิงก์'}
-                </span>
-                {result.createdAt && (() => {
-                    try {
-                        const date = new Date(result.createdAt);
-                        if (isNaN(date.getTime())) return null;
-                        return (
-                            <span className="text-xs text-gray-400">
-                                {date.toLocaleDateString('th-TH', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
-                            </span>
-                        );
-                    } catch {
-                        return null;
-                    }
-                })()}
+        <div className="w-full min-h-full flex flex-col items-center py-6 px-4">
+            <div className="w-full max-w-[500px] px-4 mb-4">
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={handleRegenerate}
+                        disabled={!canRegenerate || regenerating}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            canRegenerate && !regenerating
+                                ? 'bg-primary text-white hover:bg-primary/90'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    >
+                        <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
+                        {regenerating ? 'กำลังสร้างใหม่...' : 'สร้างคำตอบอีกครั้ง'}
+                    </button>
+                    <span className="text-sm text-gray-500">
+                        สร้างใหม่แล้ว {regenerateCount}/{MAX_REGENERATE_PER_RESULT} ครั้ง
+                    </span>
+                </div>
+                {regenerateError && (
+                    <div className="mt-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                        {regenerateError}
+                    </div>
+                )}
+                {!canRegenerate && !regenerateError && (
+                    <p className="mt-2 text-xs text-gray-500">
+                        ถึงขีดจำกัดการสร้างใหม่สำหรับคำตอบนี้แล้ว
+                    </p>
+                )}
             </div>
 
-            <ResultFull description={responseText} />
+            <ResultFull
+                resultId={id}
+                description={fallbackText}
+                structuredOutput={structuredOutput}
+                onCopy={handleCopyAction}
+                allowNavigation={!isSurveySubmitted}
+                onFeedbackChange={handleFeedbackChange}
+            />
 
-            <div className="flex gap-3">
+            <div className="w-full max-w-[500px] mt-6 px-4 space-y-4">
+                {/* Progress indicator
+                {feedbackData.totalCount > 0 && (
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600">
+                            ให้คะแนนคำแนะนำแล้ว {feedbackData.completedCount}/{feedbackData.totalCount} ข้อ
+                        </p>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div
+                                className="bg-primary h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${(feedbackData.completedCount / feedbackData.totalCount) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                )}
+                */}
                 <button
-                    className="btn-normal-inactive"
-                    onClick={() => navigate("/result")}
+                    className={`w-full py-3 rounded-full font-medium transition-colors ${
+                        feedbackData.completedCount >= 1 && !submittingFeedback
+                            ? 'bg-primary text-white hover:bg-primary/90'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                    onClick={handleContinue}
+                    disabled={feedbackData.completedCount < 1 || submittingFeedback}
                 >
-                    กลับไปหน้ารายการ
+                    {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 1 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
                 </button>
                 <button
-                    className="btn-normal-active"
-                    onClick={() => {
-                        // Navigate to correct survey based on isSubmitFirstForm flag
-                        // If isSubmitFirstForm is false -> show survey 2 (first time after result)
-                        // If isSubmitFirstForm is true -> show survey 3 (subsequent times)
-                        if (backendUser?.isSubmitFirstForm) {
-                            navigate("/survey/3");
-                        } else {
-                            navigate("/survey/2");
-                        }
-                    }}
+                    className="text-primary w-full py-3 underline font-medium transition-colors"
+                    onClick={() => navigate("/agentic")}
                 >
-                    ไปต่อ
+                    วิเคราะห์เนื้อหาใหม่
                 </button>
             </div>
         </div>

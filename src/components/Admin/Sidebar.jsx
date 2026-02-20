@@ -1,11 +1,11 @@
 import React from "react";
-import { BarChart3, Video, ClipboardList, MessageSquare, Users, Shield } from "lucide-react";
+import { BarChart3, Video, ClipboardList, MessageSquare, MessageSquareHeart, Users, Shield } from "lucide-react";
 
 export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, isSuperAdmin }) {
   return (
     <div className={`${isOpen ? 'w-64' : 'w-0'} bg-gray-900 text-white transition-all duration-300 overflow-hidden relative`}>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-8">Admin Panel</h1>
+        <h1 className="text-2xl font-bold mb-8"> Admin Panel </h1>
         <nav className="space-y-2">
           <button
             onClick={() => onPageChange('survey')}
@@ -14,7 +14,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
             }`}
           >
             <ClipboardList size={20} />
-            <span>Survey Analytics</span>
+            <span> วิเคราะห์แบบสำรวจ </span>
           </button>
           <button
             onClick={() => onPageChange('prompts')}
@@ -23,7 +23,16 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
             }`}
           >
             <MessageSquare size={20} />
-            <span>Prompt Analytics</span>
+            <span> สถิติการใช้งาน </span>
+          </button>
+          <button
+            onClick={() => onPageChange('feedback')}
+            className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+              currentPage === 'feedback' ? 'bg-blue-600' : 'hover:bg-gray-800'
+            }`}
+          >
+            <MessageSquareHeart size={20} />
+            <span> Feedback Analytics </span>
           </button>
 
           {isSuperAdmin && (
@@ -37,7 +46,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
                 }`}
               >
                 <Shield size={20} />
-                <span>Admin Management</span>
+                <span>จัดการ Admin</span>
               </button>
               <button
                 onClick={() => onPageChange('user-list')}
@@ -46,7 +55,7 @@ export default function Sidebar({ isOpen, currentPage, onPageChange, onLogout, i
                 }`}
               >
                 <Users size={20} />
-                <span>User List</span>
+                <span>รายการผู้ใช้งาน</span>
               </button>
             </>
           )}

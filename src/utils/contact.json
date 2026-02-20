@@ -8,9 +8,9 @@
       "description": "ศูนย์กลางรับเรื่องราวร้องทุกข์และให้คำปรึกษาปัญหาทางสังคม 24 ชั่วโมง เพื่อคุ้มครองสิทธิและพัฒนาคุณภาพชีวิตกลุ่มเป้าหมาย เช่น เด็ก ผู้สูงอายุ คนพิการ ผู้หญิง โดยเชื่อมโยงกับเครือข่ายทุกภาคส่วน และส่งเสริมการเข้าถึงสวัสดิการสังคม เพื่อให้ประชาชนมีภูมิคุ้มกันและพึ่งพาตนเองได้",
       "channels": {
         "call": "1300",
-        "line": "@hotline1300",
-        "facebook": "สายด่วน 1300 พม.",
-        "email": "oscc1300@m-society.go.th"
+        "line": "https://line.me/R/ti/p/@346mbvoz",
+        "facebook": "https://www.facebook.com/1300.msociety.go.th",
+        "email": "mailto:oscc1300@m-society.go.th"
       }
     },
     {
@@ -21,9 +21,9 @@
       "description": "ศูนย์กลางรับเรื่องร้องเรียนและไกล่เกลี่ยข้อพิพาทระหว่างผู้บริโภคกับผู้ประกอบธุรกิจ เพื่อคุ้มครองสิทธิและสร้างความเป็นธรรมในการซื้อขายสินค้าหรือบริการ โดยทำหน้าที่ตรวจสอบข้อเท็จจริง เจรจาหาข้อยุติ และดำเนินคดีแทนผู้บริโภคเมื่อมีการละเมิดสิทธิ เพื่อให้ประชาชนได้รับการชดเชยเยียวยาความเสียหายและไม่ถูกเอารัดเอาเปรียบ",
       "channels": {
         "call": "1166",
-        "line": "@ocpbconnect",
-        "facebook": "สำนักงานคณะกรรมการคุ้มครองผู้บริโภค",
-        "website": "complaint.ocpb.go.th"
+        "line": "https://line.me/R/ti/p/@633xydob",
+        "facebook": "https://www.facebook.com/ocpb.official/?locale=th_TH",
+        "website": "https://complaint.ocpb.go.th"
       }
     },
     {
@@ -34,9 +34,9 @@
       "description": "ศูนย์กลางในการรับเรื่องร้องเรียนและเบาะแสเกี่ยวกับผลิตภัณฑ์สุขภาพที่ผิดกฎหมาย เช่น อาหาร ยา เครื่องสำอาง และเครื่องมือแพทย์ โดยทำหน้าที่เฝ้าระวัง ตรวจสอบ และปราบปรามการกระทำผิด ทั้งการผลิตหรือจำหน่ายสินค้าไม่ได้มาตรฐาน และการโฆษณาโอ้อวดเกินจริง เพื่อคุ้มครองความปลอดภัยของผู้บริโภค",
       "channels": {
         "call": "1556",
-        "line": "@FDAThai",
-        "website": "cemc.fda.moph.go.th",
-        "email": "1556@fda.moph.go.th"
+        "line": "https://line.me/R/ti/p/@ojr6501v",
+        "website": "https://cemc.fda.moph.go.th",
+        "email": "mailto:1556@fda.moph.go.th"
       }
     },
     {
@@ -47,9 +47,9 @@
       "description": "ศูนย์กลางรับเรื่องร้องเรียนและคุ้มครองสิทธิผู้บริโภคจากปัญหาค่าบริการ สัญญาไม่เป็นธรรม คุณภาพสัญญาณ เน็ตช้า สายหลุด รวมถึง SMS กวนใจและแก๊งคอลเซ็นเตอร์ เพื่อให้ประชาชนเข้าถึงบริการสื่อสารได้อย่างทั่วถึงและปลอดภัย",
       "channels": {
         "call": "1200",
-        "facebook": "กสทช.",
-        "website": "tcp.nbtc.go.th",
-        "email": "1200@nbtc.go.th"
+        "facebook": "https://www.facebook.com/ONBTC?locale=th_TH",
+        "website": "https://nbtc.go.th/tcp/th/complaint/complaint-form.aspx",
+        "email": "mailto:1200@nbtc.go.th"
       }
     },
     {
@@ -59,11 +59,10 @@
       "name_th": "มูลนิธิอินเทอร์เน็ตร่วมพัฒนาไทย",
       "description": "รับแจ้งเบาะแสเนื้อหาที่ผิดกฎหมายและเป็นอันตรายบนโลกออนไลน์ เช่น สื่อลามกอนาจารเด็ก การล่วงละเมิดทางเพศเด็กออนไลน์ เว็บพนัน ข่าวปลอม และความรุนแรง โดยประสานงานกับผู้ให้บริการอินเทอร์เน็ตเพื่อนำเนื้อหาออกและส่งต่อให้ตำรวจดำเนินคดี",
       "channels": {
-        "call": "02 860 1358",
-        "line": "@inetfoundation",
-        "facebook": "Thaihotline",
+        "call": "028601358",
+        "facebook": "https://www.facebook.com/thaihotline.org?locale=th_TH",
         "website": "https://www.thaihotline.org/report/",
-        "email": "admin@thaihotline.org"
+        "email": "mailto:admin@thaihotline.org"
       }
     },
     {
@@ -74,9 +73,8 @@
       "description": "ตำรวจไซเบอร์ป้องกันและปราบปรามอาชญากรรมทางเทคโนโลยี เช่น การฉ้อโกงออนไลน์ แก๊งคอลเซ็นเตอร์ การแฮกข้อมูล เว็บพนัน และข่าวปลอม พร้อมบริหารจัดการระบบรับแจ้งความออนไลน์",
       "channels": {
         "call": "1441",       
-        "facebook": "CybercopTH",
-        "website": "https://ccib.go.th",
-        "online_report": "www.thaipoliceonline.com"
+        "facebook": "https://www.facebook.com/CybercopTH?locale=th_TH",
+        "website": "https://ccib.go.th"
       }
     },
     {
@@ -87,10 +85,10 @@
       "description": "รับเรื่องร้องเรียนปัญหาจากการซื้อขายออนไลน์ การกระทำความผิดตามกฎหมายคอมพิวเตอร์ อาชญากรรมทางเทคโนโลยี และให้คำปรึกษาด้านกฎหมายและธุรกรรมอิเล็กทรอนิกส์",
       "channels": {
         "call": "1212",
-        "line": "@1212etda",
-        "facebook": "Thaihotline",
-        "website": "https://www.thaihotline.org/report/",
-        "email": "1212@mdes.go.th"
+        "line": "https://line.me/R/ti/p/@990hvlla",
+        "facebook": "https://www.facebook.com/1212ETDA",
+        "website": "https://1212.etda.or.th/Home/Index",
+        "email": "mailto:1212@mdes.go.th"
       }
     },
     {
@@ -100,9 +98,9 @@
       "name_th": "ศูนย์ต่อต้านข่าวปลอม ประเทศไทย",
       "description": "ศูนย์กลางตรวจสอบและคัดกรองข่าวปลอมด้านภัยพิบัติ สุขภาพ นโยบายรัฐบาล และเศรษฐกิจ โดยประสานงานกับหน่วยงานที่เกี่ยวข้องเพื่อยืนยันข้อเท็จจริงและเผยแพร่ข้อมูลที่ถูกต้อง",
       "channels": {
-        "line": "@antifakenewscenter",
-        "facebook": "Anti-Fake News Center Thailand",
-        "website": "https://www.thaihotline.org/report/"
+        "line": "https://line.me/R/ti/p/@008mudox",
+        "facebook": "https://www.facebook.com/AntiFakeNewsCenter?locale=th_TH",
+        "website": "https://www.antifakenewscenter.com/%e0%b9%81%e0%b8%88%e0%b9%89%e0%b8%87%e0%b9%80%e0%b8%9a%e0%b8%b2%e0%b8%b0%e0%b9%81%e0%b8%aa-%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b8%b2%e0%b8%a1%e0%b8%aa%e0%b8%96%e0%b8%b2%e0%b8%99%e0%b8%b0/"
       }
     }
   ]

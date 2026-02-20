@@ -48,7 +48,7 @@ function NextSteppage() {
         <div className="w-full max-w-[424px] flex flex-col items-center gap-4 px-4 sm:px-0">
           <ChoiceSelect
             onClick={handleContactClick}
-            text="แนะนำช่องทางในการติดต่อ ข้อความช่วยเหลือ"
+            text="ช่องทางในการติดต่อ ขอความช่วยเหลือ"
           />
 
           <ChoiceSelect

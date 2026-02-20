@@ -4,9 +4,11 @@ import ContactCard from "../components/ContactCard";
 import { useNavigate } from "react-router-dom";
 import categories from "../utils/matchingPrompt.json";
 import contactData from "../utils/contact.json";
+import { useAuth } from "../context/AuthContext";
 
 function Contactpage() {
   const navigate = useNavigate();
+  const { backendUser } = useAuth();
 
   const promptData = JSON.parse(
     localStorage.getItem("promptData")
@@ -45,7 +47,7 @@ function Contactpage() {
 
       <div className="flex flex-col items-center py-6 sm:py-8 gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary text-center px-4">
-          แนะนำช่องทางในการติดต่อขอความช่วยเหลือ
+          แนะนำช่องทางในการติดต่อ <br/> และขอความช่วยเหลือ
         </h1>
 
         {matchedContacts.length === 0 && (
@@ -77,15 +79,40 @@ function Contactpage() {
           กลับไปก่อนหน้า
         </button>
 
-        <button
-          className="btn-normal-active"
-          onClick={() => {
-            localStorage.removeItem("promptData"); 
-            navigate("/agentic");
-          }}
-        >
-          กลับไปหน้าแรก
-        </button>
+        {(() => {
+          const survey3Done = localStorage.getItem("survey3Completed") === "true";
+          if (!backendUser?.isSubmitFirstForm) {
+            return (
+              <button
+                className="btn-normal-active"
+                onClick={() => navigate("/survey/2", { state: { fromContact: true } })}
+              >
+                กลับสู่หน้าแรก
+              </button>
+            );
+          } else if (!survey3Done) {
+            return (
+              <button
+                className="btn-normal-active"
+                onClick={() => navigate("/survey/3", { state: { fromContact: true } })}
+              >
+                ประเมินความพึงพอใจ
+              </button>
+            );
+          } else {
+            return (
+              <button
+                className="btn-normal-active"
+                onClick={() => {
+                  localStorage.removeItem("promptData");
+                  navigate("/agentic");
+                }}
+              >
+                กลับสู่หน้าแรก
+              </button>
+            );
+          }
+        })()}
       </div>
     </div>
   );

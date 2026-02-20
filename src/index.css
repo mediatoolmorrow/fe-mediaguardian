@@ -115,4 +115,37 @@
   .btn-disabled {
     @apply opacity-50 cursor-not-allowed;
   }
+
+  .animate-fade-in-out {
+    animation: fadeInOut 2s ease-in-out;
+  }
+}
+
+/* Hide native scrollbar on mobile (replaced by custom MobileScrollbar) */
+@media (max-width: 639px) {
+  #main-scroll {
+    scrollbar-width: none;
+  }
+  #main-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, 50%) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(-50%, 50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(0.9);
+  }
 }

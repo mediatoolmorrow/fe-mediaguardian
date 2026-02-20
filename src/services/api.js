@@ -1,5 +1,24 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Token expiration event handling
+let onTokenExpiredCallback = null;
+
+export const setTokenExpiredCallback = (callback) => {
+  onTokenExpiredCallback = callback;
+};
+
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    // Token expired or invalid
+    localStorage.removeItem('backend_token');
+    if (onTokenExpiredCallback) {
+      onTokenExpiredCallback();
+    }
+    throw new Error('Session expired. Please login again.');
+  }
+  return response;
+};
+
 export const api = {
   /* Auth */
   async syncFirebaseUser(firebaseUser, provider) {
@@ -19,6 +38,8 @@ export const api = {
         avatar: firebaseUser.photoURL
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -92,6 +113,8 @@ export const api = {
       }
     });
 
+    await handleResponse(response);  // ← This catches 401
+
     if (!response.ok) {
       throw new Error('Failed to get user');
     }
@@ -118,6 +141,8 @@ export const api = {
       }
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to get admin info');
@@ -132,6 +157,8 @@ export const api = {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -148,9 +175,31 @@ export const api = {
       }
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to fetch user list');
+    }
+
+    return response.json();
+  },
+
+  async resetUserRateLimit(token, userId) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/reset-rate-limit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ userId })
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to reset rate limit');
     }
 
     return response.json();
@@ -165,6 +214,8 @@ export const api = {
       },
       body: JSON.stringify({ email })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -184,6 +235,8 @@ export const api = {
       body: JSON.stringify({ email })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to remove admin');
@@ -202,6 +255,8 @@ export const api = {
       body: JSON.stringify({ email })
     });
 
+    await handleResponse(response);
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to add super admin');
@@ -211,7 +266,7 @@ export const api = {
   },
 
   /* LLM */
-  async generateAdviceText(token, { content, problem, concerning, approach, goal }) {
+  async generateAdviceText(token, { content, contentDescription, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
       method: 'POST',
       headers: {
@@ -221,12 +276,15 @@ export const api = {
       body: JSON.stringify({
         mode: 'text',
         content,
+        contentDescription,
         problem,
         concerning,
         approach,
         goal
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -236,7 +294,7 @@ export const api = {
     return response.json();
   },
 
-  async generateAdviceImage(token, imageUrl) {
+  async generateAdviceImage(token, { imageUrl, contentDescription, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
       method: 'POST',
       headers: {
@@ -245,9 +303,16 @@ export const api = {
       },
       body: JSON.stringify({
         mode: 'image',
-        imageUrl
+        imageUrl,
+        contentDescription,
+        problem,
+        concerning,
+        approach,
+        goal
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -257,7 +322,7 @@ export const api = {
     return response.json();
   },
 
-  async generateAdviceLink(token, videoUrl) {
+  async generateAdviceLink(token, { videoUrl, contentDescription, problem, concerning, approach, goal }) {
     const response = await fetch(`${API_BASE_URL}/api/llm/generate`, {
       method: 'POST',
       headers: {
@@ -266,9 +331,16 @@ export const api = {
       },
       body: JSON.stringify({
         mode: 'link',
-        videoUrl
+        videoUrl,
+        contentDescription,
+        problem,
+        concerning,
+        approach,
+        goal
       })
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -277,6 +349,48 @@ export const api = {
 
     return response.json();
   },
+  /* Regenerate */
+  async regenerateAdvice(token, promptId) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/regenerate/${promptId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to regenerate advice');
+    }
+
+    return response.json();
+  },
+
+  /* Feedback */
+  async submitFeedback(token, promptId, feedbackData) {
+    // feedbackData: { feedbacks: [{ optionIndex, questionIndex, rating, optionTitle, example, explanations }] }
+    const response = await fetch(`${API_BASE_URL}/api/prompts/${promptId}/feedback`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(feedbackData)
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to submit feedback');
+    }
+
+    return response.json();
+  },
+
   /* Results */
   async getResultById(token, resultId) {
     const response = await fetch(`${API_BASE_URL}/api/prompts/${resultId}`, {
@@ -284,6 +398,8 @@ export const api = {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    await handleResponse(response);
 
     if (!response.ok) {
       const error = await response.json();
@@ -303,6 +419,34 @@ export const api = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to fetch results');
+    }
+
+    return response.json();
+  },
+
+  async getUserRateLimit(token) {
+    const response = await fetch(`${API_BASE_URL}/api/user/rate-limit`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to fetch rate limit');
+    }
+    return response.json();
+  },
+
+  async incrementDailyLimit(token) {
+    const response = await fetch(`${API_BASE_URL}/api/user/reward-limit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to increment daily limit');
     }
 
     return response.json();
@@ -349,8 +493,12 @@ export const api = {
   },
 
   /* Survey Admin */
-  async getSurveyChartData(token) {
-    const response = await fetch(`${API_BASE_URL}/api/survey/admin/charts`, {
+  async getSurveyChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/survey/admin/charts${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -388,8 +536,12 @@ export const api = {
   },
 
   /* Prompt Admin */
-  async getPromptChartData(token) {
-    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/charts`, {
+  async getPromptChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/prompts/admin/charts${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -420,6 +572,49 @@ export const api = {
     const a = document.createElement('a');
     a.href = url;
     a.download = `prompt-data-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  },
+
+  /* Feedback Admin */
+  async getFeedbackChartData(token, { month, year } = {}) {
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (year) params.set('year', year);
+    const query = params.toString() ? `?${params}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/charts${query}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch feedback data');
+    }
+
+    return response.json();
+  },
+
+  async downloadFeedbackCSV(token) {
+    const response = await fetch(`${API_BASE_URL}/api/feedback/admin/download/csv`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to download CSV');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `feedback-data-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

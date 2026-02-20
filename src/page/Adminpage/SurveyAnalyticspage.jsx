@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { Download, Users, RefreshCw } from "lucide-react";
+import MonthYearFilter from "../../components/Admin/MonthYearFilter";
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +35,13 @@ export default function SurveyAnalyticspage({
   onRefresh,
   downloading,
 }) {
+  const [filter, setFilter] = useState({ month: null, year: null });
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    onRefresh(newFilter);
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -107,9 +115,14 @@ export default function SurveyAnalyticspage({
             <p className="text-3xl font-bold text-gray-900">{totalResponses}</p>
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <MonthYearFilter
+            month={filter.month}
+            year={filter.year}
+            onChange={handleFilterChange}
+          />
           <button
-            onClick={onRefresh}
+            onClick={() => onRefresh(filter)}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <RefreshCw size={18} />
@@ -128,7 +141,7 @@ export default function SurveyAnalyticspage({
 
       {/* Demographics Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6"> แผนภูมิสรุปภาพรวม </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> แผนภูมิสรุปภาพรวม </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Gender */}
           <div className="h-64">
@@ -218,7 +231,7 @@ export default function SurveyAnalyticspage({
 
       {/* Satisfaction Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6"> ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Tool Satisfaction */}
           <div>
@@ -274,7 +287,7 @@ export default function SurveyAnalyticspage({
 
       {/* Behavior Change Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6"> แบบสอบถามพฤติกรรมการหลังการใช้งาน </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> แบบสอบถามพฤติกรรมการหลังการใช้งาน </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Applied in Real Life */}
           <div>
@@ -375,39 +388,6 @@ export default function SurveyAnalyticspage({
               />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Timeline Section */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6"> แบบสอบถามที่ถูกส่งเข้ามา </h2>
-        <div className="h-80">
-          <Line
-            data={{
-              labels: timeline?.labels || [],
-              datasets: [
-                {
-                  label: "Survey Completions",
-                  data: timeline?.data || [],
-                  borderColor: "#3B82F6",
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  fill: true,
-                  tension: 0.4,
-                },
-              ],
-            }}
-            options={{
-              ...chartOptions,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    stepSize: 1,
-                  },
-                },
-              },
-            }}
-          />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, Loader2, AlertCircle, CheckCircle, Search } from 'lucide-react';
+import { Users, UserPlus, Loader2, AlertCircle, CheckCircle, Search, RotateCcw } from 'lucide-react';
 import { api } from '../../services/api';
 
 export default function UserListpage() {
@@ -11,6 +11,7 @@ export default function UserListpage() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [makingAdmin, setMakingAdmin] = useState(null);
+  const [resettingLimit, setResettingLimit] = useState(null);
 
   useEffect(() => {
     loadUsers();
@@ -81,6 +82,32 @@ export default function UserListpage() {
       setError(err.message || 'Failed to make user admin');
     } finally {
       setMakingAdmin(null);
+    }
+  };
+
+  const handleResetLimit = async (userId, email) => {
+    if (!window.confirm(`รีเซ็ตขีดจำกัดการใช้งานของ ${email} หรือไม่?`)) {
+      return;
+    }
+
+    setResettingLimit(userId);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const token = localStorage.getItem('backend_token');
+      const response = await api.resetUserRateLimit(token, userId);
+      if (response.success) {
+        setSuccessMessage(response.message || `รีเซ็ตขีดจำกัดของ ${email} สำเร็จ`);
+        loadUsers();
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(response.message || 'Failed to reset rate limit');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to reset rate limit');
+    } finally {
+      setResettingLimit(null);
     }
   };
 
@@ -214,6 +241,7 @@ export default function UserListpage() {
                   <th className="text-left py-3 px-4 font-medium text-gray-600">Role</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600">Provider</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-600">Daily Usage</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600">Created At</th>
                   <th className="text-right py-3 px-4 font-medium text-gray-600">Actions</th>
                 </tr>
@@ -226,27 +254,56 @@ export default function UserListpage() {
                     <td className="py-3 px-4">{getRoleBadge(user.role)}</td>
                     <td className="py-3 px-4">{getProviderBadge(user.provider)}</td>
                     <td className="py-3 px-4">{getStatusBadge(user.isActive)}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        (user.dailyUsage || 0) >= 100
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {user.dailyUsage || 0} / 100
+                      </span>
+                    </td>
                     <td className="py-3 px-4 text-gray-500 text-sm">
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      {user.role === 'user' && (
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end space-x-2">
+                        {/* Reset Limit Button */}
                         <button
-                          onClick={() => handleMakeAdmin(user.email)}
-                          disabled={makingAdmin === user.email}
-                          className="text-blue-600 hover:text-blue-800 transition-colors disabled:text-gray-400 flex items-center space-x-1 ml-auto"
-                          title="Make admin"
+                          onClick={() => handleResetLimit(user.id, user.email)}
+                          disabled={resettingLimit === user.id}
+                          className="text-orange-600 hover:text-orange-800 transition-colors disabled:text-gray-400 flex items-center space-x-1"
+                          title="Reset daily limit"
                         >
-                          {makingAdmin === user.email ? (
+                          {resettingLimit === user.id ? (
                             <Loader2 size={16} className="animate-spin" />
                           ) : (
                             <>
-                              <UserPlus size={16} />
-                              <span className="text-sm">Make Admin</span>
+                              <RotateCcw size={16} />
+                              <span className="text-sm">Reset</span>
                             </>
                           )}
                         </button>
-                      )}
+
+                        {/* Make Admin Button */}
+                        {user.role === 'user' && (
+                          <button
+                            onClick={() => handleMakeAdmin(user.email)}
+                            disabled={makingAdmin === user.email}
+                            className="text-blue-600 hover:text-blue-800 transition-colors disabled:text-gray-400 flex items-center space-x-1"
+                            title="Make admin"
+                          >
+                            {makingAdmin === user.email ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <>
+                                <UserPlus size={16} />
+                                <span className="text-sm">Admin</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

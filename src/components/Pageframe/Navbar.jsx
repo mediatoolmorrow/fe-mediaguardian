@@ -16,15 +16,24 @@ export default function Navbar(){
     return (
         <div className="max-w-screen max-h-[115px] max-h-[80px] bg-navbar flex justify-between py-4 px-6 sm:px-16 rounded-none sm:rounded-3xl sm:rounded-b">
             <div className="flex h-[53px] gap-3 justify-center">
-                <img src="/favicon.svg" className="scale-125"/>
-                <div className="flex flex-col -space-y-1 text-start justify-center">
+                    <img
+                    src="/favicon.svg"
+                    className="hidden md:block scale-125"
+                    />                
+                    <div className="flex flex-col -space-y-1 text-start justify-center">
                     <p className="font-bold text-base sm:text-lg "> ชุมชนเฝ้าระวังสื่อ </p>
                     <p className="font-light text-base">  Media Guardians </p>
                 </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 space-x-4">
                 {backendUser ? (
                     <>
+                    <button
+                            className=" group flex items-center "
+                            onClick={() => navigate("/history")}
+                        >
+                            <img src="./icon/history.svg" className="w-5" />                         
+                        </button>
                         {isAdmin && (
                             <button
                                 className="p-2 rounded-lg hover:bg-white/20 transition-colors"
@@ -53,7 +62,7 @@ export default function Navbar(){
                         </button>
                     </>
                 ) : (
-                    <button className="btn-login" onClick={()=>navigate("/login")} > เข้าสู่ระบบ </button>
+                    <button className="btn-login" onClick={()=>navigate("/")} >  </button>
                 )}
             </div>
         </div>

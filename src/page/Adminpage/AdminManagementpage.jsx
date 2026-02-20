@@ -131,7 +131,7 @@ export default function AdminManagementpage({ currentUserEmail }) {
 
       {/* Add New Admin Section */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600 flex items-center space-x-2">
           <UserPlus size={20} className="text-blue-600" />
           <span>Add New Admin</span>
         </h3>
@@ -169,7 +169,7 @@ export default function AdminManagementpage({ currentUserEmail }) {
 
       {/* Current Admins Section */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Current Admins</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-3 border-l-4 border-blue-600">Current Admins</h3>
 
         {loading ? (
           <div className="flex items-center justify-center py-8">

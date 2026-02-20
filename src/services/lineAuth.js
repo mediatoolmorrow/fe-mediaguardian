@@ -2,27 +2,23 @@
 const LINE_CLIENT_ID = import.meta.env.VITE_LINE_CLIENT_ID;
 const LINE_REDIRECT_URI = import.meta.env.VITE_LINE_REDIRECT_URI || `${window.location.origin}/login`;
 
-// Generate random state for CSRF protection
 const generateState = () => {
   const array = new Uint32Array(8);
   window.crypto.getRandomValues(array);
   return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
 };
 
-// Generate code verifier for PKCE
 const generateCodeVerifier = () => {
   const array = new Uint8Array(32);
   window.crypto.getRandomValues(array);
   return base64UrlEncode(array);
 };
 
-// Base64 URL encode
 const base64UrlEncode = (buffer) => {
   const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 };
 
-// Generate code challenge from verifier (S256 method)
 const generateCodeChallenge = async (verifier) => {
   const encoder = new TextEncoder();
   const data = encoder.encode(verifier);
@@ -30,16 +26,88 @@ const generateCodeChallenge = async (verifier) => {
   return base64UrlEncode(hash);
 };
 
+// Storage helpers that use both localStorage and sessionStorage for reliability on mobile
+const storage = {
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+      sessionStorage.setItem(key, value);
+    } catch (e) {
+      console.error('Storage error:', e);
+      // Fallback to sessionStorage only
+      sessionStorage.setItem(key, value);
+    }
+  },
+  
+  get: (key) => {
+    try {
+      return localStorage.getItem(key) || sessionStorage.getItem(key);
+    } catch (e) {
+      console.error('Storage error:', e);
+      return sessionStorage.getItem(key);
+    }
+  },
+  
+  remove: (key) => {
+    try {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    } catch (e) {
+      console.error('Storage error:', e);
+      sessionStorage.removeItem(key);
+    }
+  }
+};
+
+// Exchange authorization code for access token
+const exchangeCodeForToken = async (code, codeVerifier) => {
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: LINE_REDIRECT_URI,
+    client_id: LINE_CLIENT_ID,
+    code_verifier: codeVerifier
+  });
+
+  const response = await fetch('https://api.line.me/oauth2/v2.1/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: params.toString()
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error_description || 'Failed to exchange code for token');
+  }
+
+  const data = await response.json();
+  return data.access_token;
+};
+
 export const lineAuth = {
-  // Initiate LINE login
   async login() {
+    if (!LINE_CLIENT_ID) {
+      console.error('LINE_CLIENT_ID is not configured');
+      throw new Error('LINE Client ID is not configured');
+    }
+
+    if (!LINE_REDIRECT_URI) {
+      console.error('LINE_REDIRECT_URI is not configured');
+      throw new Error('LINE Redirect URI is not configured');
+    }
+
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    // Store state and code verifier in sessionStorage for verification
-    sessionStorage.setItem('line_state', state);
-    sessionStorage.setItem('line_code_verifier', codeVerifier);
+    // Use hybrid storage for mobile reliability
+    storage.set('line_state', state);
+    storage.set('line_code_verifier', codeVerifier);
+    
+    // Also store timestamp to detect expired sessions
+    storage.set('line_auth_timestamp', Date.now().toString());
 
     const params = new URLSearchParams({
       response_type: 'code',
@@ -51,10 +119,11 @@ export const lineAuth = {
       code_challenge_method: 'S256'
     });
 
-    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    window.location.href = lineAuthUrl;
   },
 
-  handleCallback() {
+  async handleCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const state = urlParams.get('state');
@@ -65,40 +134,85 @@ export const lineAuth = {
       return { success: false, error: errorDescription || error };
     }
 
-    if (!code || !state) {
-      return { success: false, error: 'Missing authorization code or state' };
+    if (!code) {
+      return { success: false, error: 'Missing authorization code' };
     }
 
-    const savedState = sessionStorage.getItem('line_state');
+    const savedState = storage.get('line_state');
+    const codeVerifier = storage.get('line_code_verifier');
+    const timestamp = storage.get('line_auth_timestamp');
+
+    // Check if session expired (5 minutes timeout)
+    if (timestamp) {
+      const elapsed = Date.now() - parseInt(timestamp);
+      if (elapsed > 5 * 60 * 1000) { // 5 minutes
+        storage.remove('line_state');
+        storage.remove('line_code_verifier');
+        storage.remove('line_auth_timestamp');
+        return {
+          success: false,
+          error: 'การเข้าสู่ระบบหมดเวลา กรุณาลองใหม่อีกครั้ง หรือลองเข้าโดยตรงการผ่านกดลิงก์บนแอพไลน์บนมือถือ (Session expired, please try again)'
+        };
+      }
+    }
+
+    // Validate state - FIXED LOGIC
+    if (!savedState || !codeVerifier) {
+      return {
+        success: false,
+        error: 'ข้อมูลการเข้าสู่ระบบหายไป กรุณาลองใหม่อีกครั้ง หรือลองเข้าโดยตรงการผ่านกดลิงก์บนแอพไลน์บนมือถือ (Please try again)'
+      };
+    }
+
     if (state !== savedState) {
-      return { success: false, error: 'State mismatch - possible CSRF attack' };
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
+      return {
+        success: false,
+        error: 'State mismatch - possible CSRF attack'
+      };
     }
 
-    const codeVerifier = sessionStorage.getItem('line_code_verifier');
+    // Exchange code for access token
+    try {
+      const accessToken = await exchangeCodeForToken(code, codeVerifier);
 
-    // Clean up sessionStorage
-    sessionStorage.removeItem('line_state');
-    sessionStorage.removeItem('line_code_verifier');
+      // Clean up storage
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
 
-    return {
-      success: true,
-      code,
-      codeVerifier,
-      redirectUri: LINE_REDIRECT_URI
-    };
+      return {
+        success: true,
+        accessToken
+      };
+    } catch (err) {
+      // Clean up storage on error
+      storage.remove('line_state');
+      storage.remove('line_code_verifier');
+      storage.remove('line_auth_timestamp');
+
+      return {
+        success: false,
+        error: err.message || 'Failed to get access token'
+      };
+    }
   },
 
-  // Check if current URL is a LINE callback
   isLineCallback() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('code') && sessionStorage.getItem('line_state');
+    const hasCode = urlParams.has('code');
+    const hasState = urlParams.has('state');
+    return hasCode && hasState;
   },
 
-  // Clear LINE callback params from URL
   clearCallbackParams() {
     const url = new URL(window.location.href);
     url.searchParams.delete('code');
     url.searchParams.delete('state');
+    url.searchParams.delete('error');
+    url.searchParams.delete('error_description');
     window.history.replaceState({}, document.title, url.pathname);
   }
 };

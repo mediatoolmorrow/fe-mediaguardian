@@ -4,7 +4,12 @@
     {
       "id": "creative",
       "en": "communicate with creativity",
-      "th": "ตอบกลับอย่างสร้างสรรค์"
+      "th": "ตอบกลับคอมเมนต์"
+    },
+    {
+      "id": "post",
+      "en": "communicate with creativity",
+      "th": "ตอบกลับเจ้าของโพสต์"
     },
     {
       "id": "child",
@@ -19,7 +24,7 @@
     {
       "id": "elder",
       "en": "communicate with elder",
-      "th": "ตั้งคำถามชวนคุยกับผู้ใหญ่"
+      "th": "ตั้งคำถามชวนคุยกับคนอายุมากกว่า"
     }
   ]
 }

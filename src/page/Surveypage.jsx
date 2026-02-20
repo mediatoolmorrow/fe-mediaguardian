@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import ChoiceCheck from "../components/Survey/ChoiceCheck";
+import DropdownSelect from "../components/Survey/DropdownSelect";
+import SearchableDropdown from "../components/Survey/SearchableDropdown";
 import Banner from "../components/Banner";
 import { surveyTemplate } from "../utils/surveyTemplate";
 import { useAuth } from "../context/AuthContext";
@@ -18,7 +20,11 @@ const RATING_OPTIONS = [
 function Surveypage() {
   const { formSet } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { backendUser, refreshBackendUser } = useAuth();
+
+  const resultId = location.state?.resultId;
+  const fromContact = location.state?.fromContact || false;
 
   const currentFormSet = parseInt(formSet) || 1;
   const [answers, setAnswers] = useState({});
@@ -75,13 +81,33 @@ function Surveypage() {
 
     try {
       await api.submitSurvey(token, currentFormSet, answers);
-
       await refreshBackendUser();
 
-      if (currentFormSet === 1) {
-        navigate("/tutorial");
+      if (fromContact) {
+        if (currentFormSet === 2) {
+          // After survey 2 from contact page, go back to contact page
+          navigate("/contact");
+        } else if (currentFormSet === 3) {
+          // After survey 3, mark it done, reward daily limit, go home
+          localStorage.setItem("survey3Completed", "true");
+          localStorage.removeItem("promptData");
+          try {
+            await api.incrementDailyLimit(token);
+          } catch (limitErr) {
+            console.error("Failed to increment daily limit:", limitErr);
+          }
+          navigate("/agentic");
+        }
+      } else if (resultId) {
+        navigate(`/nextstep`, {
+          state: { surveyCompleted: true }
+        });
       } else {
-        navigate("/nextstep");
+        if (currentFormSet === 1) {
+          navigate("/tutorial");
+        } else {
+          navigate("/nextstep");
+        }
       }
     } catch (err) {
       console.error("Survey submission error:", err);
@@ -155,6 +181,30 @@ function Surveypage() {
                         />
                       ))}
                     </div>
+                  ) : question.type === "dropdown" ? (
+                    <DropdownSelect
+                      options={question.options}
+                      value={currentAnswer.length > 0 ? currentAnswer[0] : null}
+                      onChange={(index) => {
+                        if (index === null) {
+                          setAnswers({ ...answers, [question.id]: [] });
+                        } else {
+                          handleSelectAnswer(question.id, index, 1);
+                        }
+                      }}
+                    />
+                  ) : question.type === "dropdown-search" ? (
+                    <SearchableDropdown
+                      options={question.options}
+                      value={currentAnswer.length > 0 ? currentAnswer[0] : null}
+                      onChange={(index) => {
+                        if (index === null) {
+                          setAnswers({ ...answers, [question.id]: [] });
+                        } else {
+                          handleSelectAnswer(question.id, index, 1);
+                        }
+                      }}
+                    />
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {question.options?.map((option, index) => (
@@ -191,7 +241,6 @@ function Surveypage() {
         </div>
       </div>
 
-      {/* Loading Overlay */}
       {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">

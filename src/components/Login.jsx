@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { lineAuth } from "../services/lineAuth";
 
 export default function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -10,6 +12,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+    const [socialLoading, setSocialLoading] = useState(null); // 'google', 'facebook', 'apple', 'line'
     const navigate = useNavigate();
 
     const {
@@ -28,9 +31,17 @@ export default function Login() {
         loading
     } = useAuth();
 
+    // Check if returning from LINE login
+    useEffect(() => {
+        if (lineAuth.isLineCallback()) {
+            setSocialLoading('line');
+        }
+    }, []);
+
     // Navigate when user is authenticated
     useEffect(() => {
         if (backendUser && !loading) {
+            setSocialLoading(null);
             // Check if user needs to complete first-time survey
             if (backendUser.isFirstTime) {
                 navigate("/survey/1");
@@ -39,6 +50,14 @@ export default function Login() {
             }
         }
     }, [backendUser, loading, navigate]);
+
+    // Hide social loading on error
+    useEffect(() => {
+        if (error) {
+            setSocialLoading(null);
+            setIsLoading(false);
+        }
+    }, [error]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -61,34 +80,36 @@ export default function Login() {
     };
 
     const handleGoogleLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('google');
         try {
             await signInWithGoogle();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleFacebookLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('facebook');
         try {
             await signInWithFacebook();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleAppleLogin = async () => {
-        setIsLoading(true);
+        setSocialLoading('apple');
         try {
             await signInWithApple();
         } finally {
-            setIsLoading(false);
+            setSocialLoading(null);
         }
     };
 
     const handleLineLogin = () => {
         // LINE login redirects to LINE's OAuth page
+        // Show loading popup while redirecting
+        setSocialLoading('line');
         signInWithLine();
     };
 
@@ -123,21 +144,25 @@ export default function Login() {
     };
 
     const socialLogins = [
+        /* 
         {
             name: "Facebook",
             icon: "/social-media/facebook.svg",
             onClick: handleFacebookLogin,
         },
+        */
         {
             name: "Google",
             icon: "/social-media/google.svg",
             onClick: handleGoogleLogin,
         },
+        /*
         {
             name: "Apple",
             icon: "/social-media/apple.svg",
             onClick: handleAppleLogin,
         },
+        */
         {
             name: "LINE",
             icon: "/social-media/line.svg",
@@ -145,7 +170,6 @@ export default function Login() {
         },
     ];
 
-    // Show loading while checking auth state
     if (loading) {
         return (
             <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl flex items-center justify-center">
@@ -196,11 +220,7 @@ export default function Login() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                        <img
-                            src="/icon/hide.svg"
-                            alt="toggle password"
-                            className="w-5 h-5"
-                        />
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                 </div>
 
@@ -242,15 +262,20 @@ export default function Login() {
                 {socialLogins.map((social) => (
                     <button
                         key={social.name}
+                        type="button"
                         onClick={social.onClick}
-                        disabled={isLoading}
-                        className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading || socialLoading !== null}
+                        className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
                     >
-                        <img
-                            src={social.icon}
-                            alt={social.name}
-                            className="w-10 h-10"
-                        />
+                        {socialLoading === social.name.toLowerCase() ? (
+                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                        ) : (
+                            <img
+                                src={social.icon}
+                                alt={social.name}
+                                className="w-10 h-10"
+                            />
+                        )}
                     </button>
                 ))}
             </div>
@@ -320,7 +345,7 @@ export default function Login() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="flex-1 btn-normal-active disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -332,6 +357,22 @@ export default function Login() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Social Login Loading Popup */}
+            {socialLoading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-8 flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+                        <p className="text-lg font-medium text-gray-700">
+                            {socialLoading === 'line' ? 'กำลังเข้าสู่ระบบด้วย LINE...' :
+                             socialLoading === 'google' ? 'กำลังเข้าสู่ระบบด้วย Google...' :
+                             socialLoading === 'facebook' ? 'กำลังเข้าสู่ระบบด้วย Facebook...' :
+                             socialLoading === 'apple' ? 'กำลังเข้าสู่ระบบด้วย Apple...' :
+                             'กำลังโหลด...'}
+                        </p>
                     </div>
                 </div>
             )}

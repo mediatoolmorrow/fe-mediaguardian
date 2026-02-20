@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber }) {
+export default function ResultSummary({ id, description, mode, createdAt, inputPreview, resultNumber, isLatest }) {
   const navigate = useNavigate();
 
   // Truncate description for preview (shorter for list view)
@@ -9,11 +9,25 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
     ? description.substring(0, 150) + "..."
     : description;
 
-  // Format date safely
+  // Format date safely (handles Firestore Timestamp)
   const formatDate = (dateValue) => {
     if (!dateValue) return null;
     try {
-      const date = new Date(dateValue);
+      let date;
+
+      // Handle Firestore Timestamp with _seconds
+      if (dateValue._seconds !== undefined) {
+        date = new Date(dateValue._seconds * 1000);
+      }
+      // Handle Firestore Timestamp with seconds
+      else if (dateValue.seconds !== undefined) {
+        date = new Date(dateValue.seconds * 1000);
+      }
+      // Handle regular date string or timestamp
+      else {
+        date = new Date(dateValue);
+      }
+
       if (isNaN(date.getTime())) return null;
       return date.toLocaleDateString('th-TH', {
         year: 'numeric',
@@ -59,7 +73,12 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
         <div className="flex flex-col flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="font-medium"> แนวทางการสื่อสาร {resultNumber}</span>
+              <span className="font-medium">แนวทางการสื่อสาร {resultNumber}</span>
+              {isLatest && (
+                <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
+                  ใหม่
+                </span>
+              )}
             </div>
             {formattedDate && (
               <span className="text-xs text-gray-400">{formattedDate}</span>

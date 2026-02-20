@@ -1,13 +1,21 @@
 export default function ChoiceSelect({ text, isSelect, onClick }) {
+  const handleClick = (e) => {
+    e.preventDefault();
+    onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
+      type="button"
+      onClick={handleClick}
       className={`
         w-full
         p-4
         h-[60px] sm:h-[72px]
         border border-button rounded-md
         transition-colors
+        select-none
+        touch-manipulation
         ${
           isSelect
             ? "bg-accent text-white"

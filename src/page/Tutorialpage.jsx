@@ -11,8 +11,8 @@ function Tutorialpage() {
         {
             imageDesktop: "/banner/Agentic_Desktop_Size.webp",
             imageMobile: "/banner/Agentic_Mobile_Size.webp",  
-            title: "เริ่มต้นใช้งาน",
-            description: "วิธีการใช้งานในการเลือกหน้า Prompt ตัวอย่าง"
+            title: "ชุมชนเฝ้าระวังสื่อ (Media Guardians)",
+            description: " พื้นที่แห่งความร่วมมือเพื่อสร้างระบบนิเวศสื่อที่ปลอดภัยและสร้างสรรค์ โดยเรามุ่งเน้นการนำเทคโนโลยี Agentic AI เข้ามาสนับสนุนการเฝ้าระวังและตรวจสอบเนื้อหาบนโลกออนไลน์อย่างมีประสิทธิภาพ ผ่านเครือข่ายความร่วมมือที่เชื่อมโยงผู้คนในสังคมให้ร่วมกันสอดส่องและป้องกันคอนเทนต์เสี่ยง  พร้อมช่วยแนะนำวิธีการตอบกลับคอมเมนต์ และชวนคิด ชวนคุย ได้อย่างรวดเร็ว และใช้งานง่ายสำหรับทุกคน มาร่วมเป็นส่วนหนึ่งในการสร้างสังคมออนไลน์ที่มีคุณภาพและขับเคลื่อนการเฝ้าระวังอย่างยั่งยืนไปพร้อมกัน"
         },
     ];
     
@@ -32,28 +32,28 @@ function Tutorialpage() {
     const isFirstSlide = currentSlide === 0;
     
     return (
-        <div className="flex flex-col items-center justify-center w-full max-h-screen overflow-hidden p-4 sm:p-4">
+        <div className="flex flex-col items-center sm:justify-center w-full max-h-screen p-4 pt-10 sm:pt-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [-webkit-overflow-scrolling:touch]">
             <div className="flex flex-col items-center justify-between w-full h-full max-w-6xl">
-                <div className="flex-1 w-full flex flex-col items-center justify-center relative">
-                    
-                    <div className="relative w-full max-w-xl">
-                        <img 
-                            src={slides[currentSlide].imageDesktop} 
+                <div className="w-full flex flex-col items-center justify-start sm:justify-center relative">
+
+                    <div className="relative max-w-3xl w-full">
+                        <img
+                            src={slides[currentSlide].imageDesktop}
                             alt={slides[currentSlide].title}
                             className="hidden sm:block w-full h-auto rounded-2xl shadow-2xl"
                         />
-                        
-                        <img 
-                            src={slides[currentSlide].imageMobile} 
+
+                        <img
+                            src={slides[currentSlide].imageMobile}
                             alt={slides[currentSlide].title}
-                            className="block sm:hidden w-full h-auto rounded-2xl shadow-2xl"
+                            className="block sm:hidden w-full object-contain rounded-2xl shadow-2xl"
                         />
                         
                         <a 
-                            href="YOUR_YOUTUBE_URL_HERE" 
-                            target="_blank" 
+                            href="" 
+                            target="" 
                             rel="noopener noreferrer"
-                            className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all underline"
+                            className="absolute bottom-4 right-4 bg-primary hover:bg-primary text-white hover:text-blue-600 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all underline"
                         >
                             ดูวิดีโอแทน
                         </a>
