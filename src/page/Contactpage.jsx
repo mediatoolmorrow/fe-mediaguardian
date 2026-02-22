@@ -80,7 +80,6 @@ function Contactpage() {
         </button>
 
         {(() => {
-          const survey3Done = localStorage.getItem("survey3Completed") === "true";
           if (!backendUser?.isSubmitFirstForm) {
             return (
               <button
@@ -90,25 +89,13 @@ function Contactpage() {
                 กลับสู่หน้าแรก
               </button>
             );
-          } else if (!survey3Done) {
+          } else {
             return (
               <button
                 className="btn-normal-active"
                 onClick={() => navigate("/survey/3", { state: { fromContact: true } })}
               >
                 ประเมินความพึงพอใจ
-              </button>
-            );
-          } else {
-            return (
-              <button
-                className="btn-normal-active"
-                onClick={() => {
-                  localStorage.removeItem("promptData");
-                  navigate("/agentic");
-                }}
-              >
-                กลับสู่หน้าแรก
               </button>
             );
           }

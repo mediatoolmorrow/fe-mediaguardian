@@ -88,8 +88,7 @@ function Surveypage() {
           // After survey 2 from contact page, go back to contact page
           navigate("/contact");
         } else if (currentFormSet === 3) {
-          // After survey 3, mark it done, reward daily limit, go home
-          localStorage.setItem("survey3Completed", "true");
+          // After survey 3, reward daily limit, go home
           localStorage.removeItem("promptData");
           try {
             await api.incrementDailyLimit(token);
