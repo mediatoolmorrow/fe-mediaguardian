@@ -55,10 +55,12 @@ function NextSteppage() {
         </div>
 
         <div className="w-full max-w-[424px] flex flex-col items-center gap-4 px-4 sm:px-0">
-          <ChoiceSelect
-            onClick={handleSurvey3Click}
-            text="ประเมินความพึงพอใจ"
-          />
+           {backendUser?.isSubmitFirstForm && (
+              <ChoiceSelect
+                onClick={handleSurvey3Click}
+                text="ประเมินความพึงพอใจ"
+              />
+            )}
 
           <ChoiceSelect
             onClick={handleContactClick}
