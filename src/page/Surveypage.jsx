@@ -86,7 +86,7 @@ function Surveypage() {
       if (fromContact) {
         if (currentFormSet === 2) {
           // After survey 2 from contact page, go back to contact page
-          navigate("/contact");
+          navigate("/agentic");
         } else if (currentFormSet === 3) {
           // After survey 3, reward daily limit, go home
           localStorage.removeItem("promptData");
