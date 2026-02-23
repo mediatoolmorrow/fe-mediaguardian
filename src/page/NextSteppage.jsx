@@ -8,6 +8,10 @@ function NextSteppage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const navigate = useNavigate();
 
+  const handleSurvey3Click = () => {
+    navigate("/survey/3", { state: { fromContact: true } })
+  };
+
   const handleContactClick = () => {
     navigate("/contact")
   };
@@ -46,6 +50,11 @@ function NextSteppage() {
         </div>
         
         <div className="w-full max-w-[424px] flex flex-col items-center gap-4 px-4 sm:px-0">
+          <ChoiceSelect
+            onClick={handleSurvey3Click}
+            text="ประเมินความพึงพอใจ"
+          />
+
           <ChoiceSelect
             onClick={handleContactClick}
             text="ช่องทางในการติดต่อ ขอความช่วยเหลือ"

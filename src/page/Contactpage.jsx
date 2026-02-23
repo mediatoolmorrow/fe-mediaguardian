@@ -93,7 +93,7 @@ function Contactpage() {
             return (
               <button
                 className="btn-normal-active"
-                onClick={() => navigate("/survey/3", { state: { fromContact: true } })}
+                onClick={() => navigate("/nextstep")}
               >
                 ประเมินความพึงพอใจ
               </button>
