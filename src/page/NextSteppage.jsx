@@ -23,7 +23,11 @@ function NextSteppage() {
   };
 
   const handleHomeClick = () => {
-    navigate("/survey/2", { state: { fromContact: true } });
+    if (backendUser?.isSubmitFirstForm) {
+      navigate("/agentic");
+    } else {
+      navigate("/survey/2", { state: { fromContact: true } });
+    }
   };
 
   const closeModal = () => {
@@ -51,13 +55,10 @@ function NextSteppage() {
         </div>
 
         <div className="w-full max-w-[424px] flex flex-col items-center gap-4 px-4 sm:px-0">
-          {/* Only show "ประเมินความพึงพอใจ" if survey 2 has been submitted */}
-          {backendUser?.isSubmitFirstForm && (
-            <ChoiceSelect
-              onClick={handleSurvey3Click}
-              text="ประเมินความพึงพอใจ"
-            />
-          )}
+          <ChoiceSelect
+            onClick={handleSurvey3Click}
+            text="ประเมินความพึงพอใจ"
+          />
 
           <ChoiceSelect
             onClick={handleContactClick}
@@ -69,13 +70,10 @@ function NextSteppage() {
             text="แชร์ต่อ"
           />
 
-          {/* Show "กลับสู่หน้าแรก" only if survey 2 has NOT been submitted yet */}
-          {!backendUser?.isSubmitFirstForm && (
-            <ChoiceSelect
-              onClick={handleHomeClick}
-              text="กลับสู่หน้าแรก"
-            />
-          )}
+          <ChoiceSelect
+            onClick={handleHomeClick}
+            text="กลับสู่หน้าแรก"
+          />
         </div>
       </div>
     </div>
