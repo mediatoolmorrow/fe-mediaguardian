@@ -21,8 +21,7 @@ function NextSteppage() {
   };
 
   const handleHomeClick = () => {
-    console.log("Navigate to home");
-    navigate("/agentic")
+    navigate("/survey/2", { state: { fromContact: true } })
   };
 
   const closeModal = () => {
@@ -67,7 +66,7 @@ function NextSteppage() {
 
           <ChoiceSelect
             onClick={handleHomeClick}
-            text="กลับหน้าหลัก"
+            text="กลับสู่หน้าแรก"
           />
         </div>
       </div>
