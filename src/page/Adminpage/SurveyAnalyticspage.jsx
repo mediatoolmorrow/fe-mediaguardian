@@ -14,6 +14,7 @@ import {
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { Download, Users, RefreshCw } from "lucide-react";
 import MonthYearFilter from "../../components/Admin/MonthYearFilter";
+import { surveyTemplate } from "../../utils/surveyTemplate";
 
 ChartJS.register(
   CategoryScale,
@@ -74,6 +75,18 @@ export default function SurveyAnalyticspage({
   }
 
   const { totalResponses, demographics, satisfaction, behaviorChange, timeline } = chartData;
+
+  const occupationOptions = surveyTemplate.Set[0].questions[2].options;
+  const incomeOptions = surveyTemplate.Set[0].questions[3].options;
+
+  const resolveLabels = (labels, options) => {
+    if (!labels) return [];
+    return labels.map(label => {
+      const idx = parseInt(label);
+      if (!isNaN(idx) && options[idx] !== undefined) return options[idx];
+      return label;
+    });
+  };
 
   const chartOptions = {
     responsive: true,
@@ -191,7 +204,7 @@ export default function SurveyAnalyticspage({
             {demographics?.occupation?.data?.length > 0 ? (
               <Doughnut
                 data={{
-                  labels: demographics.occupation.labels,
+                  labels: resolveLabels(demographics.occupation.labels, occupationOptions),
                   datasets: [
                     {
                       data: demographics.occupation.data,
@@ -212,7 +225,7 @@ export default function SurveyAnalyticspage({
             {demographics?.income?.data?.length > 0 ? (
               <Doughnut
                 data={{
-                  labels: demographics.income.labels,
+                  labels: resolveLabels(demographics.income.labels, incomeOptions),
                   datasets: [
                     {
                       data: demographics.income.data,

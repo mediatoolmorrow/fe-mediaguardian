@@ -33,8 +33,6 @@ const storage = {
       localStorage.setItem(key, value);
       sessionStorage.setItem(key, value);
     } catch (e) {
-      console.error('Storage error:', e);
-      // Fallback to sessionStorage only
       sessionStorage.setItem(key, value);
     }
   },
@@ -43,7 +41,6 @@ const storage = {
     try {
       return localStorage.getItem(key) || sessionStorage.getItem(key);
     } catch (e) {
-      console.error('Storage error:', e);
       return sessionStorage.getItem(key);
     }
   },
@@ -53,7 +50,6 @@ const storage = {
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);
     } catch (e) {
-      console.error('Storage error:', e);
       sessionStorage.removeItem(key);
     }
   }
@@ -89,12 +85,10 @@ const exchangeCodeForToken = async (code, codeVerifier) => {
 export const lineAuth = {
   async login() {
     if (!LINE_CLIENT_ID) {
-      console.error('LINE_CLIENT_ID is not configured');
       throw new Error('LINE Client ID is not configured');
     }
 
     if (!LINE_REDIRECT_URI) {
-      console.error('LINE_REDIRECT_URI is not configured');
       throw new Error('LINE Redirect URI is not configured');
     }
 
