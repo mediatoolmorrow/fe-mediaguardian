@@ -176,14 +176,18 @@ const handleSubmit = async () => {
     
     // Map frontend communication labels to backend goal format
     const GOAL_MAPPING = {
-      'ตอบกลับคอมเมนต์': 'ตอบกลับคอมเมนต์',
+      'แสดงความคิดเห็น': 'ตอบกลับคอมเมนต์',
       'ตอบกลับเจ้าของโพสต์': 'ตอบกลับเจ้าของโพสต์',
       'ชวนคิด ชวนคุยกับลูก / เด็กๆ': 'ตั้งคำถามชวนคุยกับลูก',
       'ชวนคิด ชวนคุยกับเพื่อน': 'ตั้งคำถามชวนคุยกับเพื่อน',
       'ชวนคิด ชวนคุยกับคนอายุมากกว่า': 'ตั้งคำถามชวนคุยกับคนที่อายุมากกว่า'
     };
-    
+    const APPROACH_MAPPING = {
+      'แสดงความคิดเห็น': 'ตอบกลับคอมเมนต์',
+    };
+
     const goalForBackend = GOAL_MAPPING[communicationLabel] || communicationLabel;
+    const approachForBackend = APPROACH_MAPPING[communicationLabel] || communicationLabel;
     
     let result;
 
@@ -193,7 +197,7 @@ const handleSubmit = async () => {
         contentDescription: promptDescription, // ← ADD THIS
         problem: problemLabels,
         concerning: impactLabels,
-        approach: communicationLabel,
+        approach: approachForBackend,
         goal: goalForBackend
       });
     } else if (promptMode === "image") {
@@ -204,7 +208,7 @@ const handleSubmit = async () => {
         contentDescription: promptDescription,
         problem: problemLabels,
         concerning: impactLabels,
-        approach: communicationLabel,
+        approach: approachForBackend,
         goal: goalForBackend
       });
     } else if (promptMode === "link") {
@@ -213,7 +217,7 @@ const handleSubmit = async () => {
         contentDescription: promptDescription,
         problem: problemLabels,
         concerning: impactLabels,
-        approach: communicationLabel,
+        approach: approachForBackend,
         goal: goalForBackend
       });
     }
@@ -401,7 +405,7 @@ const handleSubmit = async () => {
         {/* Always-visible reply row */}
         <div className="grid grid-cols-2 gap-3">
           <ChoiceCard
-            title="ตอบกลับคอมเมนต์"
+            title="แสดงความคิดเห็น"
             iconSource={iconMap["creative"]}
             selected={selectedItems.communication.includes("creative")}
             onClick={() => toggleSelection("communication", "creative", 1)}
@@ -426,7 +430,7 @@ const handleSubmit = async () => {
           });
 
           const otherOptions = Array.from(availableGoals.values()).filter(
-            g => g.th !== "ตอบกลับคอมเมนต์" && g.th !== "ตอบกลับเจ้าของโพสต์"
+            g => g.th !== "แสดงความคิดเห็น" && g.th !== "ตอบกลับเจ้าของโพสต์"
           );
 
           if (otherOptions.length === 0) return null;
