@@ -36,7 +36,7 @@ function NextSteppage() {
 
   return (
     <div className="w-full max-h-screen flex flex-col">
-      <Banner imgSource="./banner/03_Agentic_Banner.webp" />
+      <Banner imgSource="./banner/next_step_banner.webp" />
 
       {showShareModal && (
         <div
