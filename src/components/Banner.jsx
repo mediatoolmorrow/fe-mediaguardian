@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Banner({ imgSource }) {
   return (
-    <div className="w-full h-[133px] overflow-hidden">
+    <div className="w-full sm:w-[calc(100%+20px)] h-[133px] overflow-hidden">
       <img
         src={imgSource}
         alt="Banner"

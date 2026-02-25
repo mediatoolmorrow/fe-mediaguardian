@@ -71,7 +71,7 @@ export default function Pageframe() {
             {!hideNavbar && <Navbar />}
 
         <div className="flex-1 relative overflow-hidden">
-          <main id="main-scroll" ref={scrollRef} className="h-full overflow-y-auto bg-background sm:[scrollbar-gutter:stable]">
+          <main id="main-scroll" ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden bg-background sm:[scrollbar-gutter:stable]">
             <Outlet />
           </main>
           <MobileScrollbar scrollEl={scrollRef} />
