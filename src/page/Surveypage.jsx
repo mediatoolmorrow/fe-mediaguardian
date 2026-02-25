@@ -96,7 +96,6 @@ function Surveypage() {
         }
       }
     } catch (err) {
-      console.error("Survey submission error:", err);
       setError(err.message || "เกิดข้อผิดพลาดในการส่งแบบฟอร์ม กรุณาลองใหม่อีกครั้ง");
     } finally {
       setIsSubmitting(false);

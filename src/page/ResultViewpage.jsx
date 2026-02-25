@@ -56,7 +56,6 @@ function ResultViewpage() {
                 const data = await api.getResultById(token, id);
                 setResult(data);
             } catch (err) {
-                console.error("Error fetching result:", err);
                 setError(err.message || "ไม่สามารถโหลดผลลัพธ์ได้");
             } finally {
                 setLoading(false);
@@ -68,12 +67,7 @@ function ResultViewpage() {
         }
     }, [id]);
 
-    // Handle copy action - just show notification (navigation handled by "ไปต่อ" button)
-    const handleCopyAction = () => {
-        // Copy action completed - no navigation needed
-        // Survey navigation is now handled by handleContinue
-        console.log("Text copied");
-    };
+    const handleCopyAction = () => {};
 
     // Handle continue button - only works when at least 1 feedback is given
     const handleContinue = async () => {
@@ -107,9 +101,7 @@ function ResultViewpage() {
                 });
 
                 await api.submitFeedback(token, id, { feedbacks });
-                console.log("Feedback submitted successfully:", feedbacks);
             } catch (err) {
-                console.error("Error submitting feedback:", err);
                 // Continue navigation even if feedback fails
             } finally {
                 setSubmittingFeedback(false);
@@ -127,8 +119,6 @@ function ResultViewpage() {
 
     // Handle feedback popup continue
     const handleFeedbackContinue = (feedbackData) => {
-        console.log("Feedback received:", feedbackData);
-        // TODO: Send feedback to backend when ready
         setShowFeedbackPopup(false);
         navigate("/nextstep");
     };
@@ -154,7 +144,6 @@ function ResultViewpage() {
             const newResult = await api.regenerateAdvice(token, id);
             setResult(newResult);
         } catch (err) {
-            console.error("Error regenerating:", err);
             // Check for rate limit error
             const errorMsg = err.message?.toLowerCase() || '';
             if (
@@ -222,16 +211,6 @@ function ResultViewpage() {
     let output = result.output || result.result || result.data || result.response;
     const rawOutput = result.rawOutput || result.llmResponse || result.raw || "";
 
-    // Debug: Log the result structure
-    console.log("=== ResultViewpage Debug ===");
-    console.log("Full result object:", JSON.stringify(result, null, 2));
-    console.log("result.output:", result.output);
-    console.log("result.result:", result.result);
-    console.log("result.mode:", result.mode);
-    console.log("Output type:", typeof output);
-    console.log("Output value:", output);
-    console.log("============================");
-
     // Determine if we have structured output or raw text
     let structuredOutput = null;
     let fallbackText = rawOutput;
@@ -278,7 +257,6 @@ function ResultViewpage() {
             fallbackText = output.raw;
         } else if (output.factChecking || output.decisionMaking || output.impact || output.options) {
             structuredOutput = output;
-            console.log("Found structured output:", structuredOutput);
         } else {
             fallbackText = JSON.stringify(output, null, 2);
         }
@@ -287,7 +265,6 @@ function ResultViewpage() {
     if (!structuredOutput && result) {
         if (result.decisionMaking || result.factChecking || result.options) {
             structuredOutput = result;
-            console.log("Using result directly as structured output");
         }
     }
 

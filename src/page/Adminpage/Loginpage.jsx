@@ -32,7 +32,6 @@ export default function AdminLoginpage({ onLogin }) {
       }
     } catch (error) {
       setLoginError(error.message || 'Login failed. Please try again.');
-      console.error('Login error:', error);
     } finally {
       setIsLoggingIn(false);
     }

@@ -74,7 +74,6 @@ function ResultListpage() {
                 setHasMore(resultsList.length === displayCount && resultsList.length < total);
                 setError(null);
             } catch (err) {
-                console.error("Error fetching results:", err);
                 setError(err.message || "ไม่สามารถโหลดประวัติได้");
             } finally {
                 setLoading(false);
@@ -240,7 +239,6 @@ function ResultListpage() {
                     isOpen={showFeedbackTest}
                     onClose={() => setShowFeedbackTest(false)}
                     onContinue={(data) => {
-                        console.log("Feedback data:", data);
                         alert("Feedback submitted! Check console for data.");
                         setShowFeedbackTest(false);
                     }}

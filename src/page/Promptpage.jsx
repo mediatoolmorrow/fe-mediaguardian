@@ -236,11 +236,9 @@ const handleSubmit = async () => {
       navigate(`/result/${resultId}`);
     } else {
       // Fallback: navigate to agentic page if no ID
-      console.error("No result ID returned from API");
       navigate("/agentic");
     }
   } catch (err) {
-    console.error("LLM API Error:", err);
 
     // Check for rate limit error (429 status or specific messages)
     const errorMessage = err.message?.toLowerCase() || '';

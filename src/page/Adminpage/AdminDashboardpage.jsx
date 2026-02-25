@@ -23,9 +23,8 @@ export default function AdminDashboard() {
   const [videoUrl, setVideoUrl] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
   const [saveError, setSaveError] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalUsers: 0,
     pageViews: 0,
     avgSession: '0m 0s',
@@ -35,7 +34,6 @@ export default function AdminDashboard() {
     sessionChange: 0,
     bounceChange: 0
   });
-  const [statsLoading, setStatsLoading] = useState(false);
 
   const [surveyChartData, setSurveyChartData] = useState(null);
   const [surveyLoading, setSurveyLoading] = useState(false);
@@ -56,8 +54,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!authLoading && backendUser && isAdmin) {
-      loadVideoUrl();
-      loadStats();
       loadSurveyChartData();
       loadPromptChartData();
       loadFeedbackData();
@@ -82,34 +78,6 @@ export default function AdminDashboard() {
     setCurrentPage(page);
   };
 
-  const loadStats = async () => {
-    setStatsLoading(true);
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: 'Generate realistic website statistics in JSON only: {"totalUsers": number, "pageViews": number, "avgSession": "string like 4m 32s", "bounceRate": "string like 42.3%", "userGrowth": number, "viewsGrowth": number, "sessionChange": number, "bounceChange": number}'
-          }]
-        })
-      });
-
-      const data = await response.json();
-      const resultText = data.content.find(item => item.type === 'text')?.text || '';
-      const cleanText = resultText.replace(/```json|```/g, '').trim();
-      const result = JSON.parse(cleanText);
-      setStats(result);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
-
   const loadSurveyChartData = async ({ month, year } = {}) => {
     setSurveyLoading(true);
     setSurveyError('');
@@ -126,7 +94,6 @@ export default function AdminDashboard() {
         setSurveyError(response.message || 'Failed to load survey data');
       }
     } catch (error) {
-      console.error('Failed to load survey chart data:', error);
       setSurveyError(error.message || 'Failed to load survey data');
     } finally {
       setSurveyLoading(false);
@@ -144,7 +111,6 @@ export default function AdminDashboard() {
       }
       await api.downloadSurveyCSV(token);
     } catch (error) {
-      console.error('Failed to download CSV:', error);
       alert('Failed to download CSV: ' + error.message);
     } finally {
       setCsvDownloading(false);
@@ -167,7 +133,6 @@ export default function AdminDashboard() {
         setPromptError(response.message || 'Failed to load prompt data');
       }
     } catch (error) {
-      console.error('Failed to load prompt chart data:', error);
       setPromptError(error.message || 'Failed to load prompt data');
     } finally {
       setPromptLoading(false);
@@ -184,7 +149,6 @@ export default function AdminDashboard() {
       }
       await api.downloadPromptCSV(token);
     } catch (error) {
-      console.error('Failed to download Prompt CSV:', error);
       alert('Failed to download CSV: ' + error.message);
     } finally {
       setPromptCsvDownloading(false);
@@ -208,7 +172,6 @@ export default function AdminDashboard() {
         setFeedbackError(response.message || 'Failed to load feedback data');
       }
     } catch (error) {
-      console.error('Failed to load feedback data:', error);
       setFeedbackError(error.message || 'Failed to load feedback data');
     } finally {
       setFeedbackLoading(false);
@@ -225,36 +188,9 @@ export default function AdminDashboard() {
       }
       await api.downloadFeedbackCSV(token);
     } catch (error) {
-      console.error('Failed to download Feedback CSV:', error);
       alert('Failed to download CSV: ' + error.message);
     } finally {
       setFeedbackCsvDownloading(false);
-    }
-  };
-
-  const loadVideoUrl = async () => {
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: 'Return a sample YouTube embed URL in JSON only: {"videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ"}'
-          }]
-        })
-      });
-
-      const data = await response.json();
-      const resultText = data.content.find(item => item.type === 'text')?.text || '';
-      const cleanText = resultText.replace(/```json|```/g, '').trim();
-      const result = JSON.parse(cleanText);
-      setVideoUrl(result.videoUrl);
-    } catch (error) {
-      console.error('Failed to load video URL:', error);
-      setVideoUrl('https://www.youtube.com/embed/dQw4w9WgXcQ');
     }
   };
 
@@ -275,7 +211,7 @@ export default function AdminDashboard() {
     return url;
   };
 
-  const handleSaveVideo = async (url) => {
+  const handleSaveVideo = (url) => {
     setSaveError('');
     setSaveMessage('');
 
@@ -289,40 +225,10 @@ export default function AdminDashboard() {
       return;
     }
 
-    setIsSaving(true);
-
-    try {
-      const embedUrl = convertToEmbedUrl(url);
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: `Simulate saving video URL: ${embedUrl}. Return JSON only: {"success": true, "message": "Video URL updated successfully"}`
-          }]
-        })
-      });
-
-      const data = await response.json();
-      const resultText = data.content.find(item => item.type === 'text')?.text || '';
-      const cleanText = resultText.replace(/```json|```/g, '').trim();
-      const result = JSON.parse(cleanText);
-
-      if (result.success) {
-        setVideoUrl(embedUrl);
-        setSaveMessage(result.message);
-        setTimeout(() => setSaveMessage(''), 3000);
-      }
-    } catch (error) {
-      setSaveError('Failed to save video URL. Please try again.');
-      console.error('Save error:', error);
-    } finally {
-      setIsSaving(false);
-    }
+    const embedUrl = convertToEmbedUrl(url);
+    setVideoUrl(embedUrl);
+    setSaveMessage('Video URL updated successfully');
+    setTimeout(() => setSaveMessage(''), 3000);
   };
 
   // Show loading while auth is loading
@@ -420,13 +326,13 @@ export default function AdminDashboard() {
           />
         );
       case 'stats':
-        return <Statisticspage stats={stats} loading={statsLoading} />;
+        return <Statisticspage stats={stats} loading={false} />;
       case 'tutorial':
         return (
           <VideoManagement
             videoUrl={videoUrl}
             onSave={handleSaveVideo}
-            loading={isSaving}
+            loading={false}
             error={saveError}
             successMessage={saveMessage}
           />

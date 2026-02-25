@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       try {
         await refreshBackendUser();
       } catch (err) {
-        console.error('Token refresh failed:', err);
+        // silent
       }
     }
   }, 25 * 60 * 1000); // 25 minutes
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
             const userData = response.user || response;
             setBackendUser(userData);
           } catch (err) {
-            console.error('Failed to get backend user:', err);
+            // silent
           }
         }
       } else {
@@ -139,7 +139,6 @@ export const AuthProvider = ({ children }) => {
 useEffect(() => {
   setTokenExpiredCallback(() => {
     try {
-      console.log('Session expired - cleaning up');
       // Clear auth state
       setUser(null);
       setBackendUser(null);
@@ -150,7 +149,7 @@ useEffect(() => {
         window.location.href = '/login';
       }
     } catch (error) {
-      console.error('Error in token expiration callback:', error);
+      // silent
     }
   });
 
@@ -385,7 +384,6 @@ useEffect(() => {
       }
       return { success: false, error: 'No token' };
     } catch (err) {
-      console.error('Failed to refresh backend user:', err);
       return { success: false, error: err.message };
     }
   };

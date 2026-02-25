@@ -37,7 +37,7 @@ function ResultFull({
             try {
                 document.execCommand('copy');
             } catch (err) {
-                console.error('Failed to copy:', err);
+                // silent
             }
             document.body.removeChild(textArea);
         }
