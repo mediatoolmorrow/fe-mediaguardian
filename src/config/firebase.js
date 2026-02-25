@@ -32,6 +32,7 @@ const facebookProvider = new FacebookAuthProvider();
 const appleProvider = new OAuthProvider('apple.com');
 
 // Configure providers
+googleProvider.addScope('email');
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });

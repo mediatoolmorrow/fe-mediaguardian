@@ -4,11 +4,8 @@ import ContactCard from "../components/ContactCard";
 import { useNavigate } from "react-router-dom";
 import categories from "../utils/matchingPrompt.json";
 import contactData from "../utils/contact.json";
-import { useAuth } from "../context/AuthContext";
-
 function Contactpage() {
   const navigate = useNavigate();
-  const { backendUser } = useAuth();
 
   const promptData = JSON.parse(
     localStorage.getItem("promptData")
@@ -78,41 +75,6 @@ function Contactpage() {
         >
           กลับไปก่อนหน้า
         </button>
-
-        {(() => {
-          const survey3Done = localStorage.getItem("survey3Completed") === "true";
-          if (!backendUser?.isSubmitFirstForm) {
-            return (
-              <button
-                className="btn-normal-active"
-                onClick={() => navigate("/survey/2", { state: { fromContact: true } })}
-              >
-                กลับสู่หน้าแรก
-              </button>
-            );
-          } else if (!survey3Done) {
-            return (
-              <button
-                className="btn-normal-active"
-                onClick={() => navigate("/survey/3", { state: { fromContact: true } })}
-              >
-                ประเมินความพึงพอใจ
-              </button>
-            );
-          } else {
-            return (
-              <button
-                className="btn-normal-active"
-                onClick={() => {
-                  localStorage.removeItem("promptData");
-                  navigate("/agentic");
-                }}
-              >
-                กลับสู่หน้าแรก
-              </button>
-            );
-          }
-        })()}
       </div>
     </div>
   );

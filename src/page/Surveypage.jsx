@@ -24,7 +24,6 @@ function Surveypage() {
   const { backendUser, refreshBackendUser } = useAuth();
 
   const resultId = location.state?.resultId;
-  const fromContact = location.state?.fromContact || false;
 
   const currentFormSet = parseInt(formSet) || 1;
   const [answers, setAnswers] = useState({});
@@ -83,21 +82,8 @@ function Surveypage() {
       await api.submitSurvey(token, currentFormSet, answers);
       await refreshBackendUser();
 
-      if (fromContact) {
-        if (currentFormSet === 2) {
-          // After survey 2 from contact page, go back to contact page
-          navigate("/contact");
-        } else if (currentFormSet === 3) {
-          // After survey 3, mark it done, reward daily limit, go home
-          localStorage.setItem("survey3Completed", "true");
-          localStorage.removeItem("promptData");
-          try {
-            await api.incrementDailyLimit(token);
-          } catch (limitErr) {
-            console.error("Failed to increment daily limit:", limitErr);
-          }
-          navigate("/agentic");
-        }
+      if (currentFormSet === 3) {
+        navigate("/agentic");
       } else if (resultId) {
         navigate(`/nextstep`, {
           state: { surveyCompleted: true }

@@ -11,11 +11,9 @@ function ScrollToTop() {
 import Pageframe from "./components/Pageframe/Pageframe";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-{/* Unprotected Routes */}
 import Loginpage from "./page/Loginpage";
 import Pdpapage from "./page/Pdpapage";
 
-{/* Protected Routes */}
 import Tutorialpage from "./page/Tutorialpage"
 import ResultViewpage from "./page/ResultViewpage";
 import Contactpage from "./page/Contactpage";
