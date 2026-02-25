@@ -11,7 +11,7 @@ function NextSteppage() {
   const { backendUser } = useAuth();
 
   const handleSurvey3Click = () => {
-    navigate("/survey/3", { state: { fromContact: true } });
+    navigate("/survey/3");
   };
 
   const handleContactClick = () => {
@@ -26,7 +26,7 @@ function NextSteppage() {
     if (backendUser?.isSubmitFirstForm) {
       navigate("/agentic");
     } else {
-      navigate("/survey/2", { state: { fromContact: true } });
+      navigate("/survey/2");
     }
   };
 
