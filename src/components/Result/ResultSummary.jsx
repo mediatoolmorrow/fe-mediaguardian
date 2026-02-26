@@ -5,9 +5,10 @@ export default function ResultSummary({ id, description, mode, createdAt, inputP
   const navigate = useNavigate();
 
   // Truncate description for preview (shorter for list view)
-  const truncatedDescription = description && description.length > 150
-    ? description.substring(0, 150) + "..."
-    : description;
+  const trimmedDescription = description?.trim() || "";
+  const truncatedDescription = trimmedDescription.length > 150
+    ? trimmedDescription.substring(0, 150) + "..."
+    : trimmedDescription;
 
   // Format date safely (handles Firestore Timestamp)
   const formatDate = (dateValue) => {
