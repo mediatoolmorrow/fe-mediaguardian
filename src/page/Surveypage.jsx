@@ -36,6 +36,15 @@ function Surveypage() {
     const currentAnswers = answers[questionId] || [];
     const max = parseInt(maxAnswer) || 1;
 
+    // q5: "ไม่มีบุตร" (index 0) is exclusive — cannot combine with other options
+    if (questionId === "q5" && optionIndex === 0) {
+      setAnswers({
+        ...answers,
+        [questionId]: currentAnswers.includes(0) ? [] : [0]
+      });
+      return;
+    }
+
     if (max === 1) {
       setAnswers({
         ...answers,
@@ -198,6 +207,7 @@ function Surveypage() {
                           text={option}
                           isSelect={currentAnswer.includes(index)}
                           onClick={() => handleSelectAnswer(question.id, index, question.maxAnswer)}
+                          disabled={question.id === "q5" && currentAnswer.includes(0) && index !== 0}
                         />
                       ))}
                     </div>
