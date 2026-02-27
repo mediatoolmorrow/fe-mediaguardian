@@ -33,7 +33,7 @@ export default function ChoiceCard({
           ? "bg-accent"
           : disabled
           ? "bg-white cursor-not-allowed opacity-50"
-          : "hover:bg-accent hover:shadow-md"
+          : "bg-white hover:bg-accent hover:shadow-md"
       }`}
     >
       <div className="flex flex-col items-center gap-2">
