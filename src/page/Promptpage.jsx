@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PromptBox from "../components/PromptBox";
 import ChoiceCard from "../components/ChoiceCard";
@@ -33,16 +33,23 @@ function PromptPage() {
   const [error, setError] = useState(null);
   const [rateLimitReached, setRateLimitReached] = useState(false);
   const [rateLimit, setRateLimit] = useState({ remaining: null, limit: 100 });
+  const errorRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('backend_token');
     if (!token) return;
     api.getUserRateLimit(token)
       .then(data => setRateLimit(data))
-      .catch(() => {}); // keep loading state on error until backend is ready
+      .catch(() => {});
   }, []);
 
-  // Content from PromptBox
+  useEffect(() => {
+    if ((error || rateLimitReached) && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [error, rateLimitReached]);
+
+ 
   const [promptMode, setPromptMode] = useState("text");
   const [promptContent, setPromptContent] = useState(null);
   const [isContentValid, setIsContentValid] = useState(false);
@@ -76,7 +83,6 @@ function PromptPage() {
         return { ...prev, [section]: current.filter(v => v !== value) };
       }
 
-      // If maxSelect is 1, replace the current selection instead of blocking
       if (maxSelect === 1) {
         return { ...prev, [section]: [value] };
       }
@@ -107,7 +113,7 @@ function PromptPage() {
     return Array.from(map.values());
   }, [selectedCategories]);
 
-  // Get labels for selected items
+
   const getSelectedLabels = () => {
     const problemLabels = selectedCategories.map(cat => cat.title_th).join(", ");
     const impactLabels = selectedItems.impacts
@@ -147,7 +153,7 @@ function PromptPage() {
     return data.url;
   };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
   const token = localStorage.getItem('backend_token');
 
   if (!token) {
@@ -174,7 +180,6 @@ const handleSubmit = async () => {
   try {
     const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
     
-    // Map frontend communication labels to backend goal format
     const GOAL_MAPPING = {
       'แสดงความคิดเห็น': 'ตอบกลับคอมเมนต์',
       'ตอบกลับเจ้าของโพสต์': 'ตอบกลับเจ้าของโพสต์',
@@ -194,14 +199,13 @@ const handleSubmit = async () => {
     if (promptMode === "text") {
       result = await api.generateAdviceText(token, {
         content: promptContent,
-        contentDescription: promptDescription, // ← ADD THIS
+        contentDescription: promptDescription,  
         problem: problemLabels,
         concerning: impactLabels,
         approach: approachForBackend,
         goal: goalForBackend
       });
     } else if (promptMode === "image") {
-      // Upload image first, then send URL to API
       const imageUrl = await uploadImage(promptContent.file);
       result = await api.generateAdviceImage(token, {
         imageUrl,
@@ -222,7 +226,7 @@ const handleSubmit = async () => {
       });
     }
 
-    // Store result and navigate directly to result view page
+     
     localStorage.setItem("promptData", JSON.stringify({
       mode: promptMode,
       problems: selectedItems.page1,
@@ -230,17 +234,14 @@ const handleSubmit = async () => {
       communication: selectedItems.communication,
     }));
 
-    // Navigate directly to the result view page with the result ID
     const resultId = result._id || result.id || result.promptId;
     if (resultId) {
       navigate(`/result/${resultId}`);
     } else {
-      // Fallback: navigate to agentic page if no ID
       navigate("/agentic");
     }
   } catch (err) {
 
-    // Check for rate limit error (429 status or specific messages)
     const errorMessage = err.message?.toLowerCase() || '';
     const isRateLimit =
       err.status === 429 ||
@@ -272,8 +273,8 @@ const handleSubmit = async () => {
           rateLimit={rateLimit}
           onValidationChange={handleValidationChange}
         />
-
-        {/* Rate Limit Alert */}
+ 
+        <div ref={errorRef}>
         {rateLimitReached && (
           <div className="p-4 bg-amber-50 border border-amber-300 rounded-lg">
             <div className="flex items-start gap-3">
@@ -316,6 +317,7 @@ const handleSubmit = async () => {
             </button>
           </div>
         )}
+        </div>
 
         <div className="flex items-center justify-between">
           
