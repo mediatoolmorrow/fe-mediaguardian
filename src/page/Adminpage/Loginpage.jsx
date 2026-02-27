@@ -18,7 +18,6 @@ export default function AdminLoginpage({ onLogin }) {
 
       if (response.token) {
         localStorage.setItem('adminToken', response.token);
-        // Store user role info
         if (response.user) {
           localStorage.setItem('adminUser', JSON.stringify(response.user));
         }
