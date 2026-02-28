@@ -306,9 +306,7 @@ function ResultFull({
                                                     }}
                                                 />
 
-                                                {/* Action buttons row: Copy + Like + Improve */}
                                                 <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-                                                    {/* Copy button */}
                                                     <button
                                                         onClick={() =>
                                                             handleCopy(

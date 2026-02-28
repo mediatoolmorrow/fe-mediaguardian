@@ -181,14 +181,14 @@ function PromptPage() {
     const { problemLabels, impactLabels, communicationLabel } = getSelectedLabels();
     
     const GOAL_MAPPING = {
-      'แสดงความคิดเห็น': 'ตอบกลับคอมเมนต์',
+      'ตอบกลับคอมเมนต์': 'แสดงความคิดเห็น',
       'ตอบกลับเจ้าของโพสต์': 'ตอบกลับเจ้าของโพสต์',
       'ชวนคิด ชวนคุยกับลูก / เด็กๆ': 'ตั้งคำถามชวนคุยกับลูก',
       'ชวนคิด ชวนคุยกับเพื่อน': 'ตั้งคำถามชวนคุยกับเพื่อน',
       'ชวนคิด ชวนคุยกับคนอายุมากกว่า': 'ตั้งคำถามชวนคุยกับคนที่อายุมากกว่า'
     };
     const APPROACH_MAPPING = {
-      'แสดงความคิดเห็น': 'ตอบกลับคอมเมนต์',
+      'ตอบกลับคอมเมนต์': 'แสดงความคิดเห็น',
     };
 
     const goalForBackend = GOAL_MAPPING[communicationLabel] || communicationLabel;
