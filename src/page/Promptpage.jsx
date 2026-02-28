@@ -405,7 +405,7 @@ function PromptPage() {
         {/* Always-visible reply row */}
         <div className="grid grid-cols-2 gap-3">
           <ChoiceCard
-            title="แสดงความคิดเห็น"
+            title="ตอบกลับคอมเมนต์"
             iconSource={iconMap["creative"]}
             selected={selectedItems.communication.includes("creative")}
             onClick={() => toggleSelection("communication", "creative", 1)}
