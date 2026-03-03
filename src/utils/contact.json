@@ -139,7 +139,7 @@
       "order": 12,
       "image": "/contact/normal.png",
       "name_th": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
-      "description": "",
+      "description": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
       "channels": {
         "call": "1111"
       }
@@ -149,7 +149,7 @@
       "order": 13,
       "image": "/contact/normal_2.png",
       "name_th": "ศูนย์ดำรงธรรม (กระจายทุกจังหวัด) กระทรวงมหาดไทย",
-      "description": "",
+      "description": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
       "channels": {
         "call": ""
       }
