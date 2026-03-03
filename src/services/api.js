@@ -349,6 +349,54 @@ export const api = {
 
     return response.json();
   },
+  async generateAdviceStream(token, body, onProgress) {
+    const response = await fetch(`${API_BASE_URL}/api/llm/generate/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    await handleResponse(response);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      const err = new Error(error.message || 'Failed to generate advice');
+      err.status = response.status;
+      throw err;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = JSON.parse(line.slice(6));
+
+        if (data.type === 'progress') {
+          onProgress(data.percent);
+        } else if (data.type === 'done') {
+          return data.result;
+        } else if (data.type === 'error') {
+          const err = new Error(data.message || 'Stream error');
+          err.status = data.status;
+          throw err;
+        }
+      }
+    }
+  },
+
   /* Regenerate */
   async regenerateAdvice(token, promptId) {
     const response = await fetch(`${API_BASE_URL}/api/llm/regenerate/${promptId}`, {

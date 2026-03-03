@@ -26,10 +26,20 @@ const iconMap = {
   "post" : "/choice-icon/talk/talk-post.svg"
 };
 
+const loadingTexts = [
+  "กำลังวิเคราะห์เนื้อหา...",
+  "ประมวลผลและตรวจสอบข้อมูล...",
+  "ตรวจสอบความเหมาะสมของเนื้อหา...",
+  "สร้างคำแนะนำที่เหมาะกับคุณ...",
+  "เกือบเสร็จแล้ว รอสักครู่...",
+];
+
 function PromptPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   const [error, setError] = useState(null);
   const [rateLimitReached, setRateLimitReached] = useState(false);
   const [rateLimit, setRateLimit] = useState({ remaining: null, limit: 100 });
@@ -48,6 +58,22 @@ function PromptPage() {
       errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [error, rateLimitReached]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setLoadingProgress(0);
+      setLoadingTextIndex(0);
+      return;
+    }
+    setLoadingProgress(0);
+    setLoadingTextIndex(0);
+
+    const textInterval = setInterval(() => {
+      setLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
+    }, 3000);
+
+    return () => clearInterval(textInterval);
+  }, [isLoading]);
 
  
   const [promptMode, setPromptMode] = useState("text");
@@ -194,37 +220,32 @@ function PromptPage() {
     const goalForBackend = GOAL_MAPPING[communicationLabel] || communicationLabel;
     const approachForBackend = APPROACH_MAPPING[communicationLabel] || communicationLabel;
     
-    let result;
+    const commonBody = {
+      contentDescription: promptDescription,
+      problem: problemLabels,
+      concerning: impactLabels,
+      approach: approachForBackend,
+      goal: goalForBackend
+    };
 
+    let body;
     if (promptMode === "text") {
-      result = await api.generateAdviceText(token, {
-        content: promptContent,
-        contentDescription: promptDescription,  
-        problem: problemLabels,
-        concerning: impactLabels,
-        approach: approachForBackend,
-        goal: goalForBackend
-      });
+      body = { mode: "text", content: promptContent, ...commonBody };
     } else if (promptMode === "image") {
       const imageUrl = await uploadImage(promptContent.file);
-      result = await api.generateAdviceImage(token, {
-        imageUrl,
-        contentDescription: promptDescription,
-        problem: problemLabels,
-        concerning: impactLabels,
-        approach: approachForBackend,
-        goal: goalForBackend
-      });
+      setLoadingProgress(20);
+      body = { mode: "image", imageUrl, ...commonBody };
     } else if (promptMode === "link") {
-      result = await api.generateAdviceLink(token, {
-        videoUrl: promptContent,
-        contentDescription: promptDescription,
-        problem: problemLabels,
-        concerning: impactLabels,
-        approach: approachForBackend,
-        goal: goalForBackend
-      });
+      body = { mode: "link", videoUrl: promptContent, ...commonBody };
     }
+
+    const result = await api.generateAdviceStream(token, body, (percent) => {
+      if (promptMode === "image") {
+        setLoadingProgress(20 + Math.round(percent * 0.8));
+      } else {
+        setLoadingProgress(percent);
+      }
+    });
 
      
     localStorage.setItem("promptData", JSON.stringify({
@@ -491,10 +512,32 @@ function PromptPage() {
 
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            <p className="text-gray-700">กำลังวิเคราะห์เนื้อหา...</p>
-            <p className="text-sm text-gray-500">อาจใช้เวลาสักครู่</p>
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-5 w-80 max-w-sm mx-4 shadow-xl">
+            <div className="text-center min-h-[2.5rem] flex items-center justify-center">
+              <p
+                key={loadingTextIndex}
+                className="text-gray-800 font-medium text-base animate-fadeIn"
+              >
+                {loadingTexts[loadingTextIndex]}
+              </p>
+            </div>
+
+            <div className="w-full">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-gray-400">กำลังประมวลผล</span>
+                <span className="text-sm font-semibold text-primary">
+                  {Math.round(loadingProgress)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-400">อาจใช้เวลาสักครู่</p>
           </div>
         </div>
       )}

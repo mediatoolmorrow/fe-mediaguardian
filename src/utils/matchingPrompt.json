@@ -18,7 +18,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["mso", "thot"],
+      "contacts": ["mso", "thot", "tji", "cright", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -52,7 +52,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["mso", "thot"],
+      "contacts": ["mso", "thot", "kbs", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -86,7 +86,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["mso", "thot"],
+      "contacts": ["mso", "thot", "tji", "cright", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -120,7 +120,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["mso", "thot", "ocpb", "cemc"],
+      "contacts": ["mso", "thot", "ocpb", "cemc", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -154,7 +154,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["thot", "cycob", "cemc", "etda", "antifake", "nbtc"],
+      "contacts": ["thot", "cycob", "cemc", "etda", "antifake", "nbtc", "normal", "normal_n"],
        "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -196,7 +196,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["thot", "cycob"],
+      "contacts": ["thot", "cycob", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",
@@ -238,7 +238,7 @@
           "en": "Impact on user"
         }
       ],
-      "contacts": ["thot", "cycob"],
+      "contacts": ["thot", "cycob", "normal", "normal_n"],
       "goal" : [
         {
           "th" : "แสดงความคิดเห็น",

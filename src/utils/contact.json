@@ -102,6 +102,57 @@
         "facebook": "https://www.facebook.com/AntiFakeNewsCenter?locale=th_TH",
         "website": "https://www.antifakenewscenter.com/%e0%b9%81%e0%b8%88%e0%b9%89%e0%b8%87%e0%b9%80%e0%b8%9a%e0%b8%b2%e0%b8%b0%e0%b9%81%e0%b8%aa-%e0%b8%95%e0%b8%b4%e0%b8%94%e0%b8%95%e0%b8%b2%e0%b8%a1%e0%b8%aa%e0%b8%96%e0%b8%b2%e0%b8%99%e0%b8%b0/"
       }
+    },
+    {
+      "id": "tji",
+      "order": 9,
+      "image": "/contact/tji-logo.png",
+      "name_th": "สถาบันเพื่อการยุติธรรมแห่งประเทศไทย (TIJ) ร่วมกับ สถาบัน ChangeFusion สำนักงานตำรวจแห่งชาติ",
+      "description": "รับแจ้งเหตุและให้คำปรึกษาผ่านทางแมสเซนเจอร์ และเฟซบุ๊กในเพจมายซิส MySisbot",
+      "channels": {
+        "facebook": "https://www.facebook.com/mysisbot?locale=th_TH",
+      }
+    },
+    {
+      "id": "cright",
+      "order": 10,
+      "image": "/contact/cright.png",
+      "name_th": "มูลนิธิศูนย์พิทักษ์สิทธิเด็ก",
+      "description": "มูลนิธิศูนย์พิทักษ์สิทธิเด็ก สำหรับการแจ้งเหตุเด็กถูกละเมิด ขอคำปรึกษา",
+      "channels": {
+        "call": "024121196",
+        "website": "https://www.thaichildrights.org/"
+      }
+    },
+    {
+      "id": "kbs",
+      "order": 11,
+      "image": "/contact/kbs.png",
+      "name_th": "กองเฝ้าระวังทางวัฒนธรรม กระทรวงวัฒนธรรม",
+      "description": "",
+      "channels": {
+        "call": "1765 "
+      }
+    },
+    {
+      "id": "normal",
+      "order": 12,
+      "image": "/contact/normal.png",
+      "name_th": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
+      "description": "",
+      "channels": {
+        "call": "1111"
+      }
+    },
+    {
+      "id": "normal_n",
+      "order": 13,
+      "image": "/contact/normal_2.png",
+      "name_th": "ศูนย์ดำรงธรรม (กระจายทุกจังหวัด) กระทรวงมหาดไทย",
+      "description": "",
+      "channels": {
+        "call": ""
+      }
     }
   ]
 }
