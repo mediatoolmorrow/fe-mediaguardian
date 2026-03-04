@@ -325,23 +325,21 @@ function ResultViewpage() {
                         {regenerating ? 'กำลังสร้างใหม่...' : 'วิเคราะห์คำตอบอีกครั้ง'}
                     </button>
                 </div>
+
                 <button
-                    className={`w-full py-3 rounded-full font-medium transition-colors ${
-                        feedbackData.completedCount >= 0 && !submittingFeedback
-                            ? 'bg-primary text-white hover:bg-primary/90'
-                            : 'bg-primary text-white hover:bg-primary/90'
-                    }`}
+                    className={"w-full py-3 rounded-full font-medium transition-colors bg-primary text-white hover:bg-primary/90"}
                     onClick={handleContinue}
-                    disabled={feedbackData.completedCount < 0 || submittingFeedback}
                 >
-                    {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 0 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
+                    ไปต่อ
                 </button>
+                
                 <button
                     className="text-primary w-full py-3 underline font-medium transition-colors"
                     onClick={() => navigate("/agentic")}
                 >
                     เริ่มต้นใหม่ทั้งหมด
                 </button>
+
             </div>
         </div>
     );
