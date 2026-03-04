@@ -32,11 +32,11 @@ export default function PromptBox({
       displayName: "Text Content",
       icon: "/icon/message.svg",
     },
-    {
+    /*{ 
       id: "link",
       displayName: "Link Content",
       icon: "/icon/link.svg",
-    },
+    },*/
     {
       id: "image",
       displayName: "Image Content",
@@ -156,7 +156,7 @@ export default function PromptBox({
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary flex items-center">
             <input
               type="url"
-              placeholder="โปรดใส่ลิงก์วิดีโอ ที่มีเนื้อหาคำพูดที่ไม่เหมาะสม ความยาวไม่เกิน 3 นาที"
+              placeholder="โปรดใส่ลิงก์วิดิโอที่มีเนื้อหาเสี่ยงหรือไม่เหมาะสม ความยาวไม่เกิน 3 นาที"
               className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
               value={linkContent}
@@ -279,7 +279,7 @@ export default function PromptBox({
         </div>
         {readOnly && (
           <span className="text-xs underline text-gray-400 shrink-0">
-            *ไม่สามารถแก้ไขได้ในขั้นตอนนี้
+            *หากต้องการแก้ไขข้อมูลโปรดกดย้อนกลับ
           </span>
         )}
       </div>

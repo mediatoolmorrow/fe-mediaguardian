@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
 
-export default function Modal({ url = "https://mediaguardianth.com/", title = "Media Guardians", onClose }) {
+export default function Modal({ url = "https://www.mediaguardianth.com/", title = "Media Guardians", onClose }) {
   const [copied, setCopied] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

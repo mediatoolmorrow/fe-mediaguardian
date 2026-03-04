@@ -116,7 +116,7 @@ function FeedbackPopUp({ isOpen, onClose, onContinue }) {
                       : "border-gray-200 hover:border-yellow-300 bg-white"
                   }`}
                 >
-                  <span>💡</span>
+                  <span>👎</span>
                   <span>อยากให้ปรับปรุง</span>
                 </button>
               </div>

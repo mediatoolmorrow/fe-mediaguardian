@@ -104,24 +104,15 @@
       }
     },
     {
-      "id": "tji",
-      "order": 9,
-      "image": "/contact/tij-logo.png",
-      "name_th": "สถาบันเพื่อการยุติธรรมแห่งประเทศไทย (TIJ) ร่วมกับ สถาบัน ChangeFusion สำนักงานตำรวจแห่งชาติ",
-      "description": "รับแจ้งเหตุและให้คำปรึกษาผ่านทางแมสเซนเจอร์ และเฟซบุ๊กในเพจมายซิส MySisbot",
-      "channels": {
-        "facebook": "https://www.facebook.com/mysisbot?locale=th_TH"
-      }
-    },
-    {
       "id": "cright",
       "order": 10,
       "image": "/contact/cright.png",
       "name_th": "มูลนิธิศูนย์พิทักษ์สิทธิเด็ก",
-      "description": "มูลนิธิศูนย์พิทักษ์สิทธิเด็ก สำหรับการแจ้งเหตุเด็กถูกละเมิด ขอคำปรึกษา",
+      "description": "สร้างความตระหนักและผลักดันความร่วมมือจากทุกภาคส่วน  ในการคุ้มครองและป้องกันปัญหาการละเมิดสิทธิเด็ก และสร้างสังคมที่เอื้ออาทรสำหรับเด็ก พบเห็นเด็กทำร้ายโปรดแจ้งศูนย์ช่วยเหลือสังคม",
       "channels": {
         "call": "024121196",
-        "website": "https://www.thaichildrights.org/"
+        "website": "https://www.thaichildrights.org/",
+        "facebook": "https://www.facebook.com/cpcr.cpcr"
       }
     },
     {
@@ -129,19 +120,25 @@
       "order": 11,
       "image": "/contact/kbs.png",
       "name_th": "กองเฝ้าระวังทางวัฒนธรรม กระทรวงวัฒนธรรม",
-      "description": "",
+      "description": "ศูนย์รับเรื่องร้องเรียน ให้คำปรึกษา เฝ้าระวังสื่อที่ไม่ปลอดภัยหรือเบี่ยงเบนทางวัฒนธรรมไทย และประสานงานข้อมูลด้านศาสนา ศิลปะ และวัฒนธรรม",
       "channels": {
-        "call": "1765 "
+        "call": "1765",
+        "facebook" : "https://www.facebook.com/1765culture/?locale=th_TH",
+        "email" : "mailto:culture1765@gmail.com"
       }
     },
     {
       "id": "normal",
       "order": 12,
       "image": "/contact/normal.png",
-      "name_th": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
-      "description": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
+      "name_th": "ศูนย์รับเรื่องราวร้องทุกข์ของรัฐบาล 1111",
+      "description": "รับเรื่องร้องทุกข์ แจ้งเบาะแส การกระทำผิดกฎหมาย  และรับฟังข้อเสนอแนะจากประชาชนเพื่อนำไปพิจารณาแก้ไขปัญหาอย่างรวดเร็ว เพื่อสร้างสังคมที่สงบสุข ",
       "channels": {
-        "call": "1111"
+        "call": "1111",
+        "line": "@PSC1111",
+        "facebook" : "https://www.facebook.com/GCC1111/",
+        "website" : "https://www.1111.go.th/Authen/Login",
+        "email" : "mailto:contact_1111@gcc.go.th"
       }
     },
     {
@@ -149,9 +146,10 @@
       "order": 13,
       "image": "/contact/normal_2.png",
       "name_th": "ศูนย์ดำรงธรรม (กระจายทุกจังหวัด) กระทรวงมหาดไทย",
-      "description": "ศูนย์รับเรื่องราวร้องทุกข์ สำนักนายกรัฐมนตรี",
+      "description": "รับเรื่องราวร้องทุกข์ แก้ไขปัญหาความเดือดร้อน ให้บริการข้อมูลและคำปรึกษาทางกฎหมายแก่ประชาชนในระดับพื้นที่ พร้อมประสานหน่วยงานที่เกี่ยวข้องเพื่อบำบัดทุกข์บำรุงสุขให้แก้ประชาชนอย่างรวดเร็ว",
       "channels": {
-        "website": "http://www.damrongdhama.moi.go.th/home/"
+        "website": "http://www.damrongdhama.moi.go.th/home/",
+        "call" : "1567"
       }
     }
   ]

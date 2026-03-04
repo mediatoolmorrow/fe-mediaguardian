@@ -117,7 +117,7 @@ export const surveyTemplate = {
     },
     {
       formSet: 3,
-      formLabel : "แบบสอบถามพฤติกรรมการหลังการใช้งาน",
+      formLabel : "แบบสอบถามพฤติกรรมหลังการใช้งาน",
       questions: [
         {
           id: "q8",

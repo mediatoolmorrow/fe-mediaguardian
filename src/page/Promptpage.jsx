@@ -31,7 +31,7 @@ const loadingTexts = [
   "ประมวลผลและตรวจสอบข้อมูล...",
   "ตรวจสอบความเหมาะสมของเนื้อหา...",
   "สร้างคำแนะนำที่เหมาะกับคุณ...",
-  "เกือบเสร็จแล้ว รอสักครู่...",
+  "ระบบกำลังทำการวิเคราะห์ โปรดรอสักครู่...",
 ];
 
 function PromptPage() {
@@ -70,7 +70,7 @@ function PromptPage() {
 
     const textInterval = setInterval(() => {
       setLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(textInterval);
   }, [isLoading]);

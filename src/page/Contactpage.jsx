@@ -70,7 +70,7 @@ function Contactpage() {
 
       <div className="flex gap-2 p-4 items-center justify-center">
         <button
-          className="btn-normal-active bg-button"
+          className="btn-normal-active bg-primary"
           onClick={() => navigate(-1)}
         >
           กลับไปก่อนหน้า

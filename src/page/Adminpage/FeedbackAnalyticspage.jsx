@@ -432,7 +432,7 @@ export default function FeedbackAnalyticspage({
                               : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
-                          {fb.feedbackType === "good" ? "👍 Like" : "💡 Improve"}
+                          {fb.feedbackType === "good" ? "👍 Like" : "👎 Improve"}
                         </span>
                       </td>
                       <td className="py-3 px-4">

@@ -40,7 +40,7 @@ function FeedbackModal({
     };
 
     const ratingLabel = ratingType === "like" ? "ชอบ" : "อยากให้ปรับปรุง";
-    const ratingEmoji = ratingType === "like" ? "👍" : "💡";
+    const ratingEmoji = ratingType === "like" ? "👍" : "👎";
 
     return (
         <>

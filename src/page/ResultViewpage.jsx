@@ -186,7 +186,7 @@ function ResultViewpage() {
                     className="btn-normal-active"
                     onClick={() => navigate("/agentic")}
                 >
-                    วิเคราะห์เนื้อหาใหม่
+                    เริ่มต้นใหม่ทั้งหมด
                 </button>
             </div>
         );
@@ -200,7 +200,7 @@ function ResultViewpage() {
                     className="btn-normal-active"
                     onClick={() => navigate("/agentic")}
                 >
-                    วิเคราะห์เนื้อหาใหม่
+                    เริ่มต้นใหม่ทั้งหมด
                 </button>
             </div>
         );
@@ -271,23 +271,6 @@ function ResultViewpage() {
     return (
         <div className="w-full min-h-full flex flex-col items-center py-6 px-4">
             <div className="w-full max-w-[500px] px-4 mb-4">
-                <div className="flex items-center justify-between">
-                    <button
-                        onClick={handleRegenerate}
-                        disabled={!canRegenerate || regenerating}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            canRegenerate && !regenerating
-                                ? 'bg-primary text-white hover:bg-primary/90'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
-                    >
-                        <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
-                        {regenerating ? 'กำลังสร้างใหม่...' : 'สร้างคำตอบอีกครั้ง'}
-                    </button>
-                    <span className="text-sm text-gray-500">
-                        สร้างใหม่แล้ว {regenerateCount}/{MAX_REGENERATE_PER_RESULT} ครั้ง
-                    </span>
-                </div>
                 {regenerateError && (
                     <div className="mt-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
                         {regenerateError}
@@ -325,6 +308,23 @@ function ResultViewpage() {
                     </div>
                 )}
                 */}
+                <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">
+                        สร้างใหม่แล้ว {regenerateCount}/{MAX_REGENERATE_PER_RESULT} ครั้ง
+                    </span>
+                    <button
+                        onClick={handleRegenerate}
+                        disabled={!canRegenerate || regenerating}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            canRegenerate && !regenerating
+                                ? 'bg-primary text-white hover:bg-primary/90'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    >
+                        <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
+                        {regenerating ? 'กำลังสร้างใหม่...' : 'วิเคราะห์คำตอบอีกครั้ง'}
+                    </button>
+                </div>
                 <button
                     className={`w-full py-3 rounded-full font-medium transition-colors ${
                         feedbackData.completedCount >= 1 && !submittingFeedback
@@ -334,13 +334,13 @@ function ResultViewpage() {
                     onClick={handleContinue}
                     disabled={feedbackData.completedCount < 1 || submittingFeedback}
                 >
-                    {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 1 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
+                    {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 0 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
                 </button>
                 <button
                     className="text-primary w-full py-3 underline font-medium transition-colors"
                     onClick={() => navigate("/agentic")}
                 >
-                    วิเคราะห์เนื้อหาใหม่
+                    เริ่มต้นใหม่ทั้งหมด
                 </button>
             </div>
         </div>

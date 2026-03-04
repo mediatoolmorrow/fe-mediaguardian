@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 import { Download, Users, RefreshCw } from "lucide-react";
 import MonthYearFilter from "../../components/Admin/MonthYearFilter";
 import { surveyTemplate } from "../../utils/surveyTemplate";
@@ -27,6 +27,120 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+// Renders a Doughnut with a fixed-size canvas + scrollable custom legend
+// so the card never grows/shrinks regardless of label count.
+function DoughnutWithLegend({ title, labels, data, backgroundColor }) {
+  const hasData = data?.length > 0;
+
+  const chartData = {
+    labels,
+    datasets: [{ data, backgroundColor }],
+  };
+
+  // Hide the built-in legend; we draw our own below
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    cutout: "60%",
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",         // fills the grid cell (h-64 = 16rem)
+        minHeight: 0,
+      }}
+    >
+      {/* Title */}
+      <h3
+        style={{
+          fontSize: "0.875rem",
+          fontWeight: 500,
+          color: "#4B5563",
+          textAlign: "center",
+          marginBottom: "0.375rem",
+          flexShrink: 0,
+        }}
+      >
+        {title}
+      </h3>
+
+      {hasData ? (
+        <>
+          {/* Fixed-height donut canvas */}
+          <div style={{ height: "9rem", flexShrink: 0, position: "relative" }}>
+            <Doughnut data={chartData} options={options} />
+          </div>
+
+          {/* Scrollable legend */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              marginTop: "0.5rem",
+              paddingRight: "0.25rem",
+              // thin custom scrollbar
+              scrollbarWidth: "thin",
+              scrollbarColor: "#CBD5E1 transparent",
+            }}
+          >
+            {labels.map((label, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  marginBottom: "0.2rem",
+                  fontSize: "0.72rem",
+                  color: "#374151",
+                  lineHeight: 1.3,
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "0.625rem",
+                    height: "0.625rem",
+                    borderRadius: "50%",
+                    backgroundColor: backgroundColor[i % backgroundColor.length],
+                    flexShrink: 0,
+                  }}
+                />
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {label}
+                </span>
+                <span style={{ marginLeft: "auto", fontWeight: 600, flexShrink: 0 }}>
+                  {data[i]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#9CA3AF",
+            fontSize: "0.875rem",
+          }}
+        >
+          No data
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function SurveyAnalyticspage({
   chartData,
@@ -74,50 +188,34 @@ export default function SurveyAnalyticspage({
     );
   }
 
-  const { totalResponses, demographics, satisfaction, behaviorChange, timeline } = chartData;
+  const { totalResponses, demographics, satisfaction, behaviorChange } = chartData;
 
   const occupationOptions = surveyTemplate.Set[0].questions[2].options;
   const incomeOptions = surveyTemplate.Set[0].questions[3].options;
 
   const resolveLabels = (labels, options) => {
     if (!labels) return [];
-    return labels.map(label => {
+    return labels.map((label) => {
       const idx = parseInt(label);
       if (!isNaN(idx) && options[idx] !== undefined) return options[idx];
       return label;
     });
   };
 
-  const chartOptions = {
+  const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-    },
+    plugins: { legend: { position: "bottom" } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
   };
 
-  const barOptions = {
-    ...chartOptions,
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 1,
-        },
-      },
-    },
-  };
-
-  const doughnutOptions = {
-    ...chartOptions,
-    cutout: "60%",
-  };
+  // Each donut card is h-64 (16rem). The grid cells must have a fixed height so
+  // the DoughnutWithLegend flex layout can work correctly.
+  const donutCellStyle = { height: "16rem" };
 
   return (
     <div className="space-y-6">
-      {/* Header with Total & Actions */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
           <div className="p-3 bg-blue-100 rounded-full">
@@ -152,104 +250,58 @@ export default function SurveyAnalyticspage({
         </div>
       </div>
 
-      {/* Demographics Section */}
+      {/* Demographics */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> แผนภูมิสรุปภาพรวม </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600">
+          แผนภูมิสรุปภาพรวม
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Gender */}
-          <div className="h-64">
-            <h3 className="text-sm font-medium text-gray-600 mb-2 text-center"> เพศ </h3>
-            {demographics?.gender?.data?.length > 0 ? (
-              <Doughnut
-                data={{
-                  labels: demographics.gender.labels,
-                  datasets: [
-                    {
-                      data: demographics.gender.data,
-                      backgroundColor: demographics.gender.backgroundColor,
-                    },
-                  ],
-                }}
-                options={doughnutOptions}
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">No data</div>
-            )}
+          <div style={donutCellStyle}>
+            <DoughnutWithLegend
+              title="เพศ"
+              labels={demographics?.gender?.labels ?? []}
+              data={demographics?.gender?.data ?? []}
+              backgroundColor={demographics?.gender?.backgroundColor ?? []}
+            />
           </div>
-
-          {/* Age */}
-          <div className="h-64">
-            <h3 className="text-sm font-medium text-gray-600 mb-2 text-center"> อายุ </h3>
-            {demographics?.age?.data?.length > 0 ? (
-              <Doughnut
-                data={{
-                  labels: demographics.age.labels,
-                  datasets: [
-                    {
-                      data: demographics.age.data,
-                      backgroundColor: demographics.age.backgroundColor,
-                    },
-                  ],
-                }}
-                options={doughnutOptions}
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">No data</div>
-            )}
+          <div style={donutCellStyle}>
+            <DoughnutWithLegend
+              title="อายุ"
+              labels={demographics?.age?.labels ?? []}
+              data={demographics?.age?.data ?? []}
+              backgroundColor={demographics?.age?.backgroundColor ?? []}
+            />
           </div>
-
-          {/* Occupation */}
-          <div className="h-64">
-            <h3 className="text-sm font-medium text-gray-600 mb-2 text-center"> อาชีพ </h3>
-            {demographics?.occupation?.data?.length > 0 ? (
-              <Doughnut
-                data={{
-                  labels: resolveLabels(demographics.occupation.labels, occupationOptions),
-                  datasets: [
-                    {
-                      data: demographics.occupation.data,
-                      backgroundColor: demographics.occupation.backgroundColor,
-                    },
-                  ],
-                }}
-                options={doughnutOptions}
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">No data</div>
-            )}
+          <div style={donutCellStyle}>
+            <DoughnutWithLegend
+              title="อาชีพ"
+              labels={resolveLabels(demographics?.occupation?.labels, occupationOptions)}
+              data={demographics?.occupation?.data ?? []}
+              backgroundColor={demographics?.occupation?.backgroundColor ?? []}
+            />
           </div>
-
-          {/* Income */}
-          <div className="h-64">
-            <h3 className="text-sm font-medium text-gray-600 mb-2 text-center"> รายได้ </h3>
-            {demographics?.income?.data?.length > 0 ? (
-              <Doughnut
-                data={{
-                  labels: resolveLabels(demographics.income.labels, incomeOptions),
-                  datasets: [
-                    {
-                      data: demographics.income.data,
-                      backgroundColor: demographics.income.backgroundColor,
-                    },
-                  ],
-                }}
-                options={doughnutOptions}
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">No data</div>
-            )}
+          <div style={donutCellStyle}>
+            <DoughnutWithLegend
+              title="รายได้"
+              labels={resolveLabels(demographics?.income?.labels, incomeOptions)}
+              data={demographics?.income?.data ?? []}
+              backgroundColor={demographics?.income?.backgroundColor ?? []}
+            />
           </div>
         </div>
       </div>
 
-      {/* Satisfaction Section */}
+      {/* Satisfaction */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600">
+          ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Tool Satisfaction */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600"> ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                ท่านพึงพอใจกับการใช้งานเครื่องมือในครั้งนี้มากน้อยเพียงใด
+              </h3>
               <span className="text-lg font-semibold text-blue-600">
                 Avg: {satisfaction?.averages?.toolSatisfaction || "0"}
               </span>
@@ -258,23 +310,17 @@ export default function SurveyAnalyticspage({
               <Bar
                 data={{
                   labels: satisfaction?.toolSatisfaction?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: satisfaction?.toolSatisfaction?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#3B82F6",
-                    },
-                  ],
+                  datasets: [{ label: "Responses", data: satisfaction?.toolSatisfaction?.data || [0, 0, 0, 0, 0], backgroundColor: "#3B82F6" }],
                 }}
                 options={barOptions}
               />
             </div>
           </div>
-
-          {/* Recommendation Intent */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600">ท่านตั้งใจว่าจะแนะนำแพลตฟอร์มนี้ให้เพื่อนหรือคนรู้จักของท่านได้ใช้งาน</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                ท่านตั้งใจว่าจะแนะนำแพลตฟอร์มนี้ให้เพื่อนหรือคนรู้จักของท่านได้ใช้งาน
+              </h3>
               <span className="text-lg font-semibold text-blue-600">
                 Avg: {satisfaction?.averages?.recommendationIntent || "0"}
               </span>
@@ -283,13 +329,7 @@ export default function SurveyAnalyticspage({
               <Bar
                 data={{
                   labels: satisfaction?.recommendationIntent?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: satisfaction?.recommendationIntent?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#10B981",
-                    },
-                  ],
+                  datasets: [{ label: "Responses", data: satisfaction?.recommendationIntent?.data || [0, 0, 0, 0, 0], backgroundColor: "#10B981" }],
                 }}
                 options={barOptions}
               />
@@ -298,109 +338,36 @@ export default function SurveyAnalyticspage({
         </div>
       </div>
 
-      {/* Behavior Change Section */}
+      {/* Behavior Change */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600"> แบบสอบถามพฤติกรรมการหลังการใช้งาน </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 pl-3 border-l-4 border-blue-600">
+          แบบสอบถามพฤติกรรมการหลังการใช้งาน
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Applied in Real Life */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600"> ฉันได้นำข้อความจากเครื่องมือนี้ไปปรับใช้ในการสื่อสารจริงบนโลกออนไลน์ </h3>
-              <span className="text-lg font-semibold text-purple-600">
-                Avg: {behaviorChange?.averages?.appliedInRealLife || "0"}
-              </span>
+          {[
+            { key: "appliedInRealLife", label: "ฉันได้นำข้อความจากเครื่องมือนี้ไปปรับใช้ในการสื่อสารจริงบนโลกออนไลน์", color: "#8B5CF6" },
+            { key: "receivedBenefits", label: "ฉันได้รับประโยชน์จากการใช้งานแพลตฟอร์มนี้เพื่อสื่อสารอย่างสร้างสรรค์", color: "#EC4899" },
+            { key: "improvedCommunication", label: "หลังจากที่ฉันได้ลองใช้เครื่องมือนี้ ฉันรู้สึกว่า การสื่อสารของฉันดีขึ้น และส่งผลเชิงบวกต่อผู้อื่นมากขึ้น", color: "#F59E0B" },
+            { key: "willingToUseAgain", label: "ถ้าฉันอยากสื่อสารเชิงบวกบนโลกออนไลน์ ฉันอยากเข้ามาใช้เครื่องมือนี้เพื่อช่วยให้สื่อสารได้ดีขึ้น", color: "#06B6D4" },
+          ].map(({ key, label, color }) => (
+            <div key={key}>
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-sm font-medium text-gray-600">{label}</h3>
+                <span className="text-lg font-semibold text-purple-600">
+                  Avg: {behaviorChange?.averages?.[key] || "0"}
+                </span>
+              </div>
+              <div className="h-64">
+                <Bar
+                  data={{
+                    labels: behaviorChange?.[key]?.labels || ["1", "2", "3", "4", "5"],
+                    datasets: [{ label: "Responses", data: behaviorChange?.[key]?.data || [0, 0, 0, 0, 0], backgroundColor: color }],
+                  }}
+                  options={barOptions}
+                />
+              </div>
             </div>
-            <div className="h-64">
-              <Bar
-                data={{
-                  labels: behaviorChange?.appliedInRealLife?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: behaviorChange?.appliedInRealLife?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#8B5CF6",
-                    },
-                  ],
-                }}
-                options={barOptions}
-              />
-            </div>
-          </div>
-
-          {/* Received Benefits */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600">ฉันได้รับประโยชน์จากการใช้งานแพลตฟอร์มนี้เพื่อสื่อสารอย่างสร้างสรรค์</h3>
-              <span className="text-lg font-semibold text-purple-600">
-                Avg: {behaviorChange?.averages?.receivedBenefits || "0"}
-              </span>
-            </div>
-            <div className="h-64">
-              <Bar
-                data={{
-                  labels: behaviorChange?.receivedBenefits?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: behaviorChange?.receivedBenefits?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#EC4899",
-                    },
-                  ],
-                }}
-                options={barOptions}
-              />
-            </div>
-          </div>
-
-          {/* Improved Communication */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600">หลังจากที่ฉันได้ลองใช้เครื่องมือนี้ ฉันรู้สึกว่า การสื่อสารของฉันดีขึ้น และส่งผลเชิงบวกต่อผู้อื่นมากขึ้น</h3>
-              <span className="text-lg font-semibold text-purple-600">
-                Avg: {behaviorChange?.averages?.improvedCommunication || "0"}
-              </span>
-            </div>
-            <div className="h-64">
-              <Bar
-                data={{
-                  labels: behaviorChange?.improvedCommunication?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: behaviorChange?.improvedCommunication?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#F59E0B",
-                    },
-                  ],
-                }}
-                options={barOptions}
-              />
-            </div>
-          </div>
-
-          {/* Willing to Use Again */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-medium text-gray-600">ถ้าฉันอยากสื่อสารเชิงบวกบนโลกออนไลน์ ฉันอยากเข้ามาใช้เครื่องมือนี้เพื่อช่วยให้สื่อสารได้ดีขึ้น</h3>
-              <span className="text-lg font-semibold text-purple-600">
-                Avg: {behaviorChange?.averages?.willingToUseAgain || "0"}
-              </span>
-            </div>
-            <div className="h-64">
-              <Bar
-                data={{
-                  labels: behaviorChange?.willingToUseAgain?.labels || ["1", "2", "3", "4", "5"],
-                  datasets: [
-                    {
-                      label: "Responses",
-                      data: behaviorChange?.willingToUseAgain?.data || [0, 0, 0, 0, 0],
-                      backgroundColor: "#06B6D4",
-                    },
-                  ],
-                }}
-                options={barOptions}
-              />
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

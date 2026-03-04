@@ -349,7 +349,7 @@ function ResultFull({
                                                         }`}
                                                         title="อยากให้ปรับปรุง"
                                                     >
-                                                        <span>💡</span>
+                                                        <span>👎</span>
                                                         <span className="hidden sm:inline">ปรับปรุง</span>
                                                     </button>
                                                 </div>
