@@ -329,7 +329,7 @@ function ResultViewpage() {
                     className={`w-full py-3 rounded-full font-medium transition-colors ${
                         feedbackData.completedCount >= 1 && !submittingFeedback
                             ? 'bg-primary text-white hover:bg-primary/90'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-primary text-white hover:bg-primary/90'
                     }`}
                     onClick={handleContinue}
                     disabled={feedbackData.completedCount < 1 || submittingFeedback}
