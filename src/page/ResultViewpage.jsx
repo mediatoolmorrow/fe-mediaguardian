@@ -71,8 +71,6 @@ function ResultViewpage() {
 
     // Handle continue button - only works when at least 1 feedback is given
     const handleContinue = async () => {
-        if (feedbackData.completedCount < 1) return;
-
         const token = localStorage.getItem('backend_token');
 
         // Send feedback to API - structured by recommendation
