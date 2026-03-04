@@ -58,7 +58,7 @@ export default function PromptBox({
       setSelected("text");
       setLinkContent(textContent.trim());
       setTextContent("");
-      setShowToast(true);
+      setShowToast(false);
       setTimeout(() => setShowToast(false), 2000);
     }
   }, [textContent, selected]);
