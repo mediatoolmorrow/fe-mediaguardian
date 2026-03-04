@@ -69,44 +69,37 @@ function ResultViewpage() {
 
     const handleCopyAction = () => {};
 
-    // Handle continue button - only works when at least 1 feedback is given
-    const handleContinue = async () => {
+   const handleContinue = async () => {
         const token = localStorage.getItem('backend_token');
-
-        // Send feedback to API - structured by recommendation
         const hasRatings = Object.keys(feedbackData.ratings || {}).length > 0;
+
         if (hasRatings && token) {
-            setSubmittingFeedback(true);
-            try {
-                // Transform feedback data to be structured by recommendation
-                const feedbacks = [];
-                Object.entries(feedbackData.ratings || {}).forEach(([key, rating]) => {
-                    if (rating) {
-                        const [optionIndex, questionIndex] = key.split('-').map(Number);
-                        // Clean HTML tags from question text
-                        const rawText = feedbackData.questionTexts?.[key] || "";
-                        const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\\n/g, "\n").trim();
-
-                        feedbacks.push({
-                            optionIndex,
-                            questionIndex,
-                            rating,
-                            optionTitle: feedbackData.optionTitles?.[key] || `ข้อแนะนำที่ ${optionIndex + 1}`,
-                            example: cleanText,  // The actual question text that was rated
-                            explanations: feedbackData.explanations?.[key] || null
-                        });
-                    }
-                });
-
-                await api.submitFeedback(token, id, { feedbacks });
-            } catch (err) {
-                // Continue navigation even if feedback fails
-            } finally {
-                setSubmittingFeedback(false);
-            }
+            // Submit in background — don't await, don't block navigation
+            (async () => {
+                try {
+                    const feedbacks = [];
+                    Object.entries(feedbackData.ratings || {}).forEach(([key, rating]) => {
+                        if (rating) {
+                            const [optionIndex, questionIndex] = key.split('-').map(Number);
+                            const rawText = feedbackData.questionTexts?.[key] || "";
+                            const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\\n/g, "\n").trim();
+                            feedbacks.push({
+                                optionIndex,
+                                questionIndex,
+                                rating,
+                                optionTitle: feedbackData.optionTitles?.[key] || `ข้อแนะนำที่ ${optionIndex + 1}`,
+                                example: cleanText,
+                                explanations: feedbackData.explanations?.[key] || null
+                            });
+                        }
+                    });
+                    await api.submitFeedback(token, id, { feedbacks });
+                } catch (err) {
+                    // Silently ignore — navigation already happened
+                }
+            })();
         }
 
-        // Navigate to next step
         navigate("/nextstep", { state: { resultId: id } });
     };
 
