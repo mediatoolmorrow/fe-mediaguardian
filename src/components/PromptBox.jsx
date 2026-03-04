@@ -55,7 +55,7 @@ export default function PromptBox({
 
   useEffect(() => {
     if (selected === "text" && textContent.trim().startsWith("https://")) {
-      setSelected("link");
+      setSelected("text");
       setLinkContent(textContent.trim());
       setTextContent("");
       setShowToast(true);
