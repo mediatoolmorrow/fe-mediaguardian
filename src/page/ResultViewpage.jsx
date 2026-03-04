@@ -327,12 +327,12 @@ function ResultViewpage() {
                 </div>
                 <button
                     className={`w-full py-3 rounded-full font-medium transition-colors ${
-                        feedbackData.completedCount >= 1 && !submittingFeedback
+                        feedbackData.completedCount >= 0 && !submittingFeedback
                             ? 'bg-primary text-white hover:bg-primary/90'
                             : 'bg-primary text-white hover:bg-primary/90'
                     }`}
                     onClick={handleContinue}
-                    disabled={feedbackData.completedCount < 1 || submittingFeedback}
+                    disabled={feedbackData.completedCount < 0 || submittingFeedback}
                 >
                     {submittingFeedback ? 'กำลังบันทึก...' : feedbackData.completedCount >= 0 ? 'ไปต่อ' : 'แสดงความเห็นอย่างน้อย 1 ข้อเพื่อไปต่อ'}
                 </button>
