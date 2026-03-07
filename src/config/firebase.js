@@ -14,12 +14,12 @@ import {
 
 // Firebase configuration - Replace with your actual config
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: 'AIzaSyBe0jSY0wSti515Epcu0lTNwcqG2-w52g0',
+  authDomain: 'mediaguardian-db.firebaseapp.com',
+  projectId: 'mediaguardian-db',
+  storageBucket: 'mediaguardian-db.firebasestorage.app',
+  messagingSenderId: '515518688892',
+  appId: '1:515518688892:web:4960c369d0ab5da41963f9'
 };
 
 // Initialize Firebase

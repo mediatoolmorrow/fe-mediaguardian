@@ -285,7 +285,7 @@ useEffect(() => {
 
       // Send the access token to backend for user verification
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/auth/line/callback`,
+        `${import.meta.env.VITE_API_BASE_UR || 'https://api-mediaguardian-com.vercel.app'}/api/auth/line/callback`,
         {
           method: 'POST',
           headers: {
