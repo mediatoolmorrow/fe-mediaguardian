@@ -208,13 +208,7 @@ function ResultFull({
         || [];
 
     if (!structuredOutput || !options.length) {
-        return (
-            <div className="w-full max-w-[500px] px-4">
-                <div className="text-sm text-gray-700 whitespace-pre-wrap">
-                    {description || "ไม่มีข้อมูล"}
-                </div>
-            </div>
-        );
+        return null;
     }
 
     const currentOption = options[activeOptionTab];
