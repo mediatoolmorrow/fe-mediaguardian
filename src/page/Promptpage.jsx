@@ -161,7 +161,7 @@ function PromptPage() {
     formData.append('image', file);
 
     const token = localStorage.getItem('backend_token');
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_UR || 'https://api-mediaguardian-com.vercel.app';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_UR || 'https://core-api-a-865528271469.asia-southeast1.run.app';
 
     const response = await fetch(`${API_BASE_URL}/api/upload/image`, {
       method: 'POST',
