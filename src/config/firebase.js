@@ -14,12 +14,13 @@ import {
 
 // Firebase configuration - Replace with your actual config
 const firebaseConfig = {
-  apiKey: 'AIzaSyBe0jSY0wSti515Epcu0lTNwcqG2-w52g0',
-  authDomain: 'mediaguardian-db.firebaseapp.com',
-  projectId: 'mediaguardian-db',
-  storageBucket: 'mediaguardian-db.firebasestorage.app',
-  messagingSenderId: '515518688892',
-  appId: '1:515518688892:web:4960c369d0ab5da41963f9'
+  apiKey: "AIzaSyDbT8COEf4ASS9B0jNhjwSGodT5wpgGEfI",
+  authDomain: "mediaguardian-d761f.firebaseapp.com",
+  projectId: "mediaguardian-d761f",
+  storageBucket: "mediaguardian-d761f.firebasestorage.app",
+  messagingSenderId: "432777412441",
+  appId: "1:432777412441:web:9fcc701fcd5bd97f221648",
+  measurementId: "G-0K3KDPVRM0"
 };
 
 // Initialize Firebase
