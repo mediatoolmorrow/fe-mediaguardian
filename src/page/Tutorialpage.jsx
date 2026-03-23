@@ -40,7 +40,7 @@ function Tutorialpage() {
             {/* Text — only this section scrolls */}
             <div className="flex-1 overflow-y-auto w-full max-w-4xl mt-4 px-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [-webkit-overflow-scrolling:touch]">
                 <div className="text-left pb-4">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2 text-center">
                         {slide.title}
                     </h2>
                     <p className="text-sm sm:text-base text-gray-600">
