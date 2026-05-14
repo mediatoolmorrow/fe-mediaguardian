@@ -143,7 +143,7 @@ export default function PromptBox({
         {selected === "text" && (
           <div className="w-full h-full border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary">
             <textarea
-              placeholder="วางคอนเทนต์ที่เป็นตัวหนังสือของคุณที่นี่..."
+              placeholder="วางข้อความ รูปภาพ หรือคัดลอกเนื้อหาจากสื่อที่คุณเจอมาตรงนี้ เช่น โพสต์ ข้อความในแคปชั่น หรือโฆษณาที่รู้สึกว่าไม่ปลอดภัย เป็นต้น"
               className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
               readOnly={readOnly}
               value={textContent}
@@ -253,7 +253,7 @@ export default function PromptBox({
         <p className="font-bold text-primary mb-2">2. สถานการณ์</p>
         <div className="border border-primary rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-primary" style={{ height: '64px' }}>
           <textarea
-            placeholder="บอกเราว่าคุณเป็นใคร กำลังคุยกับใคร ไปเจอสื่ออะไรมา..."
+            placeholder="เล่าให้ฟังว่าเจอสื่อนี้ที่ไหน รู้สึกอย่างไร และอยากทำอะไรกับมัน เช่น เจอมาบนหน้าฟีดแล้วรู้สึกกังวลใจ อยากเข้าไปแสดงความคิดเห็น เป็นต้น"
             className="w-full h-full resize-none bg-transparent text-sm outline-none placeholder:text-gray-400"
             readOnly={readOnly}
             value={contentDescription}
