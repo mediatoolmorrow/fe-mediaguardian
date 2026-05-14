@@ -283,7 +283,7 @@ export default function PromptAnalyticspage({
               <Users className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">ผู้ใช้ที่ใช้งานแล้ว</p>
+              <p className="text-sm text-gray-500">ผู้ที่กลับมาใช้งานซ้ำ</p>
               <p className="text-2xl font-bold text-gray-900">{formatNumber(uniqueUsers)}</p>
             </div>
           </div>
