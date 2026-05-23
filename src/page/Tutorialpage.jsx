@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const YOUTUBE_EMBED_URL = "https://www.youtube.com/watch?v=zKsm0vmZbIQ";
+const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/zKsm0vmZbIQ?si=f7m35f_11g0vMkRt";
 
 const slide = {
     title: "เกี่ยวกับแพลตฟอร์ม",
