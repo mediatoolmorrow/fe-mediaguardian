@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://core-api-a-865528271469.asia-southeast1.run.app';
+const API_BASE_URL = 'https://core-api-a-dev-865528271469.asia-southeast1.run.app';
 
 // Token expiration event handling
 let onTokenExpiredCallback = null;
