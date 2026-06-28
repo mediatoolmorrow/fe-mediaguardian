@@ -285,7 +285,7 @@ useEffect(() => {
 
       // Send the access token to backend for user verification
       const response = await fetch(
-        `https://core-api-a-dev-865528271469.asia-southeast1.run.app/api/auth/line/callback`,
+        `https://core-api-a-865528271469.asia-southeast1.run.app/api/auth/line/callback`,
         {
           method: 'POST',
           headers: {
