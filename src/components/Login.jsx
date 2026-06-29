@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { lineAuth } from "../services/lineAuth";
+import { isInAppBrowser, openInExternalBrowser } from "../utils/inAppBrowser";
 
 export default function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -13,6 +14,7 @@ export default function Login() {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [socialLoading, setSocialLoading] = useState(null); // 'google', 'facebook', 'apple', 'line'
+    const [inAppBrowser] = useState(isInAppBrowser);
     const navigate = useNavigate();
 
     const {
@@ -80,6 +82,10 @@ export default function Login() {
     };
 
     const handleGoogleLogin = async () => {
+        if (inAppBrowser) {
+            openInExternalBrowser();
+            return;
+        }
         setSocialLoading('google');
         try {
             await signInWithGoogle();
@@ -180,6 +186,12 @@ export default function Login() {
 
     return (
         <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl">
+            {inAppBrowser && (
+                <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-lg text-sm">
+                    การเข้าสู่ระบบด้วย Google ไม่สามารถใช้งานได้ในเบราว์เซอร์ในแอปนี้
+                    กรุณากดปุ่ม Google ด้านล่างเพื่อเปิดในเบราว์เซอร์ปกติ
+                </div>
+            )}
             {error && (
                 <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
                     <span className="text-sm">{error}</span>
