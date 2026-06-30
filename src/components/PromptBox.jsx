@@ -271,11 +271,11 @@ export default function PromptBox({
             ? 'text-amber-700'
             : 'text-green-700'
         }`}>
-          <p className="whitespace-nowrap">
+          {/* <p className="whitespace-nowrap">
             วันนี้ใช้ได้อีก{' '}
             <span className="font-bold text-sm">{rateLimit?.remaining ?? '...'}</span>{' '}
             ครั้ง จะรีเซ็ตในอีก {hoursUntilMidnight()} ชั่วโมง
-          </p>
+          </p> */}
         </div>
         {readOnly && (
           <span className="text-xs underline text-gray-400 shrink-0">
