@@ -23,6 +23,7 @@ export const api = {
   /* Auth */
   async syncFirebaseUser(firebaseUser, provider) {
     const idToken = await firebaseUser.getIdToken();
+    const ref = localStorage.getItem('user_ref') || null;
 
     const response = await fetch(`${API_BASE_URL}/api/auth/firebase`, {
       method: 'POST',
@@ -35,7 +36,8 @@ export const api = {
         providerId: firebaseUser.uid,
         provider: provider,
         username: firebaseUser.displayName,
-        avatar: firebaseUser.photoURL
+        avatar: firebaseUser.photoURL,
+        ref,
       })
     });
 
@@ -134,6 +136,18 @@ export const api = {
   },
 
   /* Admin Management (Super Admin only) */
+  async getRefSummary(token) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/ref-summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    await handleResponse(response);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch ref summary');
+    }
+    return response.json();
+  },
+
   async getStepSummary(token) {
     const response = await fetch(`${API_BASE_URL}/api/admin/step-summary`, {
       headers: { 'Authorization': `Bearer ${token}` }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import pdpaData from "../utils/filePDPA.json";
 import { useTrackStep } from "../hooks/useTrackStep";
@@ -6,6 +6,14 @@ import { useTrackStep } from "../hooks/useTrackStep";
 function Pdpapage() {
   useTrackStep(1);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref && !localStorage.getItem('user_ref')) {
+      localStorage.setItem('user_ref', ref);
+    }
+  }, []);
 
   const renderContent = (content) => {
     // Handle array of objects

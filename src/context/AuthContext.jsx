@@ -292,7 +292,8 @@ useEffect(() => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            accessToken: callbackResult.accessToken
+            accessToken: callbackResult.accessToken,
+            ref: localStorage.getItem('user_ref') || null,
           })
         }
       );

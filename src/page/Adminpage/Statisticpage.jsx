@@ -3,14 +3,21 @@ import { api } from "../../services/api";
 
 export default function Statisticspage() {
   const [stepData, setStepData] = useState(null);
+  const [refData, setRefData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('backend_token');
     if (!token) return;
-    api.getStepSummary(token)
-      .then(res => { if (res.success) setStepData(res); })
+    Promise.all([
+      api.getStepSummary(token),
+      api.getRefSummary(token),
+    ])
+      .then(([step, ref]) => {
+        if (step.success) setStepData(step);
+        if (ref.success) setRefData(ref);
+      })
       .catch(err => setError(err.message || 'โหลดข้อมูลไม่สำเร็จ'))
       .finally(() => setLoading(false));
   }, []);
@@ -34,16 +41,15 @@ export default function Statisticspage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800">ความคืบหน้าของผู้ใช้งาน</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
-              จำนวน user ที่คงอยู่ในแต่ละหน้าล่าสุด (ทั้งหมด {stepData?.total ?? 0} คน)
-            </p>
-          </div>
-        </div>
 
+      {/* Step Summary */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-800">ความคืบหน้าของผู้ใช้งาน</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            จำนวน user ที่คงอยู่ในแต่ละหน้าล่าสุด (ทั้งหมด {stepData?.total ?? 0} คน)
+          </p>
+        </div>
         <div className="space-y-4">
           {stepData?.data?.map(({ step, label, count }) => {
             const total = stepData.total || 1;
@@ -70,6 +76,37 @@ export default function Statisticspage() {
           })}
         </div>
       </div>
+
+      {/* Ref Summary */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-800">ที่มาของผู้ใช้งาน</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            จำนวน user แยกตามแหล่งที่มา (ทั้งหมด {refData?.total ?? 0} คน)
+          </p>
+        </div>
+        <div className="space-y-4">
+          {refData?.data?.map(({ ref, count }) => {
+            const total = refData.total || 1;
+            const pct = Math.round((count / total) * 100);
+            return (
+              <div key={ref}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-600 font-mono">{ref}</span>
+                  <span className="text-sm font-semibold text-gray-800">{count} คน ({pct}%)</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2">
+                  <div
+                    className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
     </div>
   );
 }
