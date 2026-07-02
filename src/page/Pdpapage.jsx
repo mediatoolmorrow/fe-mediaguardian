@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import pdpaData from "../utils/filePDPA.json";
+import { useTrackStep } from "../hooks/useTrackStep";
 
 function Pdpapage() {
+  useTrackStep(1);
   const navigate = useNavigate();
 
   const renderContent = (content) => {

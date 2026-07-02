@@ -1,7 +1,9 @@
 import React from "react";
 import Login from "../components/Login";
+import { useTrackStep } from "../hooks/useTrackStep";
 
 function Loginpage() {
+  useTrackStep(2);
   return (
     <div className="bg-white w-full sm:min-h-full min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center px-4">

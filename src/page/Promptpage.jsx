@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTrackStep } from "../hooks/useTrackStep";
 import PromptBox from "../components/PromptBox";
 import ChoiceCard from "../components/ChoiceCard";
 import categoriesData from "../utils/matchingPrompt.json";
@@ -37,6 +38,7 @@ const loadingTexts = [
 function PromptPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  useTrackStep(5);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);

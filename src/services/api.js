@@ -134,6 +134,18 @@ export const api = {
   },
 
   /* Admin Management (Super Admin only) */
+  async getStepSummary(token) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/step-summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    await handleResponse(response);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch step summary');
+    }
+    return response.json();
+  },
+
   async getAdminMe(token) {
     const response = await fetch(`${API_BASE_URL}/api/admin/me`, {
       headers: {
@@ -519,6 +531,23 @@ export const api = {
       throw new Error(error.message || 'Failed to submit survey');
     }
 
+    return response.json();
+  },
+
+  async updateMaxStep(token, step) {
+    const response = await fetch(`${API_BASE_URL}/api/auth/step`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ step })
+    });
+    await handleResponse(response);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update step');
+    }
     return response.json();
   },
 

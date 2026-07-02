@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTrackStep } from "../hooks/useTrackStep";
 
 const YOUTUBE_EMBED_URL = "https://www.youtube.com/embed/zKsm0vmZbIQ?si=f7m35f_11g0vMkRt";
 
@@ -20,6 +21,7 @@ const slide = {
 
 function Tutorialpage() {
     const navigate = useNavigate();
+    useTrackStep(3);
 
     return (
         <div className="flex flex-col items-center w-full h-screen p-4 pt-10 sm:pt-4">

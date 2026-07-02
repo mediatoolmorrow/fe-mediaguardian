@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
   if (!backendUser) return;
 
-  // Refresh token every 25 minutes (before 30min expiration)
+  // Periodically re-sync user data (token itself is valid for 30 days)
   const refreshInterval = setInterval(async () => {
     const token = localStorage.getItem('backend_token');
     if (token) {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
         // silent
       }
     }
-  }, 25 * 60 * 1000); // 25 minutes
+  }, 60 * 60 * 1000); // 1 hour
 
   return () => clearInterval(refreshInterval);
 }, [backendUser]);

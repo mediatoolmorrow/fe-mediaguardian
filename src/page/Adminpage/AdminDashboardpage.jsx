@@ -326,7 +326,7 @@ export default function AdminDashboard() {
           />
         );
       case 'stats':
-        return <Statisticspage stats={stats} loading={false} />;
+        return <Statisticspage />;
       case 'tutorial':
         return (
           <VideoManagement

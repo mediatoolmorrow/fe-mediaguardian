@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useTrackStep } from "../hooks/useTrackStep";
 import ResultFull from "../components/Result/ResultFull";
 import FeedbackPopUp from "../components/FeedbackPopUp";
 import { api } from "../services/api";
@@ -12,6 +13,7 @@ function ResultViewpage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    useTrackStep(6);
     const { backendUser, refreshBackendUser } = useAuth();
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(true);

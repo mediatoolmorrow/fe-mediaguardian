@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useTrackStep } from "../hooks/useTrackStep";
 import ChoiceSelect from "../components/Survey/ChoiceSelect";
 import ChoiceCheck from "../components/Survey/ChoiceCheck";
 import DropdownSelect from "../components/Survey/DropdownSelect";
@@ -22,6 +23,7 @@ function Surveypage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { backendUser, refreshBackendUser } = useAuth();
+  useTrackStep(4);
 
   const resultId = location.state?.resultId;
 
