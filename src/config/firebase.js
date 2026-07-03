@@ -9,7 +9,9 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  browserLocalPersistence,
+  setPersistence,
 } from 'firebase/auth';
 
 // Firebase configuration - Replace with your actual config
@@ -26,6 +28,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// ใช้ localStorage แทน sessionStorage เพื่อแก้ปัญหา in-app browser (LINE/Facebook)
+// ที่บล็อก sessionStorage ทำให้ Firebase OAuth state หายระหว่าง redirect
+setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 // Auth providers
 const googleProvider = new GoogleAuthProvider();
@@ -56,5 +62,7 @@ export {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  browserLocalPersistence,
+  setPersistence,
 };
