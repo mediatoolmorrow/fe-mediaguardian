@@ -3,7 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { lineAuth } from "../services/lineAuth";
-import { isInAppBrowser, isLineBrowser, isFacebookBrowser, openInExternalBrowser } from "../utils/inAppBrowser";
+import { isInAppBrowser, isLineBrowser, openInExternalBrowser } from "../utils/inAppBrowser";
 
 export default function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -13,10 +13,9 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-    const [socialLoading, setSocialLoading] = useState(null); // 'google', 'facebook', 'apple', 'line'
+    const [socialLoading, setSocialLoading] = useState(null);
     const [inAppBrowser] = useState(isInAppBrowser);
     const [isLine] = useState(isLineBrowser);
-    const [isFacebook] = useState(isFacebookBrowser);
     const navigate = useNavigate();
 
     const {
@@ -85,12 +84,11 @@ export default function Login() {
 
     const handleGoogleLogin = async () => {
         if (isLine) {
-            // LINE: redirect ออก external browser ได้ด้วย ?openExternalBrowser=1
             openInExternalBrowser();
             return;
         }
-        if (isFacebook) {
-            // Facebook: ไม่สามารถ force external browser ได้ — banner แนะนำแล้ว ไม่ทำอะไรเพิ่ม
+        if (inAppBrowser) {
+            // browser อื่นที่บล็อก sessionStorage — banner แนะนำ copy link แล้ว ไม่ทำอะไรเพิ่ม
             return;
         }
         setSocialLoading('google');
@@ -198,13 +196,13 @@ export default function Login() {
                     กดปุ่ม Google ด้านล่างเพื่อเปิดในเบราว์เซอร์ปกติ แล้วค่อยเข้าสู่ระบบด้วย Google
                 </div>
             )}
-            {isFacebook && (
-                <div className="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-sm">
-                    <p className="font-semibold mb-1">ไม่สามารถใช้ Google Login ใน Facebook browser ได้</p>
-                    <p>กรุณาคัดลอกลิงก์นี้แล้วเปิดในเบราว์เซอร์ปกติ (Chrome / Safari)</p>
+            {!isLine && inAppBrowser && (
+                <div className="mb-4 p-3 bg-orange-50 border border-orange-300 text-orange-800 rounded-lg text-sm">
+                    <p className="font-semibold mb-1">ไม่สามารถใช้ Google Login ใน browser นี้ได้</p>
+                    <p className="mb-2">กรุณาคัดลอกลิงก์แล้วเปิดใน Chrome หรือ Safari</p>
                     <button
                         onClick={() => navigator.clipboard?.writeText(window.location.href).catch(() => {})}
-                        className="mt-2 w-full py-1.5 bg-blue-600 text-white rounded text-sm font-medium"
+                        className="w-full py-2 bg-orange-500 text-white rounded-lg text-sm font-medium active:bg-orange-600"
                     >
                         คัดลอกลิงก์
                     </button>
