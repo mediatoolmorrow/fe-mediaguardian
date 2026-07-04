@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Login from "../components/Login";
 import { useTrackStep } from "../hooks/useTrackStep";
 
 function Loginpage() {
   useTrackStep(2);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('openExternalBrowser')) {
+      params.delete('openExternalBrowser');
+      const clean = params.toString();
+      window.history.replaceState({}, '', clean ? `?${clean}` : window.location.pathname);
+    }
+  }, []);
+
   return (
     <div className="bg-white w-full sm:min-h-full min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center px-4">

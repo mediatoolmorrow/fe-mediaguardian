@@ -13,6 +13,12 @@ function Pdpapage() {
     if (ref && !localStorage.getItem('user_ref')) {
       localStorage.setItem('user_ref', ref);
     }
+    // ลบ openExternalBrowser ออกจาก URL หลังจาก external browser เปิดแล้ว
+    if (params.has('openExternalBrowser')) {
+      params.delete('openExternalBrowser');
+      const clean = params.toString();
+      window.history.replaceState({}, '', clean ? `?${clean}` : window.location.pathname);
+    }
   }, []);
 
   const renderContent = (content) => {
