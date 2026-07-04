@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { lineAuth } from "../services/lineAuth";
@@ -16,7 +16,7 @@ export default function Login() {
     const [socialLoading, setSocialLoading] = useState(null);
     const [inAppBrowser] = useState(isInAppBrowser);
     const [isLine] = useState(isLineBrowser);
-    const [googleCountdown, setGoogleCountdown] = useState(2);
+    const [pageReady, setPageReady] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -43,14 +43,11 @@ export default function Login() {
         }
     }, []);
 
-    // นับถอยหลัง 2 วินาทีก่อนเปิดให้กด Google (กัน race condition ตอน Firebase ยัง init ไม่เสร็จ)
+    // แสดง loader 3 วิก่อนโชว์หน้า login
     useEffect(() => {
-        if (googleCountdown <= 0) return;
-        const timer = setInterval(() => {
-            setGoogleCountdown(prev => (prev <= 1 ? 0 : prev - 1));
-        }, 1000);
-        return () => clearInterval(timer);
-    }, [googleCountdown]);
+        const timer = setTimeout(() => setPageReady(true), 3000);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Navigate when user is authenticated
     useEffect(() => {
@@ -100,10 +97,6 @@ export default function Login() {
         }
         if (inAppBrowser) {
             // browser อื่นที่บล็อก sessionStorage — banner แนะนำ copy link แล้ว ไม่ทำอะไรเพิ่ม
-            return;
-        }
-        // กัน race condition: ต้องรอครบ 5 วิ และ Firebase init เสร็จก่อน
-        if (googleCountdown > 0 || !firebaseReady) {
             return;
         }
         setSocialLoading('google');
@@ -196,10 +189,10 @@ export default function Login() {
         },
     ];
 
-    if (loading) {
+    if (loading || !pageReady) {
         return (
             <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Loader2 size={32} className="animate-spin text-blue-600" />
             </div>
         );
     }
@@ -305,14 +298,12 @@ export default function Login() {
                 {socialLogins.map((social) => {
                     // Google ต้องรอครบ 5 วิ และ Firebase พร้อม (กัน race condition ตอนกดเร็ว)
                     // LINE ไม่ต้องรอ เพราะ redirect ไป OAuth ของ LINE เอง ไม่พึ่ง Firebase
-                    const needsFirebase = social.name === 'Google';
-                    const notReady = needsFirebase && (googleCountdown > 0 || !firebaseReady);
                     return (
                         <button
                             key={social.name}
                             type="button"
                             onClick={social.onClick}
-                            disabled={isLoading || socialLoading !== null || notReady}
+                            disabled={isLoading || socialLoading !== null}
                             className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
                         >
                             {socialLoading === social.name.toLowerCase() ? (
@@ -321,7 +312,7 @@ export default function Login() {
                                 <img
                                     src={social.icon}
                                     alt={social.name}
-                                    className={`w-10 h-10 ${notReady ? 'grayscale' : ''}`}
+                                    className="w-10 h-10"
                                 />
                             )}
                         </button>
