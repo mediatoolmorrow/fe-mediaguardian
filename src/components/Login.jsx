@@ -301,14 +301,6 @@ export default function Login() {
                 <p className="text-sm text-text">หรือเข้าใช้งานด้วย</p>
             </div>
 
-            {googleCountdown > 0 && (
-                <div className="text-center mb-3">
-                    <p className="text-xs text-gray-400">
-                        กรุณารอ {googleCountdown} วินาที ก่อนเข้าสู่ระบบด้วย Google
-                    </p>
-                </div>
-            )}
-
             <div className="flex gap-4 justify-center mb-6">
                 {socialLogins.map((social) => {
                     // Google ต้องรอครบ 5 วิ และ Firebase พร้อม (กัน race condition ตอนกดเร็ว)
@@ -325,13 +317,11 @@ export default function Login() {
                         >
                             {socialLoading === social.name.toLowerCase() ? (
                                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
-                            ) : notReady ? (
-                                <span className="text-sm font-semibold text-gray-400">{googleCountdown}</span>
                             ) : (
                                 <img
                                     src={social.icon}
                                     alt={social.name}
-                                    className="w-10 h-10"
+                                    className={`w-10 h-10 ${notReady ? 'grayscale' : ''}`}
                                 />
                             )}
                         </button>
