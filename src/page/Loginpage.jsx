@@ -12,6 +12,11 @@ function Loginpage() {
       const clean = params.toString();
       window.history.replaceState({}, '', clean ? `?${clean}` : window.location.pathname);
     }
+    // reload 1 ครั้งเพื่อแก้ปัญหา Firebase sessionStorage ใน in-app browser
+    if (!sessionStorage.getItem('login_reloaded')) {
+      sessionStorage.setItem('login_reloaded', '1');
+      window.location.reload();
+    }
   }, []);
 
   return (
