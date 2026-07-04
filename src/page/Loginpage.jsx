@@ -13,10 +13,12 @@ function Loginpage() {
       params.delete('openExternalBrowser');
     }
 
-    // พอ external browser เปิดมาพร้อม ?reloaded=0 → เปลี่ยน flag เป็น 1 แล้ว reload จริงๆ
+    // พอ external browser เปิดมาพร้อม ?reloaded=0 → อัปเดต URL แล้ว force reload
     if (params.get('reloaded') === '0') {
       params.set('reloaded', '1');
-      window.location.href = `${window.location.pathname}?${params.toString()}`;
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, '', newUrl);
+      window.location.reload();
       return;
     }
 
