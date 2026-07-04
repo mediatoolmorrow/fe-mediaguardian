@@ -5,6 +5,8 @@ import {
   facebookProvider,
   appleProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -119,6 +121,26 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // Handle Google redirect result (เมื่อใช้ signInWithRedirect แทน popup)
+  useEffect(() => {
+    getRedirectResult(auth).then(async (result) => {
+      if (!result) return;
+      try {
+        const backendResponse = await api.syncFirebaseUser(result.user, 'google');
+        setBackendUser(backendResponse.user);
+        if (backendResponse.token) {
+          localStorage.setItem('backend_token', backendResponse.token);
+        }
+      } catch (err) {
+        setError(getFirebaseErrorMessage(err));
+      }
+    }).catch((err) => {
+      if (err.code !== 'auth/null-user') {
+        setError(getFirebaseErrorMessage(err));
+      }
+    });
+  }, []);
+
   // Clear error after 5 seconds
   useEffect(() => {
     if (error) {
@@ -207,6 +229,14 @@ useEffect(() => {
     setError(null);
     setLoading(true);
     try {
+      // ถ้ามาจาก LINE external browser (URL มี reloaded=1) ใช้ redirect แทน popup
+      // เพราะ popup ต้องการ sessionStorage ซึ่งอาจยังไม่พร้อมใน session ใหม่
+      const params = new URLSearchParams(window.location.search);
+      const fromLine = params.get('reloaded') === '1';
+      if (fromLine) {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
       const result = await signInWithPopup(auth, googleProvider);
       const backendResponse = await api.syncFirebaseUser(result.user, 'google');
       setBackendUser(backendResponse.user);
