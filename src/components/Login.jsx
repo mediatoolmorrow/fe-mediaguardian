@@ -17,6 +17,7 @@ export default function Login() {
     const [inAppBrowser] = useState(isInAppBrowser);
     const [isLine] = useState(isLineBrowser);
     const [googleCountdown, setGoogleCountdown] = useState(3);
+    const [showSkeleton, setShowSkeleton] = useState(true);
     const navigate = useNavigate();
 
     const {
@@ -43,7 +44,13 @@ export default function Login() {
         }
     }, []);
 
-    // นับถอยหลัง 5 วินาทีก่อนเปิดให้กด Google (กัน race condition ตอน Firebase ยัง init ไม่เสร็จ)
+    // แสดง skeleton 2 วิเมื่อเข้าหน้า login
+    useEffect(() => {
+        const timer = setTimeout(() => setShowSkeleton(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // นับถอยหลัง 3 วินาทีก่อนเปิดให้กด Google (กัน race condition ตอน Firebase ยัง init ไม่เสร็จ)
     useEffect(() => {
         if (googleCountdown <= 0) return;
         const timer = setInterval(() => {
@@ -196,10 +203,26 @@ export default function Login() {
         },
     ];
 
-    if (loading) {
+    if (showSkeleton || loading) {
         return (
-            <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="w-full max-w-[440px] mx-auto p-8 bg-white rounded-xl animate-pulse">
+                {/* email input skeleton */}
+                <div className="h-12 bg-gray-200 rounded-lg mb-4" />
+                {/* password input skeleton */}
+                <div className="h-12 bg-gray-200 rounded-lg mb-2" />
+                {/* forgot password skeleton */}
+                <div className="h-4 bg-gray-200 rounded w-24 mx-auto mb-6" />
+                {/* login button skeleton */}
+                <div className="h-11 bg-gray-200 rounded-full w-36 mx-auto mb-6" />
+                {/* divider skeleton */}
+                <div className="h-4 bg-gray-200 rounded w-28 mx-auto mb-6" />
+                {/* social buttons skeleton */}
+                <div className="flex gap-4 justify-center mb-6">
+                    <div className="w-14 h-14 bg-gray-200 rounded-full" />
+                    <div className="w-14 h-14 bg-gray-200 rounded-full" />
+                </div>
+                {/* switch mode skeleton */}
+                <div className="h-4 bg-gray-200 rounded w-40 mx-auto" />
             </div>
         );
     }
