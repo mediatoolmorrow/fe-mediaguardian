@@ -16,7 +16,7 @@ export default function Login() {
     const [socialLoading, setSocialLoading] = useState(null);
     const [inAppBrowser] = useState(isInAppBrowser);
     const [isLine] = useState(isLineBrowser);
-    const [googleCountdown, setGoogleCountdown] = useState(5);
+    const [googleCountdown, setGoogleCountdown] = useState(3);
     const navigate = useNavigate();
 
     const {
