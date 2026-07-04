@@ -13,14 +13,14 @@ function Loginpage() {
       params.delete('openExternalBrowser');
     }
 
-    // พอ external browser เปิดมาพร้อม ?reloaded=0 → reload 1 ครั้ง แล้วเปลี่ยนเป็น reloaded=1
+    // พอ external browser เปิดมาพร้อม ?reloaded=0 → เปลี่ยน flag เป็น 1 แล้ว reload จริงๆ
     if (params.get('reloaded') === '0') {
       params.set('reloaded', '1');
-      window.location.replace(`${window.location.pathname}?${params.toString()}`);
+      window.location.href = `${window.location.pathname}?${params.toString()}`;
       return;
     }
 
-    // หลัง reload แล้ว → ลบ reloaded ออกให้ URL สะอาด
+    // หลัง reload แล้ว (reloaded=1) → ลบ param ออกให้ URL สะอาด
     if (params.get('reloaded') === '1') {
       params.delete('reloaded');
       const clean = params.toString();
