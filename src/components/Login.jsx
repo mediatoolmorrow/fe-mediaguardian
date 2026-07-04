@@ -16,6 +16,7 @@ export default function Login() {
     const [socialLoading, setSocialLoading] = useState(null);
     const [inAppBrowser] = useState(isInAppBrowser);
     const [isLine] = useState(isLineBrowser);
+    const [googleCountdown, setGoogleCountdown] = useState(5);
     const navigate = useNavigate();
 
     const {
@@ -41,6 +42,15 @@ export default function Login() {
             setSocialLoading('line');
         }
     }, []);
+
+    // นับถอยหลัง 5 วินาทีก่อนเปิดให้กด Google (กัน race condition ตอน Firebase ยัง init ไม่เสร็จ)
+    useEffect(() => {
+        if (googleCountdown <= 0) return;
+        const timer = setInterval(() => {
+            setGoogleCountdown(prev => (prev <= 1 ? 0 : prev - 1));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [googleCountdown]);
 
     // Navigate when user is authenticated
     useEffect(() => {
@@ -92,8 +102,8 @@ export default function Login() {
             // browser อื่นที่บล็อก sessionStorage — banner แนะนำ copy link แล้ว ไม่ทำอะไรเพิ่ม
             return;
         }
-        // กัน race condition: ถ้า Firebase ยัง init ไม่เสร็จ อย่าเพิ่งให้ login
-        if (!firebaseReady) {
+        // กัน race condition: ต้องรอครบ 5 วิ และ Firebase init เสร็จก่อน
+        if (googleCountdown > 0 || !firebaseReady) {
             return;
         }
         setSocialLoading('google');
@@ -291,18 +301,20 @@ export default function Login() {
                 <p className="text-sm text-text">หรือเข้าใช้งานด้วย</p>
             </div>
 
-            {!firebaseReady && (
+            {googleCountdown > 0 && (
                 <div className="text-center mb-3">
-                    <p className="text-xs text-gray-400">กำลังเตรียมระบบเข้าสู่ระบบ...</p>
+                    <p className="text-xs text-gray-400">
+                        กรุณารอ {googleCountdown} วินาที ก่อนเข้าสู่ระบบด้วย Google
+                    </p>
                 </div>
             )}
 
             <div className="flex gap-4 justify-center mb-6">
                 {socialLogins.map((social) => {
-                    // Google ต้องรอ Firebase พร้อมก่อน (กัน race condition ตอนกดเร็ว)
+                    // Google ต้องรอครบ 5 วิ และ Firebase พร้อม (กัน race condition ตอนกดเร็ว)
                     // LINE ไม่ต้องรอ เพราะ redirect ไป OAuth ของ LINE เอง ไม่พึ่ง Firebase
                     const needsFirebase = social.name === 'Google';
-                    const notReady = needsFirebase && !firebaseReady;
+                    const notReady = needsFirebase && (googleCountdown > 0 || !firebaseReady);
                     return (
                         <button
                             key={social.name}
@@ -311,8 +323,10 @@ export default function Login() {
                             disabled={isLoading || socialLoading !== null || notReady}
                             className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
                         >
-                            {socialLoading === social.name.toLowerCase() || notReady ? (
+                            {socialLoading === social.name.toLowerCase() ? (
                                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                            ) : notReady ? (
+                                <span className="text-sm font-semibold text-gray-400">{googleCountdown}</span>
                             ) : (
                                 <img
                                     src={social.icon}
