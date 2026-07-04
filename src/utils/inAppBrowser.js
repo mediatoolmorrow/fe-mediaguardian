@@ -25,8 +25,10 @@ const isSessionStorageBlocked = () => {
 export const isInAppBrowser = () => isInAppBrowserByUA() || isSessionStorageBlocked();
 
 // LINE รองรับ ?openExternalBrowser=1 อย่างเป็นทางการ
+// ใส่ ?reloaded=1 ไปด้วยเพื่อให้ external browser รู้ว่าต้อง reload 1 ครั้ง
 export const openInExternalBrowser = () => {
   const url = new URL(window.location.href);
   url.searchParams.set('openExternalBrowser', '1');
+  url.searchParams.set('reloaded', '0');
   window.location.href = url.toString();
 };

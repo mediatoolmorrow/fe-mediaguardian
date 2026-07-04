@@ -7,15 +7,24 @@ function Loginpage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
+    // ลบ openExternalBrowser ออกจาก URL
     if (params.has('openExternalBrowser')) {
       params.delete('openExternalBrowser');
+    }
+
+    // พอ external browser เปิดมาพร้อม ?reloaded=0 → reload 1 ครั้ง แล้วเปลี่ยนเป็น reloaded=1
+    if (params.get('reloaded') === '0') {
+      params.set('reloaded', '1');
+      window.location.replace(`${window.location.pathname}?${params.toString()}`);
+      return;
+    }
+
+    // หลัง reload แล้ว → ลบ reloaded ออกให้ URL สะอาด
+    if (params.get('reloaded') === '1') {
+      params.delete('reloaded');
       const clean = params.toString();
       window.history.replaceState({}, '', clean ? `?${clean}` : window.location.pathname);
-    }
-    // reload 1 ครั้งเพื่อแก้ปัญหา Firebase sessionStorage ใน in-app browser
-    if (!sessionStorage.getItem('login_reloaded')) {
-      sessionStorage.setItem('login_reloaded', '1');
-      window.location.reload();
     }
   }, []);
 
