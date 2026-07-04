@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [backendUser, setBackendUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [firebaseReady, setFirebaseReady] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
@@ -109,6 +110,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('backend_token');
       }
       setLoading(false);
+      // Firebase resolve persistence เสร็จแล้ว = auth layer พร้อมใช้งาน (popup/redirect ปลอดภัย)
+      setFirebaseReady(true);
     });
 
     return unsubscribe;
@@ -427,6 +430,7 @@ useEffect(() => {
     user,
     backendUser,
     loading,
+    firebaseReady,
     error,
     successMessage,
     isAdmin,

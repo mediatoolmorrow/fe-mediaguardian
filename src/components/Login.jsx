@@ -31,7 +31,8 @@ export default function Login() {
         clearError,
         clearSuccessMessage,
         backendUser,
-        loading
+        loading,
+        firebaseReady
     } = useAuth();
 
     // Check if returning from LINE login
@@ -89,6 +90,10 @@ export default function Login() {
         }
         if (inAppBrowser) {
             // browser อื่นที่บล็อก sessionStorage — banner แนะนำ copy link แล้ว ไม่ทำอะไรเพิ่ม
+            return;
+        }
+        // กัน race condition: ถ้า Firebase ยัง init ไม่เสร็จ อย่าเพิ่งให้ login
+        if (!firebaseReady) {
             return;
         }
         setSocialLoading('google');
@@ -286,26 +291,38 @@ export default function Login() {
                 <p className="text-sm text-text">หรือเข้าใช้งานด้วย</p>
             </div>
 
+            {!firebaseReady && (
+                <div className="text-center mb-3">
+                    <p className="text-xs text-gray-400">กำลังเตรียมระบบเข้าสู่ระบบ...</p>
+                </div>
+            )}
+
             <div className="flex gap-4 justify-center mb-6">
-                {socialLogins.map((social) => (
-                    <button
-                        key={social.name}
-                        type="button"
-                        onClick={social.onClick}
-                        disabled={isLoading || socialLoading !== null}
-                        className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
-                    >
-                        {socialLoading === social.name.toLowerCase() ? (
-                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
-                        ) : (
-                            <img
-                                src={social.icon}
-                                alt={social.name}
-                                className="w-10 h-10"
-                            />
-                        )}
-                    </button>
-                ))}
+                {socialLogins.map((social) => {
+                    // Google ต้องรอ Firebase พร้อมก่อน (กัน race condition ตอนกดเร็ว)
+                    // LINE ไม่ต้องรอ เพราะ redirect ไป OAuth ของ LINE เอง ไม่พึ่ง Firebase
+                    const needsFirebase = social.name === 'Google';
+                    const notReady = needsFirebase && !firebaseReady;
+                    return (
+                        <button
+                            key={social.name}
+                            type="button"
+                            onClick={social.onClick}
+                            disabled={isLoading || socialLoading !== null || notReady}
+                            className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none"
+                        >
+                            {socialLoading === social.name.toLowerCase() || notReady ? (
+                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                            ) : (
+                                <img
+                                    src={social.icon}
+                                    alt={social.name}
+                                    className="w-10 h-10"
+                                />
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
             <div className="text-center text-sm">
