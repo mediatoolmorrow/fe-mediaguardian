@@ -83,17 +83,17 @@ function Pdpapage() {
 
   return (
     <>
-      {/* Image inside Pageframe, fits container without scroll */}
+      {/* Image fills entire Pageframe */}
       <div className="w-full h-full overflow-hidden">
         <img
           src="/pdpa/DPA_Desktop.jpg"
           alt="PDPA"
-          className="hidden sm:block w-full h-full object-contain object-top"
+          className="hidden sm:block w-full h-full object-cover object-top"
         />
         <img
           src="/pdpa/PDPA_Mobile.jpg"
           alt="PDPA"
-          className="block sm:hidden w-full h-full object-contain object-top"
+          className="block sm:hidden w-full h-full object-cover object-top"
         />
       </div>
 

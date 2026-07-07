@@ -51,21 +51,22 @@ function MobileScrollbar({ scrollEl }) {
 export default function Pageframe() {
   const { pathname } = useLocation();
   const hideNavbar = ["/login", "/", "/pdpa"].includes(pathname);
-  const isFullscreen = ["/", "/pdpa"].includes(pathname);
   const scrollRef = useRef(null);
 
   return (
-    <div className={`font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center ${isFullscreen ? "" : "sm:p-6"}`}
+    <div className="font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center sm:p-6"
       style={{
         backgroundImage: "url('/bg.webp')",
       }}>
-            <div className={`
+            <div className="
             w-full h-full
+            sm:max-w-[1312px] sm:max-h-[996px]
             flex flex-col
             bg-white
+            shadow-2xl
+            rounded-none sm:rounded-3xl
             overflow-hidden
-            ${isFullscreen ? "" : "sm:max-w-[1312px] sm:max-h-[996px] shadow-2xl rounded-none sm:rounded-3xl"}
-            `}>
+            ">
 
             {!hideNavbar && <Navbar />}
 
