@@ -76,8 +76,8 @@ function Pdpapage() {
       </div>
 
       {/* Bottom popup bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.12)] px-4 py-3 flex items-center justify-center gap-4">
-        <p className="text-sm text-gray-700 font-medium">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.12)] px-4 py-3 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+        <p className="text-sm text-gray-700 font-medium text-center">
           นโยบายความเป็นส่วนตัว (Privacy Policy)
         </p>
         <div className="flex gap-2">
