@@ -83,17 +83,17 @@ function Pdpapage() {
 
   return (
     <>
-      {/* Image — width 100%, height scales naturally to show full image */}
-      <div className="w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden">
+      {/* Container fills all available height, image shrinks to fit */}
+      <div className="w-full h-full flex items-center justify-center overflow-hidden">
         <img
           src="/pdpa/DPA_Desktop.jpg"
           alt="PDPA"
-          className="hidden sm:block w-full h-full object-contain object-center"
+          className="hidden sm:block max-w-full max-h-full object-contain"
         />
         <img
           src="/pdpa/PDPA_Mobile.jpg"
           alt="PDPA"
-          className="block sm:hidden w-full h-full object-contain object-center"
+          className="block sm:hidden max-w-full max-h-full object-contain"
         />
       </div>
 
