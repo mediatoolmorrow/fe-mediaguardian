@@ -50,7 +50,7 @@ function MobileScrollbar({ scrollEl }) {
 
 export default function Pageframe() {
   const { pathname } = useLocation();
-  const hideNavbar = ["/login", "/", "/pdpa"].includes(pathname);
+  const hideNavbar = ["/login"].includes(pathname);
   const scrollRef = useRef(null);
 
   return (
