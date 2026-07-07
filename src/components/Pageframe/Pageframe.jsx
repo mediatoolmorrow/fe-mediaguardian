@@ -51,10 +51,11 @@ function MobileScrollbar({ scrollEl }) {
 export default function Pageframe() {
   const { pathname } = useLocation();
   const hideNavbar = ["/login", "/", "/pdpa"].includes(pathname);
+  const isPdpa = ["/", "/pdpa"].includes(pathname);
   const scrollRef = useRef(null);
 
   return (
-    <div className="font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center sm:p-6"
+    <div className={`font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center sm:p-6 ${isPdpa ? "pb-[80px] sm:pb-[52px]" : ""}`}
       style={{
         backgroundImage: "url('/bg.webp')",
       }}>
