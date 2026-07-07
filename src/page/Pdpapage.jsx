@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
 import pdpaData from "../utils/filePDPA.json";
 import { useTrackStep } from "../hooks/useTrackStep";
@@ -57,40 +58,47 @@ function Pdpapage() {
     return null;
   };
 
-  return (
-    <div className="w-screen h-screen overflow-hidden relative">
-      {/* PDPA image — fits entire screen, no scroll */}
-      <img
-        src="/pdpa/DPA_Desktop.jpg"
-        alt="PDPA"
-        className="hidden sm:block w-full h-full object-contain object-top"
-      />
-      <img
-        src="/pdpa/PDPA_Mobile.jpg"
-        alt="PDPA"
-        className="block sm:hidden w-full h-full object-contain object-top"
-      />
-
-      {/* Bottom bar — fixed to viewport edge, full width, outside any frame */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.15)] px-6 py-3 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
-        <p className="text-sm text-gray-700 font-medium text-center">
-          นโยบายความเป็นส่วนตัว (Privacy Policy)
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowModal(true)}
-            className="px-5 py-1.5 rounded-full text-sm font-medium bg-primary text-white hover:opacity-90 transition-opacity"
-          >
-            อ่านนโยบาย
-          </button>
-          <button
-            onClick={() => navigate("/login")}
-            className="px-5 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            ปิด
-          </button>
-        </div>
+  const bottomBar = ReactDOM.createPortal(
+    <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.15)] px-6 py-3 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
+      <p className="text-sm text-gray-700 font-medium text-center">
+        นโยบายความเป็นส่วนตัว (Privacy Policy)
+      </p>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-5 py-1.5 rounded-full text-sm font-medium bg-primary text-white hover:opacity-90 transition-opacity"
+        >
+          อ่านนโยบาย
+        </button>
+        <button
+          onClick={() => navigate("/login")}
+          className="px-5 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
+        >
+          ปิด
+        </button>
       </div>
+    </div>,
+    document.body
+  );
+
+  return (
+    <>
+      {/* Image inside Pageframe, fits container without scroll */}
+      <div className="w-full h-full overflow-hidden">
+        <img
+          src="/pdpa/DPA_Desktop.jpg"
+          alt="PDPA"
+          className="hidden sm:block w-full h-full object-contain object-top"
+        />
+        <img
+          src="/pdpa/PDPA_Mobile.jpg"
+          alt="PDPA"
+          className="block sm:hidden w-full h-full object-contain object-top"
+        />
+      </div>
+
+      {/* Bottom bar rendered to document.body via portal — outside Pageframe */}
+      {bottomBar}
 
       {/* PDPA Content Modal */}
       {showModal && (
@@ -155,7 +163,7 @@ function Pdpapage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

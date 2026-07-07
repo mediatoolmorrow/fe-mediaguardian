@@ -28,12 +28,10 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        {/* PDPA — full viewport, no Pageframe */}
-        <Route path="/" element={<Pdpapage />} />
-        <Route path="/pdpa" element={<Pdpapage />} />
-
         <Route element={<Pageframe />}>
           {/* Public Routes */}
+          <Route path="/" element={<Pdpapage />} />
+          <Route path="/pdpa" element={<Pdpapage />} />
           <Route path="/login" element={<Loginpage />} />
 
           {/* Protected Routes */}
