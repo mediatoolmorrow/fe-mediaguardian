@@ -65,22 +65,22 @@ function Pdpapage() {
         <img
           src="/pdpa/DPA_Desktop.jpg"
           alt="PDPA"
-          className="hidden sm:block w-full h-full object-contain"
+          className="hidden sm:block w-full h-full object-cover"
         />
         {/* Mobile image */}
         <img
           src="/pdpa/PDPA_Mobile.jpg"
           alt="PDPA"
-          className="block sm:hidden w-full h-full object-contain"
+          className="block sm:hidden w-full h-full object-cover"
         />
       </div>
 
       {/* Bottom popup bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.12)] px-4 py-3 flex items-center justify-between gap-3">
-        <p className="text-sm text-gray-700 font-medium flex-1 min-w-0 truncate">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-[0_-2px_16px_rgba(0,0,0,0.12)] px-4 py-3 flex items-center justify-center gap-4">
+        <p className="text-sm text-gray-700 font-medium">
           นโยบายความเป็นส่วนตัว (Privacy Policy)
         </p>
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-2">
           <button
             onClick={() => setShowModal(true)}
             className="px-4 py-1.5 rounded-full text-sm font-medium bg-primary text-white hover:opacity-90 transition-opacity"
