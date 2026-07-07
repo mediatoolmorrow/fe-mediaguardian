@@ -74,7 +74,7 @@ function Pdpapage() {
           onClick={() => navigate("/login")}
           className="px-5 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
         >
-          ปิด
+          ยอมรับ
         </button>
       </div>
     </div>,
