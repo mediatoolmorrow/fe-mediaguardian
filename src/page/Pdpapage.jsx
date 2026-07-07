@@ -58,20 +58,20 @@ function Pdpapage() {
   };
 
   return (
-    <>
-      {/* Full-screen PDPA image */}
-      <div className="w-full h-full relative overflow-hidden pb-[56px]">
+    <div className="min-h-screen overflow-y-auto">
+      {/* Full-viewport PDPA image — scrollable if taller than screen */}
+      <div className="w-full pb-[56px]">
         {/* Desktop image */}
         <img
           src="/pdpa/DPA_Desktop.jpg"
           alt="PDPA"
-          className="hidden sm:block w-full h-full object-cover"
+          className="hidden sm:block w-full h-auto"
         />
         {/* Mobile image */}
         <img
           src="/pdpa/PDPA_Mobile.jpg"
           alt="PDPA"
-          className="block sm:hidden w-full h-full object-cover"
+          className="block sm:hidden w-full h-auto"
         />
       </div>
 
@@ -159,7 +159,7 @@ function Pdpapage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
