@@ -83,17 +83,17 @@ function Pdpapage() {
 
   return (
     <>
-      {/* Image fills entire Pageframe */}
-      <div className="w-full h-full overflow-hidden">
+      {/* Image — width 100%, height scales naturally to show full image */}
+      <div className="w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden">
         <img
           src="/pdpa/DPA_Desktop.jpg"
           alt="PDPA"
-          className="hidden sm:block w-full h-full object-cover object-top"
+          className="hidden sm:block w-full h-full object-contain object-center"
         />
         <img
           src="/pdpa/PDPA_Mobile.jpg"
           alt="PDPA"
-          className="block sm:hidden w-full h-full object-cover object-top"
+          className="block sm:hidden w-full h-full object-contain object-center"
         />
       </div>
 
