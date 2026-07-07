@@ -53,21 +53,18 @@ export default function Pageframe() {
   const hideNavbar = ["/login", "/", "/pdpa"].includes(pathname);
   const isPdpa = ["/", "/pdpa"].includes(pathname);
   const scrollRef = useRef(null);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+  const pdpaAspect = isPdpa ? (isMobile ? "1080/1920" : "1312/966") : undefined;
 
   return (
     <div className={`font-display h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center sm:p-6 ${isPdpa ? "pb-[80px] sm:pb-[52px]" : ""}`}
       style={{
         backgroundImage: "url('/bg.webp')",
       }}>
-            <div className="
-            w-full h-full
-            sm:max-w-[1312px] sm:max-h-[996px]
-            flex flex-col
-            bg-white
-            shadow-2xl
-            rounded-none sm:rounded-3xl
-            overflow-hidden
-            ">
+            <div
+              className={`flex flex-col bg-white shadow-2xl overflow-hidden ${isPdpa ? "rounded-none sm:rounded-3xl" : "w-full h-full sm:max-w-[1312px] sm:max-h-[996px] rounded-none sm:rounded-3xl"}`}
+              style={isPdpa ? { height: "100%", width: "auto", aspectRatio: pdpaAspect, maxWidth: "100%" } : undefined}
+            >
 
             {!hideNavbar && <Navbar />}
 
