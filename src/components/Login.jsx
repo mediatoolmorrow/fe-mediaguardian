@@ -172,7 +172,7 @@ export default function Login() {
         */
         {
             name: "Google",
-            icon: "/social-media/google.svg",
+            icon: "/icon/google.svg",
             onClick: handleGoogleLogin,
         },
         /*
@@ -184,7 +184,7 @@ export default function Login() {
         */
         {
             name: "LINE",
-            icon: "/social-media/line.svg",
+            icon: "/icon/line.svg",
             onClick: handleLineLogin,
         },
     ];
