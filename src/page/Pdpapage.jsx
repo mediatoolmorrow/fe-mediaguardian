@@ -152,9 +152,9 @@ function Pdpapage() {
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-4 border-t flex-shrink-0">
+            <div className="px-5 py-4 border-t flex-shrink-0 flex justify-center">
               <button
-                className="btn-normal-active w-full"
+                className="btn-normal-active w-full text-center"
                 onClick={() => navigate("/login")}
               >
                 ยอมรับ
